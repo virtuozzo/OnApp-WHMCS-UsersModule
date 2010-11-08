@@ -30,7 +30,7 @@ function autosuspend_onappusers() {
 
 function unsuspend_user($vars) {
     require_once("../modules/servers/onappusers/onappusers.php");
-    include ROOTDIR . '/includes/modulefunctions.php';
+    require_once ROOTDIR . '/includes/modulefunctions.php';
 
     $invoice_id = $vars['invoiceid'];
     $client_query = "SELECT
@@ -54,6 +54,10 @@ function unsuspend_user($vars) {
         GROUP BY tblinvoices.id";
     $client_result = full_query($client_query);
     $client = mysql_fetch_assoc($client_result);
+
+    if (!$client) {
+        return;
+    }
 
     $servers_query = "SELECT
             id,
