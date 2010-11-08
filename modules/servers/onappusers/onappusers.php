@@ -1,5 +1,6 @@
 <?php
 define('ONAPPUSERS_CREATE_ACCOUNT_TMPL_NAME', 'OnApp account created');
+load_lang();
 
 function onappusers_ConfigOptions() {
     // Should return an array of the module options for each product - maximum of 24
@@ -14,7 +15,7 @@ function onappusers_ConfigOptions() {
 }
 
 function onappusers_CreateAccount($params) {
-    global $CONFIG;
+    global $CONFIG, $_LANG;
     $ONAPP_DEFAULT_ROLE  = 2;
     $ONAPP_DEFAULT_GROUP = 1;
 
@@ -47,7 +48,8 @@ function onappusers_CreateAccount($params) {
     }
 
     if (!$password) {
-        return "Can't create User<br />\n Password not set";
+        return $_LANG['onappuserserrusercreate']."<br/>\n".
+            $_LANG['onappuserserrpwdnotset'];
     }
 
     /*********************************/
@@ -71,7 +73,7 @@ function onappusers_CreateAccount($params) {
     $onapp_user->save();
 
     if (isset($onapp_user->error)) {
-        $error_msg = "Can't create OnApp User:<br/>\n";
+        $error_msg = $_LANG['onappuserserrusercreate'].":<br/>\n";
         $error_msg .= is_array($onapp_user->error) ?
             implode("\n<br/>", $onapp_user->error) :
             $onapp_user->error;
@@ -79,7 +81,7 @@ function onappusers_CreateAccount($params) {
     }
 
     if (isset($onapp_user->_obj->error)) {
-        $error_msg = "Can't create OnApp User:<br/>\n";
+        $error_msg = $_LANG['onappuserserrusercreate'].":<br/>\n";
         $error_msg .= is_array($onapp_user->_obj->error) ?
             implode("\n<br/>", $onapp_user->_obj->error) :
             $onapp_user->_obj->error;
@@ -87,7 +89,7 @@ function onappusers_CreateAccount($params) {
     }
 
     if ( is_null($onapp_user->_obj->_id) ) {
-        return  "Can't create OnApp User";
+        return  $_LANG['onappuserserrusercreate'];
     }
     /*    End Create OnApp user      */
     /*********************************/
@@ -100,9 +102,6 @@ function onappusers_CreateAccount($params) {
         'password'      => $password,
         'email'         => $clientsdetails['email']
     ));
-    if ($res_insert === false) {
-        return "Can't insert user data into Data Base";
-    }
 
     sendmessage(ONAPPUSERS_CREATE_ACCOUNT_TMPL_NAME, $serviceid);
 
@@ -129,7 +128,7 @@ function onappusers_SuspendAccount($params) {
         $onapp_user_id = mysql_result($result, 0);
     }
     if (!$onapp_user_id) {
-        return "Can't find OnApp User for client #$client_id on server #$server_id";
+        return sprintf($_LANG['onappuserserrassociateuser'], $client_id, $server_id);
     }
 
     $onapp_user = get_onapp_object('ONAPP_User', $server_ip, $server_username, $server_password);
@@ -139,7 +138,7 @@ function onappusers_SuspendAccount($params) {
     $onapp_user->suspend();
 
     if (isset($onapp_user->error)) {
-        $error_msg = "Can't suspend OnApp User<br/>\n";
+        $error_msg = $_LANG['onappuserserrusersuspend'].":<br/>\n";
         $error_msg .= is_array($onapp_user->error) ?
             implode("\n<br/>", $onapp_user->error) :
             $onapp_user->error;
@@ -169,7 +168,7 @@ function onappusers_UnsuspendAccount($params) {
         $onapp_user_id = mysql_result($result, 0);
     }
     if (!$onapp_user_id) {
-        return "Can't find OnApp User for client #$client_id on server #$server_id";
+        return sprintf($_LANG['onappuserserrassociateuser'], $client_id, $server_id);
     }
 
     $onapp_user = get_onapp_object('ONAPP_User', $server_ip, $server_username, $server_password);
@@ -179,7 +178,7 @@ function onappusers_UnsuspendAccount($params) {
     $onapp_user->activate_user();
 
     if (isset($onapp_user->error)) {
-        $error_msg = "Can't suspend OnApp User<br/>\n";
+        $error_msg = $_LANG['onappuserserruserunsuspend'].":<br/>\n";
         $error_msg .= is_array($onapp_user->error) ?
             implode("\n<br/>", $onapp_user->error) :
             $onapp_user->error;
@@ -195,6 +194,8 @@ function onappusers_UnsuspendAccount($params) {
  * @return mixed Return true on success, Otherwise error string.
  */
 function create_table() {
+    global $_LANG;
+
     $query = 'CREATE TABLE IF NOT EXISTS `tblonappusers` (
             `server_id` int(11) NOT NULL,
             `client_id` int(11) NOT NULL,
@@ -205,7 +206,7 @@ function create_table() {
             KEY `client_id` (`client_id`)
         ) ENGINE=InnoDB;';
     if (!full_query($query, $whmcsmysql)) {
-        return "Error creating table onappclients";
+        return sprintf($_LANG['onappuserserrtablecreate'], 'onappclients');
     }
 
     // Add e-mail templates
@@ -224,7 +225,7 @@ function create_table() {
             '<p></p>To login, visit http://{$service_server_ip}';
         $insert_fields['plaintext'] = 0;
         if (!insert_query('tblemailtemplates', $insert_fields)) {
-            return 'Error adding \''.ONAPPUSERS_CREATE_ACCOUNT_TMPL_NAME.'\' template';
+            return sprintf($_LANG['onappuserserrtmpladd'], ONAPPUSERS_CREATE_ACCOUNT_TMPL_NAME);
         }
     }
 
@@ -254,4 +255,35 @@ function get_onapp_object($class, $server_ip, $email, $apikey)  {
     $obj->auth($server_ip, $email, $apikey);
 
     return $obj;
+}
+
+/**
+ * Load $_LANG from language file
+ */
+function load_lang() {
+    $dh = opendir (dirname(__FILE__).'/lang/');
+
+    while (false !== $file2 = readdir ($dh)) {
+        if (!is_dir ('' . 'lang/' . $file2) ) {
+            $pieces = explode ('.', $file2);
+            if ($pieces[1] == 'txt') {
+                $arrayoflanguagefiles[] = $pieces[0];
+                continue;
+            }
+            continue;
+        }
+    };
+
+    closedir ($dh);
+
+    $language = $_SESSION['Language'];
+
+    if ( ! in_array ($language, $arrayoflanguagefiles) )
+        $language =  "English";
+
+    ob_start ();
+    include dirname(__FILE__) . "/lang/$language.txt";
+    $templang = ob_get_contents ();
+    ob_end_clean ();
+    eval ($templang);
 }
