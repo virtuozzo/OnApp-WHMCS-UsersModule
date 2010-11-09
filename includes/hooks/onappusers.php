@@ -1,6 +1,6 @@
 <?php
 function autosuspend_onappusers() {
-    require_once("../modules/servers/onappusers/onappusers.php");
+    require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
     global $CONFIG;
 
     if ($CONFIG['AutoSuspension'] != 'on') {
@@ -29,7 +29,7 @@ function autosuspend_onappusers() {
 }
 
 function unsuspend_user($vars) {
-    require_once("../modules/servers/onappusers/onappusers.php");
+    require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
     require_once ROOTDIR . '/includes/modulefunctions.php';
 
     $invoice_id = $vars['invoiceid'];
