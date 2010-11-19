@@ -1,5 +1,6 @@
 <?php
 define('ONAPPUSERS_CREATE_ACCOUNT_TMPL_NAME', 'OnApp account created');
+define('ONAPPUSERS_CREATE_ACCOUNT_PREFIX', 'whm_');
 load_lang();
 
 function onappusers_ConfigOptions() {
@@ -38,7 +39,7 @@ function onappusers_CreateAccount($params) {
 
     // Save hosting username 
     if (!$username) {
-        $username = $clientsdetails['email'];
+        $username = ONAPPUSERS_CREATE_ACCOUNT_PREFIX.$clientsdetails['email'];
         full_query("UPDATE
                 tblhosting
             SET
@@ -56,7 +57,7 @@ function onappusers_CreateAccount($params) {
     /*      Create OnApp user        */
     $onapp_user = get_onapp_object('ONAPP_User', $server_ip, $server_username, $server_password);
 
-    $onapp_user->_email      = $clientsdetails['email'];
+    $onapp_user->_email      = ONAPPUSERS_CREATE_ACCOUNT_PREFIX.$clientsdetails['email'];
     $onapp_user->_password   = $password;
     $onapp_user->_login      = $username;
     $onapp_user->_first_name = $clientsdetails['firstname'];
