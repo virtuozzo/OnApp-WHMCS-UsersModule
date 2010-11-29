@@ -98,9 +98,10 @@ function onappusers_CreateAccount($params) {
     $res_insert = insert_query('tblonappusers', array(
         'server_id'     => $server_id,
         'client_id'     => $clientsdetails['userid'],
+        'service_id'    => $serviceid,
         'onapp_user_id' => $onapp_user->_obj->_id,
         'password'      => $password,
-        'email'         => $clientsdetails['email']
+        'email'         => $serviceid.'_'.$clientsdetails['email']
     ));
 
     sendmessage(ONAPPUSERS_CREATE_ACCOUNT_TMPL_NAME, $serviceid);
@@ -109,6 +110,7 @@ function onappusers_CreateAccount($params) {
 }
 
 function onappusers_SuspendAccount($params) {
+    $serviceid       = $params["serviceid"];
     $client_id       = $params['clientsdetails']['userid'];
     $server_id       = $params['serverid'];
     $server_ip       = $params['serverip'];
@@ -121,7 +123,8 @@ function onappusers_SuspendAccount($params) {
             tblonappusers
         WHERE
             server_id = $server_id
-            AND client_id = $client_id";
+            AND client_id = $client_id
+            AND service_id = $serviceid";
 
     $result = full_query($query);
     if ($result) {
@@ -149,6 +152,7 @@ function onappusers_SuspendAccount($params) {
 }
 
 function onappusers_UnsuspendAccount($params) {
+    $serviceid       = $params["serviceid"];
     $client_id       = $params['clientsdetails']['userid'];
     $server_id       = $params['serverid'];
     $server_ip       = $params['serverip'];
@@ -161,7 +165,8 @@ function onappusers_UnsuspendAccount($params) {
             tblonappusers
         WHERE
             server_id = $server_id
-            AND client_id = $client_id";
+            AND client_id = $client_id
+            AND service_id = $serviceid";
 
     $result = full_query($query);
     if ($result) {
@@ -199,10 +204,11 @@ function create_table() {
     $query = 'CREATE TABLE IF NOT EXISTS `tblonappusers` (
             `server_id` int(11) NOT NULL,
             `client_id` int(11) NOT NULL,
+            `service_id` int(11) NOT NULL,
             `onapp_user_id` int(11) NOT NULL,
             `password` text NOT NULL,
             `email` text NOT NULL,
-            PRIMARY KEY (`server_id`, `client_id`),
+            PRIMARY KEY (`server_id`, `client_id`, `service_id`),
             KEY `client_id` (`client_id`)
         ) ENGINE=InnoDB;';
     if (!full_query($query, $whmcsmysql)) {
