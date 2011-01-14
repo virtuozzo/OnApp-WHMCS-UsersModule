@@ -30,7 +30,6 @@ function autosuspend_onappusers() {
 
 function unsuspend_user($vars) {
     require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
-    require_once ROOTDIR . '/includes/modulefunctions.php';
 
     $invoice_id = $vars['invoiceid'];
     $client_query = "SELECT
@@ -103,7 +102,16 @@ function unsuspend_user($vars) {
     $client_amount = mysql_fetch_assoc($client_amount_result);
 
     if (!$client_amount['amount']) {
-        serverunsuspendaccount($client['service_id']);
+        $params['serviceid'] = $client['service_id'];
+        $params['clientsdetails']['userid'] = $client['client_id'];
+        $params['serverid'] = $client['server_id'];
+        $params['serverip'] = $servers[$client['server_id']]['ipaddress'];
+        $params['serverusername'] = $servers[$client['server_id']]['username'];
+        $params['serverpassword'] = $servers[$client['server_id']]['password'];
+        
+        if (onappusers_UnsuspendAccount($params) == 'success') {
+            update_query('tblhosting', array('domainstatus'=>'Active'), array('id'=>$client['service_id']));
+        }
     }
 
 }
