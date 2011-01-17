@@ -215,6 +215,34 @@ function create_table() {
         return sprintf($_LANG['onappuserserrtablecreate'], 'onappclients');
     }
 
+    $col_exist_res = full_query('DESCRIBE tblonappusers service_id');
+    if (!mysql_num_rows($col_exist_res)) {
+        $alter_query = 'ALTER TABLE tblonappusers
+            ADD service_id int(11) NOT NULL';
+        full_query($alter_query);
+
+        if (mysql_num_rows(full_query("SHOW KEYS FROM tblonappusers WHERE Key_name = 'PRIMARY'"))){
+            full_query('ALTER TABLE tblonappusers DROP PRIMARY KEY');
+        }
+
+        $services_query = 'SELECT
+                tblonappusers.server_id, tblonappusers.client_id, tblhosting.id
+            FROM
+                tblonappusers, tblhosting
+            WHERE
+                tblhosting.userid = tblonappusers.client_id
+                AND tblhosting.server = tblonappusers.server_id';
+
+        $services_res = full_query($services_query);
+
+        while ($service = mysql_fetch_assoc($services_res)) {
+            $where = array('server_id'=>$service['server_id'], 'client_id'=>$service['client_id']);
+            update_query('tblonappusers', array('service_id'=>$service['id']), $where);
+        }
+
+        full_query('ALTER TABLE tblonappusers ADD PRIMARY KEY (server_id, client_id, service_id)');
+    }
+
     // Add e-mail templates
     $where = array();
     $where['type'] = 'product';
