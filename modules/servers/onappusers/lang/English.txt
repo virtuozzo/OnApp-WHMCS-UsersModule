@@ -26,3 +26,4 @@ $_LANG['onappusersstatenddate'] = 'End date';
 $_LANG['onappusersstatapply'] = '  Apply  ';
 $_LANG['onappusersstattotalamount'] = 'Total Amount';
 $_LANG['onappusersstatnodata'] = 'There are no data for chosen period';
+$_LANG['onappuserscreateaccount'] = 'OnApp account created';
