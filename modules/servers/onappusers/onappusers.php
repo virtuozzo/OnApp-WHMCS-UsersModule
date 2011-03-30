@@ -362,49 +362,6 @@ function create_table() {
     return true;
 }
 
-function onappusers_ClientArea( $params = '' ) {
-    $srv = get_onapp_object( 'ONAPP_User', $params[ 'serverip' ], $params[ 'username' ], $params[ 'password' ] );
-    $ver = $srv->_version;
-
-    if( $ver >= 2.1 ) {
-        $html = file_get_contents( dirname( __FILE__ ) . '/clientarea.html' );
-        parseLang( $html );
-        $html .= '<script type="text/javascript">'
-                 . 'var URL = "/admin/clientshosting.php?userid=' . $params[ 'clientsdetails' ][ 'userid' ]
-                 . '&id=' . $params[ 'accountid' ] . '&modop=custom&ac=OutstandingDetails";';
-        $html .= 'var LANG = {' . getJSLang( ) . '};</script>';
-    }
-    else {
-        $html = '';
-    }
-    return $html;
-}
-
-function onappusers_OutstandingDetails( $params = '' ) {
-    if( isset( $_GET[ 'getstat' ] ) ) {
-        ob_end_clean( );
-        $sql = 'SELECT `onapp_user_id` FROM `tblonappusers` WHERE `client_id` = ' . $params[ 'clientsdetails' ][ 'userid' ]
-               . ' AND `service_id` = ' . $params[ 'serviceid' ] . ' AND `server_id` = ' . $params[ 'serverid' ];
-        $res = full_query( $sql );
-        $user_id = mysql_result( $res, 0 );
-
-        $json = 'http://' . urlencode( $params[ 'username' ] ) . ':' . $params[ 'password' ] . '@' . $params[ 'serverip' ]
-                . '/users/' . $user_id . '/vm_stats.json?utf8=%E2%9C%93&period[startdate]=' . $_GET[ 'start' ]
-                . '&period[enddate]=' . urlencode( $_GET[ 'end' ] );
-
-        $user = get_onapp_object( 'ONAPP_User', $params[ 'serverip' ], $params[ 'serverusername' ], $params[ 'serverpassword' ] );
-        $user = $user->load( $user_id );
-
-        $data = curl( $json );
-
-        exit( $data );
-    }
-
-    // admin:dev6dot162@109.123.105.162/users.xml
-    echo '<script type="text/javascript" src="/modules/servers/onappusers/includes/js/onappusers_stat.js"></script>';
-    echo '<script type="text/javascript">var LANG = {' . getJSLang( ) . '};</script>';
-}
-
 /**
  * Get an instance of specified wrapper class
  * and autorize it on OnApp server;
