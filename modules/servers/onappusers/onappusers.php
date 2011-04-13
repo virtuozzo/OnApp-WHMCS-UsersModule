@@ -11,7 +11,7 @@ function onappusers_ConfigOptions() {
             '<b style="color:red;">' . $res . '</b>' => array( )
         );
     } else {
-        $js = '<script type="text/javascript" src="/modules/servers/onappusers/includes/js/onappusers.js"></script>';
+        $js = '<script type="text/javascript" src="../modules/servers/onappusers/includes/js/onappusers.js"></script>';
 
         $servergroup = isset( $_GET[ 'servergroup' ] ) ? $_GET[ 'servergroup' ] : (int)$GLOBALS[ 'servergroup' ];
         $sql = 'SELECT srv.`id`, srv.`name`, srv.`ipaddress`, srv.`hostname`, srv.`username`, srv.`password`'
