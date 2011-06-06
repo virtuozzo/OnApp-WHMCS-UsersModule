@@ -42,6 +42,7 @@ function onappusers_ConfigOptions() {
 
                 // handle billing plans/groups per server
                 $groups = getPlans( $onapp_config );
+
                 if( empty( $groups ) ) {
                     $msg = sprintf( $_LANG[ 'onappusersnobillingplans' ] );
 
@@ -157,12 +158,17 @@ function onappusers_CreateAccount($params) {
     }
 
     // Assign roles to user
-    $tmp = array(
-        'attributesArray' => array( 'type' => 'array' )
-    );
+	if( $onapp_user->options[ ONAPP_OPTION_API_TYPE ] == 'xml' ){
+		$tmp = array(
+			'attributesArray' => array( 'type' => 'array' )
+		);
+	}
+	else {
+		$tmp = array();
+	}
     $onapp_user->_role_ids = array_merge( $tmp, parseRolesParams( $params[ 'configoption2' ], $params[ 'serverid' ] ) );
 
-    $onapp_user->save( );
+	$onapp_user->save( );
 
     if( isset( $onapp_user->error ) ) {
         $error_msg = $_LANG[ 'onappuserserrusercreate' ] . ":<br/>\n";
@@ -426,7 +432,7 @@ function getPlans( $params ) {
     $class = ( (float)$version > 2 ) ? 'ONAPP_BillingPlan' : 'ONAPP_Group';
     $plans = get_onapp_object( $class, $server_ip, $server_username, $server_password );
 
-    return $plans->getList( );
+	return $plans->getList( );
 }
 
 function getRoles( $params ) {
