@@ -11,6 +11,7 @@ $_LANG['onappuserserrornoserveringroup'] = 'There are no servers in selected ser
 $_LANG['onappuserserrornoserveringroup'] = 'There are no servers in selected server group';
 $_LANG['onappusersbindingplanstitle'] = 'Billing Group/Plan';
 $_LANG['onappusersbindingrolestitle'] = 'Roles';
+$_LANG['onappuserstimezonetitle'] = 'Time Zone';
 $_LANG['onappusersnobillingplans'] = 'There are no configured billing plans/groups on this server';
 $_LANG['onappusersnoroles'] = 'There are no configured roles on this server';
 $_LANG['onappusersjsloadingdata'] = '<b>Loading data...</b>';

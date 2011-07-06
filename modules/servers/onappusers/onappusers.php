@@ -1,8 +1,8 @@
 <?php
 
-load_lang();
+load_lang( );
 
-function onappusers_ConfigOptions() {
+function onappusers_ConfigOptions( ) {
     global $_LANG;
 
     // Should return an array of the module options for each product - maximum of 24
@@ -10,8 +10,11 @@ function onappusers_ConfigOptions() {
         $configarray = array(
             '<b style="color:red;">' . $res . '</b>' => array( )
         );
-    } else {
+    }
+    else {
         $js = '<script type="text/javascript" src="../modules/servers/onappusers/includes/js/onappusers.js"></script>';
+        $js .= '<script type="text/javascript" src="../modules/servers/onappusers/includes/js/tz.js"></script>';
+        $js .= '<script type="text/javascript" src="../modules/servers/onappusers/includes/js/jquery.json-2.2.min.js"></script>';
 
         $servergroup = isset( $_GET[ 'servergroup' ] ) ? $_GET[ 'servergroup' ] : (int)$GLOBALS[ 'servergroup' ];
         $sql = 'SELECT srv.`id`, srv.`name`, srv.`ipaddress`, srv.`hostname`, srv.`username`, srv.`password`'
@@ -24,7 +27,8 @@ function onappusers_ConfigOptions() {
         $js_Servers = '';
         if( mysql_num_rows( $res ) == 0 ) {
             $js_Servers = 'NoServers:"' . addslashes( sprintf( $_LANG[ 'onappuserserrorholder' ], $_LANG[ 'onappuserserrornoserveringroup' ] ) ) . '",';
-        } else {
+        }
+        else {
             while( $onapp_config = mysql_fetch_assoc( $res ) ) {
                 $onapp_config[ 'password' ] = decrypt( $onapp_config[ 'password' ] );
                 $onapp_config[ 'adress' ] = $onapp_config[ 'ipaddress' ] != '' ?
@@ -47,7 +51,8 @@ function onappusers_ConfigOptions() {
                     $msg = sprintf( $_LANG[ 'onappusersnobillingplans' ] );
 
                     $billing_plans = '"' . addslashes( sprintf( $_LANG[ 'onappuserserrorholder' ], $msg ) ) . '"';
-                } else {
+                }
+                else {
                     $tmp_BillingPlans = '';
                     foreach( $groups as $group ) {
                         $tmp_BillingPlans .= $group->_id . ':"' . addslashes( $group->_label ) . '",';
@@ -60,7 +65,8 @@ function onappusers_ConfigOptions() {
                 if( empty( $roles ) ) {
                     $msg = sprintf( $_LANG[ 'onappusersnoroles' ] );
                     $roles = '"' . addslashes( sprintf( $_LANG[ 'onappuserserrorholder' ], $msg ) ) . '"';
-                } else {
+                }
+                else {
                     $tmp_Roles = '';
                     foreach( $roles as $role ) {
                         $tmp_Roles .= $role->_id . ':"' . addslashes( $role->_label ) . '",';
@@ -69,17 +75,18 @@ function onappusers_ConfigOptions() {
                 }
 
                 $js_Servers .= $onapp_config[ 'id' ] . ':{Name:"' . $onapp_config[ 'name' ] . '", BillingPlans:'
-                            . $billing_plans . ', Roles:' . $roles . '},';
+                               . $billing_plans . ', Roles:' . $roles . '},';
             }
         }
 
-        $sql = 'SELECT prod.`configoption1` AS plans, prod.`configoption2` AS roles, prod.`servergroup` AS `group`'
+        $sql = 'SELECT prod.`configoption1` AS options, prod.`servergroup` AS `group`'
                . ' FROM `tblproducts` AS prod WHERE prod.`id` = ' . (int)$_GET[ 'id' ];
         $results = full_query( $sql );
         $results = mysql_fetch_assoc( $results );
+        $results[ 'options' ] = htmlspecialchars_decode( $results[ 'options' ] );
+        $results[ 'options' ] = substr( $results[ 'options' ], 1, -1 );
 
-        $js_Servers = '{' . $js_Servers . 'SelectedPlans:{' . $results[ 'plans' ] . '},SelectedRoles:{'
-                      . $results[ 'roles' ] . '},Group:"' . $results[ 'group' ] . '"}';
+        $js_Servers = '{' . $js_Servers . $results[ 'options' ] . ',Group:"' . $results[ 'group' ] . '"}';
 
         $js_lang = getJSLang( );
         $js .= '<script type="text/javascript">'
@@ -93,14 +100,15 @@ function onappusers_ConfigOptions() {
 
         $configarray = array(
             sprintf( $_LANG[ 'onappusersbindingplanstitle' ] ) => array( 'Description' => $js ),
-            sprintf( $_LANG[ 'onappusersbindingrolestitle' ] ) => array( )
+            sprintf( $_LANG[ 'onappusersbindingrolestitle' ] ) => array( ),
+            sprintf( $_LANG[ 'onappuserstimezonetitle' ] ) => array( ),
         );
     }
 
     return $configarray;
 }
 
-function onappusers_CreateAccount($params) {
+function onappusers_CreateAccount( $params ) {
     global $CONFIG, $_LANG;
 
     $serviceid = $params[ "serviceid" ]; // Unique ID of the product/service in the WHMCS Database
@@ -138,7 +146,7 @@ function onappusers_CreateAccount($params) {
     /*********************************/
     /*      Create OnApp user        */
     $onapp_user = get_onapp_object( 'ONAPP_User', $server_ip, $server_username, $server_password );
-    $onapp_user->_loger->setDebug( 1 );
+    //$onapp_user->_loger->setDebug( 1 );
 
     $onapp_user->_email = $serviceid . '_' . $clientsdetails[ 'email' ];
     $onapp_user->_password = $onapp_user->_password_confirmation = $password;
@@ -147,8 +155,11 @@ function onappusers_CreateAccount($params) {
     $onapp_user->_first_name = $clientsdetails[ 'firstname' ];
     $onapp_user->_last_name = $clientsdetails[ 'lastname' ];
 
+    $params[ 'configoption1' ] = html_entity_decode( $params[ 'configoption1' ] );
+    $params[ 'configoption1' ] = json_decode( $params[ 'configoption1' ], true );
+
     // Assign billing group/plan to user
-    $group_id = (int)parsePlansParams( $params[ 'configoption1' ], $params[ 'serverid' ] );
+    $group_id = $params[ 'configoption1' ][ 'SelectedPlans' ][ $params[ 'serverid' ] ];
 
     if( $onapp_user->_version > 2 ) {
         $onapp_user->_billing_plan_id = $group_id;
@@ -158,23 +169,26 @@ function onappusers_CreateAccount($params) {
     }
 
     // Assign roles to user
-	if( $onapp_user->options[ ONAPP_OPTION_API_TYPE ] == 'xml' ){
-		$tmp = array(
-			'attributesArray' => array( 'type' => 'array' )
-		);
-	}
-	else {
-		$tmp = array();
-	}
-    $onapp_user->_role_ids = array_merge( $tmp, parseRolesParams( $params[ 'configoption2' ], $params[ 'serverid' ] ) );
+    if( $onapp_user->options[ ONAPP_OPTION_API_TYPE ] == 'xml' ) {
+        $tmp = array(
+            'attributesArray' => array( 'type' => 'array' )
+        );
+    }
+    else {
+        $tmp = array( );
+    }
+    $onapp_user->_role_ids = array_merge( $tmp, $params[ 'configoption1' ][ 'SelectedRoles' ][ $params[ 'serverid' ] ] );
 
-	$onapp_user->save( );
+    // Assign TZ to user
+    $onapp_user->_time_zone = $params[ 'configoption1' ][ 'SelectedTZs' ][ $params[ 'serverid' ] ];
+
+    $onapp_user->save( );
 
     if( isset( $onapp_user->error ) ) {
         $error_msg = $_LANG[ 'onappuserserrusercreate' ] . ":<br/>\n";
         $error_msg .= is_array( $onapp_user->error ) ?
                 implode( "\n<br/>", $onapp_user->error ) :
-                $onapp_user->error;
+                str_replace( PHP_EOL, '<br/>', $onapp_user->error );
         return $error_msg;
     }
 
@@ -182,7 +196,7 @@ function onappusers_CreateAccount($params) {
         $error_msg = $_LANG[ 'onappuserserrusercreate' ] . ":<br/>\n";
         $error_msg .= is_array( $onapp_user->_obj->error ) ?
                 implode( "\n<br/>", $onapp_user->_obj->error ) :
-                $onapp_user->_obj->error;
+                str_replace( PHP_EOL, '<br/>', $onapp_user->error );
         return $error_msg;
     }
 
@@ -194,20 +208,20 @@ function onappusers_CreateAccount($params) {
 
     // Save user data in whmcs db
     $res_insert = insert_query( 'tblonappusers', array(
-                                                      'server_id'     => $server_id,
-                                                      'client_id'     => $clientsdetails[ 'userid' ],
-                                                      'service_id'    => $serviceid,
+                                                      'server_id' => $server_id,
+                                                      'client_id' => $clientsdetails[ 'userid' ],
+                                                      'service_id' => $serviceid,
                                                       'onapp_user_id' => $onapp_user->_obj->_id,
-                                                      'password'      => $password,
-                                                      'email'         => $serviceid . '_' . $clientsdetails[ 'email' ]
+                                                      'password' => $password,
+                                                      'email' => $serviceid . '_' . $clientsdetails[ 'email' ]
                                                  ) );
 
-    sendmessage( $LANG['onappuserscreateaccount'], $serviceid );
+    sendmessage( $LANG[ 'onappuserscreateaccount' ], $serviceid );
 
     return 'success';
 }
 
-function onappusers_SuspendAccount($params) {
+function onappusers_SuspendAccount( $params ) {
     global $_LANG;
 
     $serviceid = $params[ "serviceid" ];
@@ -235,6 +249,7 @@ function onappusers_SuspendAccount($params) {
     }
 
     $onapp_user = get_onapp_object( 'ONAPP_User', $server_ip, $server_username, $server_password );
+    $onapp_user->_loger->setDebug( 1 );
 
     $onapp_user->_id = $onapp_user_id;
 
@@ -251,7 +266,7 @@ function onappusers_SuspendAccount($params) {
     return 'success';
 }
 
-function onappusers_UnsuspendAccount($params) {
+function onappusers_UnsuspendAccount( $params ) {
     global $_LANG;
 
     $serviceid = $params[ "serviceid" ];
@@ -300,7 +315,7 @@ function onappusers_UnsuspendAccount($params) {
  *
  * @return mixed Return true on success, Otherwise error string.
  */
-function create_table() {
+function create_table( ) {
     global $_LANG;
 
     $query = 'CREATE TABLE IF NOT EXISTS `tblonappusers` (
@@ -348,11 +363,11 @@ function create_table() {
     // Add e-mail templates
     $where = array( );
     $where[ 'type' ] = 'product';
-    $where[ 'name' ] = $LANG['onappuserscreateaccount'];
+    $where[ 'name' ] = $LANG[ 'onappuserscreateaccount' ];
     if( !mysql_num_rows( select_query( 'tblemailtemplates', 'id', $where ) ) ) {
         $insert_fields = array( );
         $insert_fields[ 'type' ] = 'product';
-        $insert_fields[ 'name' ] = $LANG['onappuserscreateaccount'];
+        $insert_fields[ 'name' ] = $LANG[ 'onappuserscreateaccount' ];
         $insert_fields[ 'subject' ] = 'OnApp account has been created';
         $insert_fields[ 'message' ] = ' < p>Dear {$client_name}</p > ' .
                                       '<p > Your OnApp account has been created<br />' .
@@ -361,7 +376,7 @@ function create_table() {
                                       '<p ></p > To login, visit http://{$service_server_ip}';
         $insert_fields[ 'plaintext' ] = 0;
         if( !insert_query( 'tblemailtemplates', $insert_fields ) ) {
-            return sprintf( $_LANG['onappuserserrtmpladd'], $LANG['onappuserscreateaccount'] );
+            return sprintf( $_LANG[ 'onappuserserrtmpladd' ], $LANG[ 'onappuserscreateaccount' ] );
         }
     }
 
@@ -375,7 +390,7 @@ function create_table() {
  * @param $class string
  * @param $server_ip string
  * @param $email     string
- * @param $apikey    string
+ * @param $apikey   string
  *
  * @return object
  */
@@ -408,7 +423,7 @@ function load_lang( ) {
 
     closedir( $dh );
 
-    $language = $_SESSION[ 'Language' ];
+    $language = @$_SESSION[ 'Language' ];
 
     if( !in_array( $language, $arrayoflanguagefiles ) ) {
         $language = "English";
@@ -432,7 +447,7 @@ function getPlans( $params ) {
     $class = ( (float)$version > 2 ) ? 'ONAPP_BillingPlan' : 'ONAPP_Group';
     $plans = get_onapp_object( $class, $server_ip, $server_username, $server_password );
 
-	return $plans->getList( );
+    return $plans->getList( );
 }
 
 function getRoles( $params ) {
@@ -444,7 +459,7 @@ function getRoles( $params ) {
 
     return $roles->getList( );
 }
-
+/*
 function parsePlansParams( $data, $server_id ) {
     $groups = explode( ',', $data );
     foreach( $groups as $group ) {
@@ -456,8 +471,9 @@ function parsePlansParams( $data, $server_id ) {
 
     throw new Exception( 'Unknown option' );
 }
-
+* /
 function parseRolesParams( $data, $server_id ) {
+    exit('fdsfdsf');
     $groups = explode( '],', $data );
     foreach( $groups as $group ) {
         $tmp = explode( ':', $group );
@@ -477,7 +493,7 @@ function parseRolesParams( $data, $server_id ) {
 
     throw new Exception( 'Unknown option' );
 }
-
+*/
 function getJSLang( ) {
     $_LANG = array( );
     eval( load_lang( ) );
