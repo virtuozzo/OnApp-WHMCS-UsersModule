@@ -259,7 +259,7 @@ function onappusers_SuspendAccount( $params ) {
         $error_msg = $_LANG[ 'onappuserserrusersuspend' ] . ":<br/>\n";
         $error_msg .= is_array( $onapp_user->error ) ?
                 implode( "\n<br/>", $onapp_user->error ) :
-                $onapp_user->error;
+                str_replace( PHP_EOL, '<br/>', $onapp_user->error );
         return $error_msg;
     }
 
@@ -303,7 +303,7 @@ function onappusers_UnsuspendAccount( $params ) {
         $error_msg = $_LANG[ 'onappuserserruserunsuspend' ] . ":<br/>\n";
         $error_msg .= is_array( $onapp_user->error ) ?
                 implode( "\n<br/>", $onapp_user->error ) :
-                $onapp_user->error;
+                str_replace( PHP_EOL, '<br/>', $onapp_user->error );
         return $error_msg;
     }
 
@@ -459,41 +459,7 @@ function getRoles( $params ) {
 
     return $roles->getList( );
 }
-/*
-function parsePlansParams( $data, $server_id ) {
-    $groups = explode( ',', $data );
-    foreach( $groups as $group ) {
-        $tmp = explode( ':', $group );
-        if( $tmp[ 0 ] == $server_id ) {
-            return $tmp[ 1 ];
-        }
-    }
 
-    throw new Exception( 'Unknown option' );
-}
-* /
-function parseRolesParams( $data, $server_id ) {
-    exit('fdsfdsf');
-    $groups = explode( '],', $data );
-    foreach( $groups as $group ) {
-        $tmp = explode( ':', $group );
-        if( $tmp[ 0 ] == $server_id ) {
-            $tmp[ 1 ] = str_replace( '[', '', $tmp[ 1 ] );
-            $tmp[ 1 ] = str_replace( ']', '', $tmp[ 1 ] );
-            if( strpos( $tmp[ 1 ], ',' ) ) {
-                $tmp[ 1 ] = explode( ',', $tmp[ 1 ] );
-            }
-            if( !is_array( $tmp[ 1 ] ) ) {
-                $tmp[ 1 ] = array( $tmp[ 1 ] );
-            }
-
-            return $tmp[ 1 ];
-        }
-    }
-
-    throw new Exception( 'Unknown option' );
-}
-*/
 function getJSLang( ) {
     $_LANG = array( );
     eval( load_lang( ) );
