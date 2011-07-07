@@ -74,8 +74,24 @@ function onappusers_ConfigOptions( ) {
                     $roles = '{' . substr( $tmp_Roles, 0, -1 ) . '}';
                 }
 
+                // handle user groups per server
+                $usergroups = getUsersGroups( $onapp_config );
+
+                if( empty( $usergroups ) ) {
+                    $msg = sprintf( $_LANG[ 'onappusersnousergroups' ] );
+
+                    $usergroups = '"' . addslashes( sprintf( $_LANG[ 'onappuserserrorholder' ], $msg ) ) . '"';
+                }
+                else {
+                    $tmp_UserGroups = '';
+                    foreach( $usergroups as $group ) {
+                        $tmp_UserGroups .= $group->_id . ':"' . addslashes( $group->_label ) . '",';
+                    }
+                    $usergroups = '{' . substr( $tmp_UserGroups, 0, -1 ) . '}';
+                }
+
                 $js_Servers .= $onapp_config[ 'id' ] . ':{Name:"' . $onapp_config[ 'name' ] . '", BillingPlans:'
-                               . $billing_plans . ', Roles:' . $roles . '},';
+                               . $billing_plans . ', Roles:' . $roles . ', UserGroups:' . $usergroups . '},';
             }
         }
 
@@ -102,6 +118,7 @@ function onappusers_ConfigOptions( ) {
             sprintf( $_LANG[ 'onappusersbindingplanstitle' ] ) => array( 'Description' => $js ),
             sprintf( $_LANG[ 'onappusersbindingrolestitle' ] ) => array( ),
             sprintf( $_LANG[ 'onappuserstimezonetitle' ] ) => array( ),
+            sprintf( $_LANG[ 'onappusersusergroupstitle' ] ) => array( ),
         );
     }
 
@@ -146,7 +163,7 @@ function onappusers_CreateAccount( $params ) {
     /*********************************/
     /*      Create OnApp user        */
     $onapp_user = get_onapp_object( 'ONAPP_User', $server_ip, $server_username, $server_password );
-    //$onapp_user->_loger->setDebug( 1 );
+    $onapp_user->_loger->setDebug( 1 );
 
     $onapp_user->_email = $serviceid . '_' . $clientsdetails[ 'email' ];
     $onapp_user->_password = $onapp_user->_password_confirmation = $password;
@@ -181,6 +198,9 @@ function onappusers_CreateAccount( $params ) {
 
     // Assign TZ to user
     $onapp_user->_time_zone = $params[ 'configoption1' ][ 'SelectedTZs' ][ $params[ 'serverid' ] ];
+
+    // Assign user group to user
+    $onapp_user->_user_group_id = $params[ 'configoption1' ][ 'SelectedUserGroups' ][ $params[ 'serverid' ] ];
 
     $onapp_user->save( );
 
@@ -458,6 +478,16 @@ function getRoles( $params ) {
     $roles = get_onapp_object( 'ONAPP_Role', $server_ip, $server_username, $server_password );
 
     return $roles->getList( );
+}
+
+function getUsersGroups( $params ) {
+    $server_ip = $params[ 'ipaddress' ];
+    $server_username = $params[ 'username' ];
+    $server_password = $params[ 'password' ];
+
+    $groups = get_onapp_object( 'ONAPP_UserGroup', $server_ip, $server_username, $server_password );
+
+    return $groups->getList( );
 }
 
 function getJSLang( ) {

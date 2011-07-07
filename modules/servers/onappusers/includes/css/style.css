@@ -1,18 +1,18 @@
 .userstat {
-	border-collapse: collapse;
+    border-collapse: collapse;
 }
 
 .userstat td {
-	border: 1px solid #ebebeb;
-	padding: 10px;
-	qheight: 20px;
+    border: 1px solid #ebebeb;
+    padding: 10px;
+    qheight: 20px;
 }
 
 .stat-labels td {
-	background-color: #f5f5f5;
-	color: #333;
+    background-color: #f5f5f5;
+    color: #333;
 }
 
 .stat-labels td img {
-	vertical-align: middle;
+    vertical-align: middle;
 }

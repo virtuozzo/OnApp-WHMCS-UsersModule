@@ -5,14 +5,17 @@ function buildFields( ServersData ) {
         var PlansTitle = $( '#titles-holder #plans' ).html();
         var RolesTitle = $( '#titles-holder #roles' ).html();
         var TZsTitle = $( '#titles-holder #tzs' ).html();
+        var UserGroupsTitle = $( '#titles-holder #usergroups' ).html();
     }
     else {
         var PlansTitle = table.find( 'tr:first' ).find( 'td' ).eq( 0 ).html();
         var RolesTitle = table.find( 'tr:first' ).find( 'td' ).eq( 2 ).html();
         var TZsTitle = table.find( 'td' ).eq( 4 ).html();
+        var UserGroupsTitle = table.find( 'td' ).eq( 6 ).html();
         html = '<div id="titles-holder"><span id="plans">' + PlansTitle + '</span>';
         html += '<span id="roles">' + RolesTitle + '</span>';
-        html += '<span id="tzs">' + TZsTitle + '</span></div>';
+        html += '<span id="tzs">' + TZsTitle + '</span>';
+        html += '<span id="usergroups">' + UserGroupsTitle + '</span></div>';
         table.before( html );
         $( '#titles-holder' ).hide();
     }
@@ -54,6 +57,12 @@ function buildFields( ServersData ) {
         html = '<tr>';
         html += '<td class="fieldlabel">' + TZsTitle + '</td>';
         html += '<td class="fieldlabel" id="tz' + server_id + '" rel="' + server_id + '"></td></tr>';
+        table.find( 'tr:last' ).after( html );
+
+        // user groups row
+        html = '<tr>';
+        html += '<td class="fieldlabel">' + UserGroupsTitle + '</td>';
+        html += '<td class="fieldlabel" id="usergroups' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
         // process biling plans
@@ -106,11 +115,35 @@ function buildFields( ServersData ) {
         if( ServersData.Group == $( "select[name$='servergroup']" ).val() ) {
             $( select ).val( ServersData.SelectedTZs[ server_id ] );
         }
+
+        // process user groups
+        if( typeof server.UserGroups == 'object' ) {
+            select = $( '<select name="usergroups_packageconfigoption' + ++cnt + '"></select>' );
+
+            for( group_id in server.UserGroups ) {
+                plan = server.UserGroups[ group_id ];
+
+                option = new Option( plan, server_id + ':' + group_id );
+                $( select ).append( option );
+            }
+
+            // select selected plans
+            if( ServersData.Group == $( "select[name$='servergroup']" ).val() ) {
+                $( select ).val( server_id + ':' + ServersData.SelectedPlans[ server_id ] );
+            }
+        }
+        else {
+            select = server.UserGroups;
+        }
+        $( '#usergroups' + server_id ).html( select );
+
+        //insert empty row
+        table.find( 'tr:last' ).after( '<tr><td colspan="2" class="fieldlabel">&nbsp;</td></tr>' );
     }
 
     // inputs for storing selected values
     html = '<tr><td colspan="2" class="fieldlabel">';
-    html += '<input type="text" name="packageconfigoption[1]" id="bp2s" value="" size="150" />';
+    html += '<input type="text" name="packageconfigoption[1]" id="bp2s" value="" size="200" />';
     html += '</td></tr>';
 
     table.append( $( html ) );
@@ -130,6 +163,10 @@ function buildFields( ServersData ) {
     $( "select[name^='tzs_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedTZs();
     } );
+    storeSelectedUserGroups();
+    $( "select[name^='usergroups_packageconfigoption']" ).bind( 'change', function() {
+        storeSelectedUserGroups();
+    } );
 
     // align dropdown lists
     alignSelects();
@@ -138,7 +175,8 @@ function buildFields( ServersData ) {
 var OnAppUsersData = {
     SelectedPlans: {},
     SelectedRoles: {},
-    SelectedTZs: {}
+    SelectedTZs: {},
+    SelectedUserGroups: {}
 };
 
 function storeSelectedPlans() {
@@ -179,13 +217,22 @@ function storeSelectedTZs() {
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
 }
 
+function storeSelectedUserGroups() {
+    $( "select[name^='usergroups_packageconfigoption']" ).each( function( i, val ) {
+        var tmp = val.value.split( ':' );
+        OnAppUsersData.SelectedUserGroups[ tmp[ 0 ] ] = tmp[ 1 ];
+    } );
+
+    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
+
 function alignSelects() {
     if( !$( "select[name='servertype']:visible" ).length ) {
         return;
     }
 
     var max = 0;
-    $( "select[name^='tmp_packageconfigoption']" ).each( function( i, val ) {
+    $( 'div#tab2box select' ).each( function( i, val ) {
         width = $( val ).width();
         if( width > max ) {
             max = width + 30;
