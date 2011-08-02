@@ -472,12 +472,6 @@ function create_table( ) {
  * @return object
  */
 function get_onapp_object( $class, $server_ip, $username = null, $apikey = null ) {
-	/*
-	$required_file = str_replace( 'ONAPP_', '', $class ) . '.php';
-	$required_path = 'includes/wrapper/';
-	require_once $required_path . $required_file;
-	*/
-
 	$obj = new $class;
 	$obj->auth( $server_ip, $username, $apikey );
 
