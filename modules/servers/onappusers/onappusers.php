@@ -105,13 +105,12 @@ function onappusers_ConfigOptions( ) {
 		$results[ 'options' ] = substr( $results[ 'options' ], 1, -1 );
 		$results[ 'options' ] = $results[ 'options' ] ? $results[ 'options' ] . ',' : '';
 
-
 		$js_Servers = '{' . $js_Servers . $results[ 'options' ] . 'Group:"' . $results[ 'group' ] . '"}';
 
 		$js_lang = getJSLang( );
 		$js .= '<script type="text/javascript">'
 			   . 'var ServersData = ' . $js_Servers . ';'
-			   . 'var LANG_LOADING = "' . sprintf( $_LANG[ 'onappusersjsloadingdata' ] ) . '";</script > ';
+			   . 'var LANG_LOADING = "' . sprintf( $_LANG[ 'onappusersjsloadingdata' ] ) . '";</script>';
 
 		if( isset( $_GET[ 'servergroup' ] ) ) {
 			ob_end_clean( );
