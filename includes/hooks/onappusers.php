@@ -1,15 +1,20 @@
 <?php
+
+//todo check this function
 function autosuspend_onappusers() {
-	require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
 	global $CONFIG;
 
-	if ($CONFIG['AutoSuspension'] != 'on') {
+	if( !function_exists( 'onappusers_ConfigOptions' ) ) {
+		require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
+	}
+
+	if( $CONFIG[ 'AutoSuspension' ] != 'on' ) {
 		return;
 	}
 
-	$suspenddate = date ('Ymd', mktime (0, 0, 0, date ('m'), date ('d') - $CONFIG['AutoSuspensionDays'], date ('Y')));
+	$suspenddate = date( 'Ymd', mktime( 0, 0, 0, date( 'm' ), date( 'd' ) - $CONFIG[ 'AutoSuspensionDays' ], date( 'Y' ) ) );
 	$to_suspend_query = "SELECT tblhosting.id
-		FROM 
+		FROM
 			tblinvoices
 			LEFT JOIN tblinvoiceitems ON
 				tblinvoiceitems.invoiceid = tblinvoices.id
@@ -21,17 +26,20 @@ function autosuspend_onappusers() {
 			AND tblhosting.domainstatus = 'Active'
 			AND tblinvoices.duedate <= $suspenddate
 			AND tblhosting.overideautosuspend != 'on'";
-	$to_suspend_result = full_query($to_suspend_query);
+	$to_suspend_result = full_query( $to_suspend_query );
 
-	while ($to_suspend = mysql_fetch_assoc($to_suspend_result)){
-		serversuspendaccount($to_suspend['id']);
+	while( $to_suspend = mysql_fetch_assoc( $to_suspend_result ) ) {
+		serversuspendaccount( $to_suspend[ 'id' ] );
 	}
 }
 
-function unsuspend_user($vars) {
-	require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
+//todo check this function
+function unsuspend_user( $vars ) {
+	if( !function_exists( 'onappusers_ConfigOptions' ) ) {
+		require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
+	}
 
-	$invoice_id = $vars['invoiceid'];
+	$invoice_id = $vars[ 'invoiceid' ];
 	$client_query = "SELECT
 			tblonappusers.client_id,
 			tblonappusers.server_id,
@@ -51,10 +59,10 @@ function unsuspend_user($vars) {
 			tblinvoices.id = $invoice_id
 			AND tblinvoiceitems.type = 'onappusers'
 		GROUP BY tblinvoices.id";
-	$client_result = full_query($client_query);
-	$client = mysql_fetch_assoc($client_result);
+	$client_result = full_query( $client_query );
+	$client = mysql_fetch_assoc( $client_result );
 
-	if (!$client) {
+	if( !$client ) {
 		return;
 	}
 
@@ -62,27 +70,27 @@ function unsuspend_user($vars) {
 			id,
 			ipaddress,
 			username,
-			password 
+			password
 		FROM
 			tblservers
 		WHERE
 			type = 'onappusers'";
-	$servers_result = full_query($servers_query);
+	$servers_result = full_query( $servers_query );
 	$servers = array();
-	while ($server = mysql_fetch_assoc($servers_result)) {
-		$server['password'] = decrypt($server['password']);
-		$servers[$server['id']] = $server;
+	while( $server = mysql_fetch_assoc( $servers_result ) ) {
+		$server[ 'password' ] = decrypt( $server[ 'password' ] );
+		$servers[ $server[ 'id' ] ] = $server;
 	}
-	
+
 	$onapp_payment = get_onapp_object(
 		'ONAPP_Payment',
-		$servers[$client['server_id']]['ipaddress'],
-		$servers[$client['server_id']]['username'],
-		$servers[$client['server_id']]['password']
+		$servers[ $client[ 'server_id' ] ][ 'ipaddress' ],
+		$servers[ $client[ 'server_id' ] ][ 'username' ],
+		$servers[ $client[ 'server_id' ] ][ 'password' ]
 	);
 
-	$onapp_payment->_user_id = $client['onapp_user_id'];
-	$onapp_payment->_amount = $client['amount'];
+	$onapp_payment->_user_id = $client[ 'onapp_user_id' ];
+	$onapp_payment->_amount = $client[ 'amount' ];
 	$onapp_payment->_invoice_number = $invoice_id;
 
 	$onapp_payment->save();
@@ -94,28 +102,87 @@ function unsuspend_user($vars) {
 			LEFT JOIN tblinvoiceitems ON tblinvoiceitems.invoiceid = tblinvoices.id
 			LEFT JOIN tblonappusers ON tblinvoiceitems.userid = tblonappusers.client_id
 		WHERE
-			tblonappusers.client_id = ".$client['client_id']."
+			tblonappusers.client_id = " . $client[ 'client_id' ] . "
 			AND tblinvoiceitems.type = 'onappusers'
 			AND tblinvoices.status = 'Unpaid'
 		GROUP BY tblonappusers.client_id, tblonappusers.server_id";
-	$client_amount_result = full_query($client_amount_query);
-	$client_amount = mysql_fetch_assoc($client_amount_result);
+	$client_amount_result = full_query( $client_amount_query );
+	$client_amount = mysql_fetch_assoc( $client_amount_result );
 
-	if (!$client_amount['amount']) {
-		$params['serviceid'] = $client['service_id'];
-		$params['clientsdetails']['userid'] = $client['client_id'];
-		$params['serverid'] = $client['server_id'];
-		$params['serverip'] = $servers[$client['server_id']]['ipaddress'];
-		$params['serverusername'] = $servers[$client['server_id']]['username'];
-		$params['serverpassword'] = $servers[$client['server_id']]['password'];
-		
-		if (onappusers_UnsuspendAccount($params) == 'success') {
-			update_query('tblhosting', array('domainstatus'=>'Active'), array('id'=>$client['service_id']));
+	if( !$client_amount[ 'amount' ] ) {
+		$params[ 'serviceid' ] = $client[ 'service_id' ];
+		$params[ 'clientsdetails' ][ 'userid' ] = $client[ 'client_id' ];
+		$params[ 'serverid' ] = $client[ 'server_id' ];
+		$params[ 'serverip' ] = $servers[ $client[ 'server_id' ] ][ 'ipaddress' ];
+		$params[ 'serverusername' ] = $servers[ $client[ 'server_id' ] ][ 'username' ];
+		$params[ 'serverpassword' ] = $servers[ $client[ 'server_id' ] ][ 'password' ];
+
+		if( onappusers_UnsuspendAccount( $params ) == 'success' ) {
+			update_query( 'tblhosting', array( 'domainstatus' => 'Active' ), array( 'id' => $client[ 'service_id' ] ) );
 		}
 	}
-
 }
 
-add_hook("DailyCronJob",1,"autosuspend_onappusers","");
-add_hook("InvoicePaid",1,"unsuspend_user","");
-?>
+function onappusers_invoice_paid( $vars ) {
+	if( !function_exists( 'onappusers_ConfigOptions' ) ) {
+		require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
+	}
+	$invoice_id = $vars[ 'invoiceid' ];
+	$client_query = 'SELECT
+			tblonappusers.client_id,
+			tblonappusers.server_id,
+			tblonappusers.onapp_user_id,
+			tblhosting.id AS service_id,
+			tblinvoices.total AS amount
+		FROM
+			tblinvoices
+		LEFT JOIN tblonappusers ON
+				tblinvoices.userid = tblonappusers.client_id
+		LEFT JOIN tblhosting ON
+				tblhosting.userid = tblonappusers.client_id
+				AND tblhosting.server = tblonappusers.server_id
+		WHERE
+			tblinvoices.id = ' . $invoice_id . '
+		GROUP BY tblinvoices.id';
+	$client_result = full_query( $client_query );
+	$client = mysql_fetch_assoc( $client_result );
+
+	if( !$client ) {
+		return;
+	}
+
+	$servers_query = 'SELECT
+			id,
+			ipaddress,
+			username,
+			password
+		FROM
+			tblservers
+		WHERE
+			type = "onappusers" AND id = ' . $client[ 'server_id' ];
+	$servers_result = full_query( $servers_query );
+	while( $server = mysql_fetch_assoc( $servers_result ) ) {
+		$server[ 'password' ] = decrypt( $server[ 'password' ] );
+		break;
+	}
+
+	$onapp_payment = get_onapp_object(
+		'OnApp_Payment',
+		$server[ 'ipaddress' ],
+		$server[ 'username' ],
+		$server[ 'password' ]
+	);
+
+	$onapp_payment->_user_id = $client[ 'onapp_user_id' ];
+	$onapp_payment->_amount = $client[ 'amount' ];
+	$onapp_payment->_invoice_number = $invoice_id;
+
+	$onapp_payment->save();
+	$error = $onapp_payment->getErrorsAsString();
+	if( !empty( $error ) ) {
+		echo 'ERROR with OnApp payment: ' . $error;
+	}
+}
+
+add_hook( 'DailyCronJob', 1, 'autosuspend_onappusers' );
+add_hook( 'InvoicePaid', 1, 'onappusers_invoice_paid' );

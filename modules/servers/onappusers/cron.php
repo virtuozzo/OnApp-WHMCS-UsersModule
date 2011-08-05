@@ -1,5 +1,6 @@
 <?php
 $root = dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . DIRECTORY_SEPARATOR;
+$root = '/srv/www/wcs/zz/'; //todo del
 require $root . 'dbconnect.php';
 include $root . 'includes/functions.php';
 include $root . 'includes/clientfunctions.php';
@@ -19,13 +20,21 @@ create_onappusers_invoice();
 
 function create_onappusers_invoice() {
 	global $root;
+
 	require_once $root . 'modules/servers/onappusers/onappusers.php';
 
-	$clients_query = "SELECT
+	$clients_query = 'SELECT
 			tblonappusers.server_id,
 			tblonappusers.client_id,
 			tblonappusers.onapp_user_id,
-			tblhosting.id AS service_id
+			tblhosting.paymentmethod,
+			tblhosting.domain,
+			tblproducts.tax,
+			tblclients.taxexempt,
+			tblclients.state,
+			tblclients.country,
+			tblhosting.id AS service_id,
+			tblproducts.name AS packagename
 		FROM
 			tblonappusers
 			LEFT JOIN tblhosting ON
@@ -33,13 +42,14 @@ function create_onappusers_invoice() {
 				AND tblhosting.server = tblonappusers.server_id
 			LEFT JOIN tblproducts ON
 				tblhosting.packageid = tblproducts.id
-				AND tblproducts.servertype = 'onappusers'
+				AND tblproducts.servertype = "onappusers"
+			LEFT JOIN tblclients ON
+				tblclients.id = tblonappusers.client_id
 		WHERE
-			tblhosting.domainstatus = 'Active'
-		GROUP BY tblonappusers.client_id, tblonappusers.server_id";
+			tblhosting.domainstatus IN ( "Active", "Suspended" )';
 	$clients_result = full_query( $clients_query );
 
-	$servers_query = "SELECT
+	$servers_query = 'SELECT
 			id,
 			ipaddress,
 			username,
@@ -47,7 +57,7 @@ function create_onappusers_invoice() {
 		FROM
 			tblservers
 		WHERE
-			type = 'onappusers'";
+			type = "onappusers"';
 	$servers_result = full_query( $servers_query );
 	$servers = array();
 	while( $server = mysql_fetch_assoc( $servers_result ) ) {
@@ -55,7 +65,16 @@ function create_onappusers_invoice() {
 		$servers[ $server[ 'id' ] ] = $server;
 	}
 
+	//get admin
+	$sql = 'SELECT `username` FROM `tbladmins` LIMIT 1';
+	$res = mysql_query( $sql );
+	$admin = mysql_result( $res, 0 );
+	//calculate invoice dates
+	$date = date( 'Ymd' );
+	$duedate = date( 'Ymd', ( time() + $GLOBALS[ 'CONFIG' ][ 'CreateInvoiceDaysBefore' ] * 86400 ) );
 	while( $client = mysql_fetch_assoc( $clients_result ) ) {
+		var_dump( $client );
+
 		$onapp_user = get_onapp_object(
 			'OnApp_User',
 			$servers[ $client[ 'server_id' ] ][ 'ipaddress' ],
@@ -65,18 +84,12 @@ function create_onappusers_invoice() {
 		$onapp_user->_id = $client[ 'onapp_user_id' ];
 		$onapp_user->load();
 
-		$client_amount_query = "SELECT
-				SUM(tblinvoiceitems.amount) AS amount,
-				tblinvoiceitems.amount AS qq
-			FROM
-				tblinvoices
-				LEFT JOIN tblinvoiceitems ON tblinvoiceitems.invoiceid = tblinvoices.id
-				LEFT JOIN tblonappusers ON tblinvoiceitems.userid = tblonappusers.client_id
+		$client_amount_query = 'SELECT
+				tblinvoices.total AS amount
+			FROM tblinvoices
 			WHERE
-				tblonappusers.client_id = " . $client[ 'client_id' ] . "
-				AND tblinvoiceitems.type = 'onappusers'
-				AND tblinvoices.status = 'Unpaid'
-			GROUP BY tblonappusers.client_id, tblonappusers.server_id";
+				tblinvoices.userid = ' . $client[ 'client_id' ] . '
+				AND tblinvoices.status = "Unpaid"';
 		$client_amount_result = full_query( $client_amount_query );
 		$client_amount_array = mysql_fetch_assoc( $client_amount_result );
 		$client_amount = $client_amount_array ? $client_amount_array[ 'amount' ] : 0;
@@ -85,25 +98,34 @@ function create_onappusers_invoice() {
 		$amount_diff = round( $amount_diff, 2 );
 
 		if( $amount_diff > 0 ) {
-			$invoice_date = date( 'Y-m-d' );
-			$invoice_id = insert_query( 'tblinvoices', array(
-					'userid' => $client[ 'client_id' ],
-					'date' => $invoice_date,
-					'duedate' => $invoice_date,
-					'subtotal' => $amount_diff,
-					'total' => $amount_diff,
-					'status' => 'Unpaid'
-				)
+			//get if the item should be taxed and tax rate
+			$taxed = empty( $client[ 'taxexempt' ] ) && (int)$client[ 'tax' ];
+			if( $taxed ) {
+				$taxrate = getTaxRate( 1, $client[ 'state' ], $client[ 'country' ] );
+				$taxrate = $taxrate[ 'rate' ];
+			}
+			else {
+				$taxrate = '';
+			}
+
+			$data = array(
+				'userid' => $client[ 'client_id' ],
+				'date' => $date,
+				'duedate' => $duedate,
+				'paymentmethod' => $client[ 'paymentmethod' ],
+				'taxrate' => $taxrate,
+				'sendinvoice' => true,
+
+				'itemdescription1' => $client[ 'domain' ] . ' ' . $client[ 'packagename' ],
+				'itemamount1' => $amount_diff,
+				'itemtaxed1' => $taxed
 			);
-			insert_query( 'tblinvoiceitems', array(
-					'invoiceid' => $invoice_id,
-					'userid' => $client[ 'client_id' ],
-					'type' => 'onappusers',
-					'relid' => $client[ 'service_id' ],
-					'amount' => $amount_diff,
-					'description' => 'OnApp Usage'
-				)
-			);
+			$result = localAPI( 'CreateInvoice', $data, $admin );
+
+			if( $result[ 'result' ] != 'success' ) {
+				print_r( $result );
+				echo 'An Error Occurred trying to create a test invoice: ' . $results[ 'result' ] . PHP_EOL;
+			}
 		}
 	}
 }
