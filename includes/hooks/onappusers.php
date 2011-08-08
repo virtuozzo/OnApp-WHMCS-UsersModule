@@ -134,7 +134,7 @@ function onappusers_invoice_paid( $vars ) {
 		LEFT JOIN tblhosting ON
 				tblhosting.userid = tblonappusers.client_id
 				AND tblhosting.server = tblonappusers.server_id
-		LEFT JOIN tblinvoiceitems ON
+		RIGHT JOIN tblinvoiceitems ON
 				tblinvoiceitems.invoiceid = tblinvoices.id
 				AND tblinvoiceitems.relid = tblhosting.id
 		LEFT JOIN tblproducts ON
