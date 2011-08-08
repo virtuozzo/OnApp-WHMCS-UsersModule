@@ -46,7 +46,8 @@ function create_onappusers_invoice() {
 			LEFT JOIN tblclients ON
 				tblclients.id = tblonappusers.client_id
 		WHERE
-			tblhosting.domainstatus IN ( "Active", "Suspended" )';
+			tblhosting.domainstatus IN ( "Active", "Suspended" )
+			AND tblproducts.name IS NOT NULL';
 	$clients_result = full_query( $clients_query );
 
 	$servers_query = 'SELECT
@@ -125,6 +126,10 @@ function create_onappusers_invoice() {
 			if( $result[ 'result' ] != 'success' ) {
 				print_r( $result );
 				echo 'An Error Occurred trying to create a test invoice: ' . $results[ 'result' ] . PHP_EOL;
+			}
+			else {
+				$sql = 'UPDATE tblinvoiceitems SET relid = ' . $client[ 'service_id' ] . ' WHERE invoiceid = ' . $result[ 'invoiceid' ];
+				full_query( $sql );
 			}
 		}
 	}

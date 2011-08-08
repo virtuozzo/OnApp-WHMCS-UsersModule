@@ -1,12 +1,12 @@
 <?php
 
+if( !function_exists( 'onappusers_ConfigOptions' ) ) {
+	require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
+}
+
 //todo check this function
 function autosuspend_onappusers() {
 	global $CONFIG;
-
-	if( !function_exists( 'onappusers_ConfigOptions' ) ) {
-		require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
-	}
 
 	if( $CONFIG[ 'AutoSuspension' ] != 'on' ) {
 		return;
@@ -35,10 +35,6 @@ function autosuspend_onappusers() {
 
 //todo check this function
 function unsuspend_user( $vars ) {
-	if( !function_exists( 'onappusers_ConfigOptions' ) ) {
-		require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
-	}
-
 	$invoice_id = $vars[ 'invoiceid' ];
 	$client_query = "SELECT
 			tblonappusers.client_id,
@@ -124,16 +120,13 @@ function unsuspend_user( $vars ) {
 }
 
 function onappusers_invoice_paid( $vars ) {
-	if( !function_exists( 'onappusers_ConfigOptions' ) ) {
-		require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
-	}
 	$invoice_id = $vars[ 'invoiceid' ];
 	$client_query = 'SELECT
 			tblonappusers.client_id,
 			tblonappusers.server_id,
 			tblonappusers.onapp_user_id,
 			tblhosting.id AS service_id,
-			tblinvoices.total AS amount
+			tblinvoices.subtotal AS amount
 		FROM
 			tblinvoices
 		LEFT JOIN tblonappusers ON
@@ -141,13 +134,20 @@ function onappusers_invoice_paid( $vars ) {
 		LEFT JOIN tblhosting ON
 				tblhosting.userid = tblonappusers.client_id
 				AND tblhosting.server = tblonappusers.server_id
+		LEFT JOIN tblinvoiceitems ON
+				tblinvoiceitems.invoiceid = tblinvoices.id
+				AND tblinvoiceitems.relid = tblhosting.id
+		LEFT JOIN tblproducts ON
+				tblproducts.id = tblhosting.packageid
 		WHERE
 			tblinvoices.id = ' . $invoice_id . '
+			AND tblinvoices.status = "Unpaid"
+			AND tblproducts.servertype = "onappusers"
 		GROUP BY tblinvoices.id';
 	$client_result = full_query( $client_query );
 	$client = mysql_fetch_assoc( $client_result );
 
-	if( !$client ) {
+	if( !$client || ( $client[ 'amount'] == 0 ) ) {
 		return;
 	}
 
