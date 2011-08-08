@@ -1,6 +1,6 @@
 <?php
+
 $root = dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . DIRECTORY_SEPARATOR;
-$root = '/srv/www/wcs/zz/'; //todo del
 require $root . 'dbconnect.php';
 include $root . 'includes/functions.php';
 include $root . 'includes/clientfunctions.php';
@@ -20,7 +20,6 @@ create_onappusers_invoice();
 
 function create_onappusers_invoice() {
 	global $root;
-
 	require_once $root . 'modules/servers/onappusers/onappusers.php';
 
 	$clients_query = 'SELECT
