@@ -79,7 +79,7 @@ function unsuspend_user( $vars ) {
 	}
 
 	$onapp_payment = get_onapp_object(
-		'ONAPP_Payment',
+		'OnApp_Payment',
 		$servers[ $client[ 'server_id' ] ][ 'ipaddress' ],
 		$servers[ $client[ 'server_id' ] ][ 'username' ],
 		$servers[ $client[ 'server_id' ] ][ 'password' ]
@@ -141,7 +141,7 @@ function onappusers_invoice_paid( $vars ) {
 				tblproducts.id = tblhosting.packageid
 		WHERE
 			tblinvoices.id = ' . $invoice_id . '
-			AND tblinvoices.status = "Unpaid"
+			AND tblinvoices.status = "Paid"
 			AND tblproducts.servertype = "onappusers"
 		GROUP BY tblinvoices.id';
 	$client_result = full_query( $client_query );
