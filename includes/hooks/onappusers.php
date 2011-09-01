@@ -4,7 +4,6 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 	require_once ROOTDIR . '/modules/servers/onappusers/onappusers.php';
 }
 
-//todo check this function
 function onappusers_autosuspend() {
 	global $CONFIG;
 
