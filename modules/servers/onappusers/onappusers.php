@@ -359,7 +359,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 			return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
 		}
 
-		$onapp_user = get_onapp_object( 'ONAPP_User', $server_ip, $server_username, $server_password );
+		$onapp_user = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
 
 		$onapp_user->_id = $onapp_user_id;
 

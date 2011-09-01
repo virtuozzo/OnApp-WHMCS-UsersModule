@@ -73,8 +73,6 @@ function create_onappusers_invoice() {
 	$date = date( 'Ymd' );
 	$duedate = date( 'Ymd', ( time() + $GLOBALS[ 'CONFIG' ][ 'CreateInvoiceDaysBefore' ] * 86400 ) );
 	while( $client = mysql_fetch_assoc( $clients_result ) ) {
-		var_dump( $client );
-
 		$onapp_user = get_onapp_object(
 			'OnApp_User',
 			$servers[ $client[ 'server_id' ] ][ 'ipaddress' ],
@@ -85,14 +83,16 @@ function create_onappusers_invoice() {
 		$onapp_user->load();
 
 		$client_amount_query = 'SELECT
-				tblinvoices.total AS amount
+				tblinvoices.subtotal AS amount
 			FROM tblinvoices
 			WHERE
 				tblinvoices.userid = ' . $client[ 'client_id' ] . '
 				AND tblinvoices.status = "Unpaid"';
+		$client_amount = 0;
 		$client_amount_result = full_query( $client_amount_query );
-		$client_amount_array = mysql_fetch_assoc( $client_amount_result );
-		$client_amount = $client_amount_array ? $client_amount_array[ 'amount' ] : 0;
+		while( $row = mysql_fetch_assoc( $client_amount_result ) ) {
+			$client_amount += $row[ 'amount' ];
+		}
 
 		$amount_diff = $onapp_user->_obj->_outstanding_amount - $client_amount;
 		$amount_diff = round( $amount_diff, 2 );
@@ -123,11 +123,10 @@ function create_onappusers_invoice() {
 			$result = localAPI( 'CreateInvoice', $data, $admin );
 
 			if( $result[ 'result' ] != 'success' ) {
-				print_r( $result );
-				echo 'An Error Occurred trying to create a test invoice: ' . $results[ 'result' ] . PHP_EOL;
+				echo 'Following error occurred: ' . $results[ 'result' ] . PHP_EOL;
 			}
 			else {
-				$sql = 'UPDATE tblinvoiceitems SET relid = ' . $client[ 'service_id' ] . ' WHERE invoiceid = ' . $result[ 'invoiceid' ];
+				$sql = 'UPDATE tblinvoiceitems SET relid = ' . $client[ 'service_id' ] . ', type = "onappusers" WHERE invoiceid = ' . $result[ 'invoiceid' ];
 				full_query( $sql );
 			}
 		}
