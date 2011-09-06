@@ -168,7 +168,8 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		$onapp_user->logger->setDebug( 1 );
 
-		$onapp_user->_email = $serviceid . '_' . $clientsdetails[ 'email' ];
+		//$onapp_user->_email = $serviceid . '_' . $clientsdetails[ 'email' ];
+		$onapp_user->_email = $clientsdetails[ 'email' ];
 		$onapp_user->_password = $onapp_user->_password_confirmation = $password;
 		$onapp_user->_password = $password;
 		$onapp_user->_login = $username;
@@ -235,7 +236,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 														  'email' => $serviceid . '_' . $clientsdetails[ 'email' ]
 													 ) );
 
-		sendmessage( $LANG[ 'onappuserscreateaccount' ], $serviceid );
+		sendmessage( $_LANG[ 'onappuserscreateaccount' ], $serviceid );
 
 		return 'success';
 	}
@@ -427,11 +428,11 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		// Add e-mail templates
 		$where = array();
 		$where[ 'type' ] = 'product';
-		$where[ 'name' ] = $LANG[ 'onappuserscreateaccount' ];
+		$where[ 'name' ] = $_LANG[ 'onappuserscreateaccount' ];
 		if( !mysql_num_rows( select_query( 'tblemailtemplates', 'id', $where ) ) ) {
 			$insert_fields = array();
 			$insert_fields[ 'type' ] = 'product';
-			$insert_fields[ 'name' ] = $LANG[ 'onappuserscreateaccount' ];
+			$insert_fields[ 'name' ] = $_LANG[ 'onappuserscreateaccount' ];
 			$insert_fields[ 'subject' ] = 'OnApp account has been created';
 			$insert_fields[ 'message' ] = ' < p>Dear {$client_name}</p > ' .
 										  '<p > Your OnApp account has been created<br />' .
@@ -440,7 +441,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 										  '<p ></p > To login, visit http://{$service_server_ip}';
 			$insert_fields[ 'plaintext' ] = 0;
 			if( !insert_query( 'tblemailtemplates', $insert_fields ) ) {
-				return sprintf( $_LANG[ 'onappuserserrtmpladd' ], $LANG[ 'onappuserscreateaccount' ] );
+				return sprintf( $_LANG[ 'onappuserserrtmpladd' ], $_LANG[ 'onappuserscreateaccount' ] );
 			}
 		}
 
