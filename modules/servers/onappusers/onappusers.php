@@ -268,11 +268,15 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 			return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
 		}
 
-		$onapp_user = get_onapp_object( 'ONAPP_User', $server_ip, $server_username, $server_password );
-		$onapp_user->logger->setDebug( 1 );
+		$onapp_user = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
+
+		$vms = get_onapp_object( 'OnApp_VirtualMachine', $server_ip, $server_username, $server_password );
+		if( $vms->getList( $onapp_user_id ) ) {
+			$error_msg = $_LANG[ 'onappuserserruserterminate' ];
+			return $error_msg;
+		}
 
 		$onapp_user->_id = $onapp_user_id;
-
 		$onapp_user->delete();
 		$onapp_user->delete();
 
