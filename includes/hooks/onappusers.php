@@ -56,6 +56,7 @@ function onappusers_invoice_paid( $vars ) {
 			tblinvoices.id = ' . $invoice_id . '
 			AND tblinvoices.status = "Paid"
 			AND tblproducts.servertype = "onappusers"
+			AND tblinvoiceitems.type = "onappusers"
 		GROUP BY tblinvoices.id';
 	$client_result = full_query( $client_query );
 	$client = mysql_fetch_assoc( $client_result );
