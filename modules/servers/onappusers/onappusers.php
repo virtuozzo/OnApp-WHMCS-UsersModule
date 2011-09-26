@@ -143,7 +143,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		// Additional variables if the product/service is linked to a server
 		$server = $params[ 'server' ]; // True if linked to a server
 		$server_id = $params[ 'serverid' ];
-		$server_ip = $params[ 'serverip' ];
+		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'serverhostname' ] : $params[ 'ipaddress' ];
 		$server_username = $params[ 'serverusername' ];
 		$server_password = $params[ 'serverpassword' ];
 
@@ -164,7 +164,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		/*********************************/
 		/*      Create OnApp user        */
-		$onapp_user = get_onapp_object( 'ONAPP_User', $server_ip, $server_username, $server_password );
+		$onapp_user = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
 
 		$onapp_user->logger->setDebug( 1 );
 
@@ -247,7 +247,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
-		$server_ip = $params[ 'serverip' ];
+		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'serverhostname' ] : $params[ 'ipaddress' ];
 		$server_username = $params[ 'serverusername' ];
 		$server_password = $params[ 'serverpassword' ];
 
@@ -300,7 +300,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
-		$server_ip = $params[ 'serverip' ];
+		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'serverhostname' ] : $params[ 'ipaddress' ];
 		$server_username = $params[ 'serverusername' ];
 		$server_password = $params[ 'serverpassword' ];
 
@@ -321,7 +321,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 			return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
 		}
 
-		$onapp_user = get_onapp_object( 'ONAPP_User', $server_ip, $server_username, $server_password );
+		$onapp_user = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
 		$onapp_user->logger->setDebug( 1 );
 
 		$onapp_user->_id = $onapp_user_id;
@@ -343,7 +343,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
-		$server_ip = $params[ 'serverip' ];
+		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'serverhostname' ] : $params[ 'ipaddress' ];
 		$server_username = $params[ 'serverusername' ];
 		$server_password = $params[ 'serverpassword' ];
 
@@ -503,34 +503,34 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 	}
 
 	function getPlans( $params ) {
-		$server_ip = $params[ 'ipaddress' ];
+		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'hostname' ] : $params[ 'ipaddress' ];
 		$server_username = $params[ 'username' ];
 		$server_password = $params[ 'password' ];
 
-		$obj = get_onapp_object( 'ONAPP_User', $server_ip, $server_username, $server_password );
+		$obj = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
 
-		$class = ( (float)$obj->_version > 2 ) ? 'ONAPP_BillingPlan' : 'ONAPP_Group';
+		$class = ( (float)$obj->_version > 2 ) ? 'OnApp_BillingPlan' : 'OnApp_Group';
 		$plans = get_onapp_object( $class, $server_ip, $server_username, $server_password );
 
 		return $plans->getList();
 	}
 
 	function getRoles( $params ) {
-		$server_ip = $params[ 'ipaddress' ];
+		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'hostname' ] : $params[ 'ipaddress' ];
 		$server_username = $params[ 'username' ];
 		$server_password = $params[ 'password' ];
 
-		$roles = get_onapp_object( 'ONAPP_Role', $server_ip, $server_username, $server_password );
+		$roles = get_onapp_object( 'OnApp_Role', $server_ip, $server_username, $server_password );
 
 		return $roles->getList();
 	}
 
 	function getUsersGroups( $params ) {
-		$server_ip = $params[ 'ipaddress' ];
+		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'hostname' ] : $params[ 'ipaddress' ];
 		$server_username = $params[ 'username' ];
 		$server_password = $params[ 'password' ];
 
-		$groups = get_onapp_object( 'ONAPP_UserGroup', $server_ip, $server_username, $server_password );
+		$groups = get_onapp_object( 'OnApp_UserGroup', $server_ip, $server_username, $server_password );
 
 		return $groups->getList();
 	}
