@@ -72,8 +72,7 @@ function buildFields( ServersData ) {
 			for( plan_id in server.BillingPlans ) {
 				plan = server.BillingPlans[ plan_id ];
 
-				option = new Option( plan, server_id + ':' + plan_id );
-				$( select ).append( option );
+				$( select ).append( $( '<option>', { value : server_id + ':' + plan_id } ).text( plan ) );
 			}
 
 			// select selected plans
@@ -129,8 +128,7 @@ function buildFields( ServersData ) {
 			for( group_id in server.UserGroups ) {
 				plan = server.UserGroups[ group_id ];
 
-				option = new Option( plan, server_id + ':' + group_id );
-				$( select ).append( option );
+				$( select ).append( $( '<option>', { value : server_id + ':' + group_id } ).text( plan ) );
 			}
 
 			// select selected plans

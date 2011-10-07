@@ -143,7 +143,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		// Additional variables if the product/service is linked to a server
 		$server = $params[ 'server' ]; // True if linked to a server
 		$server_id = $params[ 'serverid' ];
-		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'serverhostname' ] : $params[ 'ipaddress' ];
+		$server_ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
 		$server_username = $params[ 'serverusername' ];
 		$server_password = $params[ 'serverpassword' ];
 
@@ -190,14 +190,15 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		}
 
 		// Assign roles to user
-		if( $onapp_user->options[ ONAPP_OPTION_API_TYPE ] == 'xml' ) {
-			$tmp = array(
-				'attributesArray' => array( 'type' => 'array' )
-			);
-		}
-		else {
-			$tmp = array();
-		}
+//		if( $onapp_user->options[ ONAPP_OPTION_API_TYPE ] == 'xml' ) {
+//			$tmp = array(
+//				'attributesArray' => array( 'type' => 'array' )
+//			);
+//		}
+//		else {
+//			$tmp = array();
+//		}
+		$tmp = array();
 		$onapp_user->_role_ids = array_merge( $tmp, $params[ 'configoption1' ][ 'SelectedRoles' ][ $params[ 'serverid' ] ] );
 
 		// Assign TZ to user
@@ -247,7 +248,8 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
-		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'serverhostname' ] : $params[ 'ipaddress' ];
+		$server_ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
+
 		$server_username = $params[ 'serverusername' ];
 		$server_password = $params[ 'serverpassword' ];
 
@@ -300,7 +302,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
-		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'serverhostname' ] : $params[ 'ipaddress' ];
+		$server_ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
 		$server_username = $params[ 'serverusername' ];
 		$server_password = $params[ 'serverpassword' ];
 
@@ -343,7 +345,7 @@ if( !function_exists( 'onappusers_ConfigOptions' ) ) {
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
-		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'serverhostname' ] : $params[ 'ipaddress' ];
+		$server_ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
 		$server_username = $params[ 'serverusername' ];
 		$server_password = $params[ 'serverpassword' ];
 
