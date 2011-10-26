@@ -6,16 +6,19 @@ function buildFields( ServersData ) {
 		var RolesTitle = $( '#titles-holder #roles' ).html();
 		var TZsTitle = $( '#titles-holder #tzs' ).html();
 		var UserGroupsTitle = $( '#titles-holder #usergroups' ).html();
+		var LocaleTitle = $( '#titles-holder #locale' ).html();
 	}
 	else {
 		var PlansTitle = table.find( 'tr:first' ).find( 'td' ).eq( 0 ).html();
 		var RolesTitle = table.find( 'tr:first' ).find( 'td' ).eq( 2 ).html();
 		var TZsTitle = table.find( 'td' ).eq( 4 ).html();
 		var UserGroupsTitle = table.find( 'td' ).eq( 6 ).html();
+		var LocaleTitle = table.find( 'td' ).eq( 8 ).html();
 		html = '<div id="titles-holder"><span id="plans">' + PlansTitle + '</span>';
 		html += '<span id="roles">' + RolesTitle + '</span>';
 		html += '<span id="tzs">' + TZsTitle + '</span>';
-		html += '<span id="usergroups">' + UserGroupsTitle + '</span></div>';
+		html += '<span id="usergroups">' + UserGroupsTitle + '</span>';
+		html += '<span id="locale">' + LocaleTitle + '</span></div>';
 		table.before( html );
 		$( '#titles-holder' ).hide();
 	}
@@ -63,6 +66,12 @@ function buildFields( ServersData ) {
 		html = '<tr>';
 		html += '<td class="fieldlabel">' + UserGroupsTitle + '</td>';
 		html += '<td class="fieldlabel" id="usergroups' + server_id + '"></td></tr>';
+		table.find( 'tr:last' ).after( html );
+
+		// locale row
+		html = '<tr>';
+		html += '<td class="fieldlabel">' + LocaleTitle + '</td>';
+		html += '<td class="fieldlabel" id="locale' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// process biling plans
@@ -143,6 +152,20 @@ function buildFields( ServersData ) {
 		}
 		$( '#usergroups' + server_id ).html( select );
 
+		// process locale
+		input = $( '<input name="locale_packageconfigoption' + ++cnt + '" rel="' + server_id + '" />' );
+		$( '#locale' + server_id ).html( input );
+		// select selected locale
+		if( ServersData.SelectedLocales ) {
+			if( ServersData.Group == $( "select[name$='servergroup']" ).val() ) {
+				$( input ).val( ServersData.SelectedLocales[ server_id ] );
+			}
+		}
+		else {
+			$( input ).val( 'en' );
+		}
+		$( '#locale' + server_id ).html( input );
+
 		//insert empty row
 		table.find( 'tr:last' ).after( '<tr><td colspan="2" class="fieldlabel">&nbsp;</td></tr>' );
 	}
@@ -173,6 +196,10 @@ function buildFields( ServersData ) {
 	$( "select[name^='usergroups_packageconfigoption']" ).bind( 'change', function() {
 		storeSelectedUserGroups();
 	} );
+	storeSelectedLocales();
+	$( "input[name^='locale_packageconfigoption']" ).bind( 'keyup', function() {
+		storeSelectedLocales();
+	} );
 
 	// align dropdown lists
 	alignSelects();
@@ -182,8 +209,19 @@ var OnAppUsersData = {
 	SelectedPlans: {},
 	SelectedRoles: {},
 	SelectedTZs: {},
-	SelectedUserGroups: {}
+	SelectedUserGroups: {},
+	SelectedLocales: {}
+
 };
+
+function storeSelectedLocales() {
+	$( "input[name^='locale_packageconfigoption']" ).each( function( i, val ) {
+		var index = $( val ).attr( 'rel' );
+		OnAppUsersData.SelectedLocales[ index ] = val.value;
+	} );
+
+	$( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
 
 function storeSelectedPlans() {
 	$( "select[name^='bills_packageconfigoption']" ).each( function( i, val ) {
@@ -245,6 +283,7 @@ function alignSelects() {
 		}
 	} );
 	$( 'div#tab2box select' ).css( 'min-width', max );
+	$( "div#tab2box input[name^='locale_packageconfigoption']" ).css( 'min-width', max - 5 );
 }
 
 $( document ).ready( function() {
@@ -272,34 +311,4 @@ $( document ).ready( function() {
 
 function objectToString( o ) {
 	return jQuery.toJSON( o );
-
-
-	var parse = function( _o ) {
-		var a = [], t;
-		for( var p in _o ) {
-			if( _o.hasOwnProperty( p ) ) {
-				t = _o[p];
-				if( t && typeof t == "object" ) {
-					if( t instanceof Array ) {
-						a[a.length] = p + ":[" + t.join( ", " ) + "]";
-					}
-					else {
-						a[a.length] = p + ":{" + arguments.callee( t ).join( ", " ) + "}";
-					}
-				}
-				else {
-					if( typeof t == "string" ) {
-						a[a.length] = [ p + ": \"" + t.toString() + "\"" ];
-					}
-					else {
-						a[a.length] = [ p + ": " + t.toString()];
-					}
-				}
-			}
-		}
-		return a;
-	}
-
-	return parse( o ).join( ", " );
-	//return "{" + parse( o ).join( ", " ) + "}";
 }
