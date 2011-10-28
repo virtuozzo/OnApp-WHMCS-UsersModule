@@ -177,7 +177,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		$params[ 'configoption1' ] = html_entity_decode( $params[ 'configoption1' ] );
 		$params[ 'configoption1' ] = json_decode( $params[ 'configoption1' ], true );
-
 		// Assign billing group/plan to user
 		$group_id = $params[ 'configoption1' ][ 'SelectedPlans' ][ $params[ 'serverid' ] ];
 
@@ -188,15 +187,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			$onapp_user->_group_id = $group_id;
 		}
 
-		// Assign roles to user
-		//		if( $onapp_user->options[ ONAPP_OPTION_API_TYPE ] == 'xml' ) {
-		//			$tmp = array(
-		//				'attributesArray' => array( 'type' => 'array' )
-		//			);
-		//		}
-		//		else {
-		//			$tmp = array();
-		//		}
 		$tmp = array();
 		$onapp_user->_role_ids = array_merge( $tmp, $params[ 'configoption1' ][ 'SelectedRoles' ][ $params[ 'serverid' ] ] );
 
@@ -205,6 +195,11 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		// Assign user group to user
 		$onapp_user->_user_group_id = $params[ 'configoption1' ][ 'SelectedUserGroups' ][ $params[ 'serverid' ] ];
+
+		// Assign locale to user
+		if( isset( $params[ 'configoption1' ][ 'SelectedLocales' ][ $params[ 'serverid' ] ] ) ) {
+			$onapp_user->_locale = $params[ 'configoption1' ][ 'SelectedLocales' ][ $params[ 'serverid' ] ];
+		}
 
 		$onapp_user->save();
 
