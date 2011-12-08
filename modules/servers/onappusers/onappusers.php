@@ -1,11 +1,22 @@
 <?php
 
 if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
-	require_once dirname( __FILE__ ) . '/includes/wrapper/OnAppInit.php';
+    if ( ! defined('ONAPP_WRAPPER_INIT') )
+            define('ONAPP_WRAPPER_INIT', ROOTDIR . '/includes/wrapper/OnAppInit.php');
+
+    if ( file_exists( ONAPP_WRAPPER_INIT ) )
+         require_once ONAPP_WRAPPER_INIT;
 
 	function onappusers_ConfigOptions() {
 		global $_LANG;
 
+        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+            $configarray = array(
+				$_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes' => array()
+			);
+            return $configarray;
+        }
+            
 		// Should return an array of the module options for each product - maximum of 24
 		if( ( $res = create_table() ) !== true ) {
 			$configarray = array(
@@ -129,6 +140,10 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function onappusers_CreateAccount( $params ) {
 		global $CONFIG, $_LANG;
 
+        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+            return $_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes';
+        }
+
 		$serviceid = $params[ 'serviceid' ]; // Unique ID of the product/service in the WHMCS Database
 		$pid = $params[ 'pid' ]; // Product/Service ID
 		$producttype = $params[ 'producttype' ]; // Product Type: hostingaccount, reselleraccount, server or other
@@ -239,6 +254,10 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function onappusers_TerminateAccount( $params ) {
 		global $_LANG;
 
+        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+            return $_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes';
+        }
+
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
@@ -293,6 +312,10 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function onappusers_SuspendAccount( $params ) {
 		global $_LANG;
 
+        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+            return $_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes';
+        }
+
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
@@ -335,6 +358,10 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 	function onappusers_UnsuspendAccount( $params ) {
 		global $_LANG;
+
+        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+            return $_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes';
+        }
 
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];

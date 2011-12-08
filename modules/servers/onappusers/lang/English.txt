@@ -31,3 +31,4 @@ $_LANG['onappusersstattotalamount'] = 'Total Amount';
 $_LANG['onappusersstatnodata'] = 'There are no data for chosen period';
 $_LANG['onappuserscreateaccount'] = 'OnApp account created';
 $_LANG['onappuserserruserterminate'] = 'Can\'t terminate account because user has virtual machines';
+$_LANG['onappwrappernotfound'] = 'Wapper not found. Please download it from http://onapp.com/downloads and put it into ';
