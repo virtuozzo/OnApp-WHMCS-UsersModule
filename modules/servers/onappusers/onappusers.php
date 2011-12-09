@@ -221,14 +221,13 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		}
 
 		$onapp_user->save();
-
-		if( ! is_null( $onapp_user->error ) ) {
+		if( ! is_null( $onapp_user->getErrorsAsArray() ) ) {
 			$error_msg = $_LANG[ 'onappuserserrusercreate' ] . ':<br/>';
 			$error_msg .= $onapp_user->getErrorsAsString( '<br/>' );
 			return $error_msg;
 		}
 
-		if( ! is_null( $onapp_user->_obj->error ) ) {
+		if( ! is_null( $onapp_user->_obj->getErrorsAsArray() ) ) {
 			$error_msg = $_LANG[ 'onappuserserrusercreate' ] . ':<br/>';
 			$error_msg .= $onapp_user->_obj->getErrorsAsString( '<br/>' );
 			return $error_msg;
