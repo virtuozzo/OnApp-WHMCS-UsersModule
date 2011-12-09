@@ -1,22 +1,135 @@
-<link rel="stylesheet" href="/modules/servers/onappusers/includes/css/style.css" />
+<link rel="stylesheet" href="modules/servers/onappusers/includes/css/style.css" />
 
 <h3 id="user-stat">{$LANG.onappusersstatoutstandingdetails}</h3>
+<div id="statcontainer">
 <table width="100%" cellspacing="0" cellpadding="0" class="userstat">
-    <tr class="stat-labels">
-        <td colspan="5">
-            {$LANG.onappusersstatstartdate} <input type="text" value="" name="period[startdate]" id="start">&nbsp;&nbsp;&nbsp;&nbsp;
-            {$LANG.onappusersstatenddate} <input type="text" value="" name="period[enddate]" id="end">&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="button" value="{$LANG.onappusersstatapply}" id="get-stat">&nbsp;&nbsp;&nbsp;&nbsp;
-            <span id="loading" style="display: none;">
-                <img src="/modules/servers/onappusers/includes/images/loader.gif" alt="">
-            </span>
-        </td>
-    </tr>
-    <tr class="stat-labels" id="stat-labels">
-        <td>{$LANG.onappusersstatdate}</td>
-        <td>{$LANG.onappusersstatvirtualmachines}</td>
-        <td>{$LANG.onappusersstatnetinterfaces}</td>
-        <td>{$LANG.onappusersstatdisks}</td>
-        <td>{$LANG.onappusersstatcosts}</td>
-    </tr>
+	<tr class="stat-labels">
+		<td style="text-align: center;">
+			{$LANG.onappusersstatstartdate}
+			<input type="text" value="" name="period[startdate]" id="start" size="11" />
+			<select id="start-time">
+				<option value="00">0</option>
+				<option value="01">1</option>
+				<option value="02">2</option>
+				<option value="03">3</option>
+				<option value="04">4</option>
+				<option value="05">5</option>
+				<option value="06">6</option>
+				<option value="07">7</option>
+				<option value="08">8</option>
+				<option value="09">9</option>
+				<option value="10">10</option>
+				<option value="11">11</option>
+				<option value="12">12</option>
+				<option value="13">13</option>
+				<option value="14">14</option>
+				<option value="15">15</option>
+				<option value="16">16</option>
+				<option value="17">17</option>
+				<option value="18">18</option>
+				<option value="19">19</option>
+				<option value="20">20</option>
+				<option value="21">21</option>
+				<option value="22">22</option>
+				<option value="23">23</option>
+			</select>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			{$LANG.onappusersstatenddate}
+			<input type="text" value="" name="period[enddate]" id="end" size="11" />
+			<select id="end-time">
+				<option value="00">0</option>
+				<option value="01">1</option>
+				<option value="02">2</option>
+				<option value="03">3</option>
+				<option value="04">4</option>
+				<option value="05">5</option>
+				<option value="06">6</option>
+				<option value="07">7</option>
+				<option value="08">8</option>
+				<option value="09">9</option>
+				<option value="10">10</option>
+				<option value="11">11</option>
+				<option value="12">12</option>
+				<option value="13">13</option>
+				<option value="14">14</option>
+				<option value="15">15</option>
+				<option value="16">16</option>
+				<option value="17">17</option>
+				<option value="18">18</option>
+				<option value="19">19</option>
+				<option value="20">20</option>
+				<option value="21">21</option>
+				<option value="22">22</option>
+				<option value="23">23</option>
+			</select>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="button" value="{$LANG.onappusersstatapply}" id="get-stat">&nbsp;&nbsp;&nbsp;&nbsp;
+			<span id="loading" style="visibility: hidden;">
+				<img src="modules/servers/onappusers/includes/images/loader.gif" alt="">
+			</span>
+		</td>
+	</tr>
+	<tr class="stat-labels">
+		<td style="display: none;" id="stat-nav">
+			<!-- PAGINATION -->
+			<div id="stat-pages">
+				Jump to Page: <select rel="pages"></select>
+			</div>
+			<div style="width: auto; text-align: center;">
+				<a href="#" rel="vms" class="stat-nav-bold">VM</a> |
+				<a href="#" rel="disks">Disks</a> |
+				<a href="#" rel="nets">Networks</a>
+			</div>
+		</td>
+	</tr>
+	<!-- DATA -->
+	<tr>
+		<td id="stat_data">
+			<div id="stat-vms">
+				<table>
+					<tr class="stat-labels">
+						<td>{$LANG.onappusersstatdate}</td>
+						<td>{$LANG.onappusersstatvirtualmachine}</td>
+						<td>{$LANG.onappusersstatvirtualmachineusage_cost}</td>
+						<td>{$LANG.onappusersstatvirtualmachineresources_cost}</td>
+						<td>{$LANG.onappusersstatvirtualmachinetotal_cost}</td>
+						<td>{$LANG.onappusersstatcpus}</td>
+						<td>{$LANG.onappusersstatcpu_shares}</td>
+						<td>{$LANG.onappusersstatcpu_usage}</td>
+						<td>{$LANG.onappusersstatmemory}</td>
+						<td>{$LANG.onappusersstattemplates}</td>
+						<td>{$LANG.onappusersstatcost}</td>
+					</tr>
+				</table>
+			</div>
+			<div id="stat-disks">
+				<table>
+					<tr class="stat-labels">
+						<td>{$LANG.onappusersstatdate}</td>
+						<td>{$LANG.onappusersstatvirtualmachine}</td>
+						<td>{$LANG.onappusersstatdisk_size}</td>
+						<td>{$LANG.onappusersstatdisk_DR}</td>
+						<td>{$LANG.onappusersstatdisk_DW}</td>
+						<td>{$LANG.onappusersstatdisk_RC}</td>
+						<td>{$LANG.onappusersstatdisk_WC}</td>
+						<td>{$LANG.onappusersstatcost}</td>
+					</tr>
+				</table>
+			</div>
+			<div id="stat-nets">
+				<table>
+					<tr class="stat-labels">
+						<td>{$LANG.onappusersstatdate}</td>
+						<td>{$LANG.onappusersstatvirtualmachine}</td>
+						<td>{$LANG.onappusersstatnet_interface}</td>
+						<td>{$LANG.onappusersstatnet_rate}</td>
+						<td>{$LANG.onappusersstatnet_DR}</td>
+						<td>{$LANG.onappusersstatnet_DS}</td>
+						<td>{$LANG.onappusersstatcost}</td>
+					</tr>
+				</table>
+			</div>
+		</td>
+	</tr>
 </table>
+</div>

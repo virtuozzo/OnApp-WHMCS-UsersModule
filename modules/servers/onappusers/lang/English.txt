@@ -1,34 +1,64 @@
-$_LANG['onappuserserrtablecreate'] = 'Error creating table %s';
-$_LANG['onappuserserrtmpladd'] = 'Error adding \'%s\' template';
-$_LANG['onappuserserrpwdnotset'] = 'Password not set';
-$_LANG['onappuserserrusercreate'] = 'Can\'t create OnApp User';
-$_LANG['onappuserserrassociateuser'] = 'Can\'t find OnApp User for client #%s on server #%s';
-$_LANG['onappuserserrusersuspend'] = 'Can\'t suspend OnApp User';
-$_LANG['onappuserserruserunsuspend'] = 'Can\'t unsuspend OnApp User';
+$_LANG[ 'onappuserserrtablecreate' ] = 'Error creating table %s';
+$_LANG[ 'onappuserserrtmpladd' ] = 'Error adding \'%s\' template';
+$_LANG[ 'onappuserserrpwdnotset' ] = 'Password not set';
+$_LANG[ 'onappuserserrusercreate' ] = 'Can\'t create OnApp User';
+$_LANG[ 'onappuserserrassociateuser' ] = 'Can\'t find OnApp User for client #%s on server #%s';
+$_LANG[ 'onappuserserrusersuspend' ] = 'Can\'t suspend OnApp User';
+$_LANG[ 'onappuserserruserunsuspend' ] = 'Can\'t unsuspend OnApp User';
 
-$_LANG['onappuserserrorholder'] = '<b style="color:red;">%s</b>';
-$_LANG['onappuserserrornoserveringroup'] = 'There are no servers in selected server group';
-$_LANG['onappusersbindingplanstitle'] = 'Billing Group/Plan';
-$_LANG['onappusersbindingrolestitle'] = 'Roles';
-$_LANG['onappusersbindinglocaletitle'] = 'Default Locale';
-$_LANG['onappuserstimezonetitle'] = 'Time Zone';
-$_LANG['onappusersusergroupstitle'] = 'User Groups';
-$_LANG['onappusersnobillingplans'] = 'There are no configured billing plans/groups on this server';
-$_LANG['onappusersnousergroups'] = 'There are no configured user groups on this server';
-$_LANG['onappusersnoroles'] = 'There are no configured roles on this server';
-$_LANG['onappusersjsloadingdata'] = '<b>Loading data...</b>';
-$_LANG['onapperrcantfoundadress'] = 'OnApp server address (IP or hostname) has not been set for this server';
-$_LANG['onappusersstatoutstandingdetails'] = 'Outstanding Details';
-$_LANG['onappusersstatvirtualmachines'] = 'Virtual Machines';
-$_LANG['onappusersstatdate'] = 'Date';
-$_LANG['onappusersstatnetinterfaces'] = 'Network Interfaces';
-$_LANG['onappusersstatdisks'] = 'Disks';
-$_LANG['onappusersstatcosts'] = 'Costs';
-$_LANG['onappusersstatstartdate'] = 'Start date';
-$_LANG['onappusersstatenddate'] = 'End date';
-$_LANG['onappusersstatapply'] = '  Apply  ';
-$_LANG['onappusersstattotalamount'] = 'Total Amount';
-$_LANG['onappusersstatnodata'] = 'There are no data for chosen period';
-$_LANG['onappuserscreateaccount'] = 'OnApp account created';
-$_LANG['onappuserserruserterminate'] = 'Can\'t terminate account because user has virtual machines';
-$_LANG['onappwrappernotfound'] = 'Wapper not found. Please download it from http://onapp.com/downloads and put it into ';
+$_LANG[ 'onappuserserrorholder' ] = '<b style="color:red;">%s</b>';
+$_LANG[ 'onappuserserrornoserveringroup' ] = 'There are no servers in selected server group';
+$_LANG[ 'onappusersbindingplanstitle' ] = 'Billing Group/Plan';
+$_LANG[ 'onappusersbindingrolestitle' ] = 'Roles';
+$_LANG[ 'onappusersbindinglocaletitle' ] = 'Default Locale';
+$_LANG[ 'onappuserstimezonetitle' ] = 'Time Zone';
+$_LANG[ 'onappusersusergroupstitle' ] = 'User Groups';
+$_LANG[ 'onappusersnobillingplans' ] = 'There are no configured billing plans/groups on this server';
+$_LANG[ 'onappusersnousergroups' ] = 'There are no configured user groups on this server';
+$_LANG[ 'onappusersnoroles' ] = 'There are no configured roles on this server';
+$_LANG[ 'onappusersjsloadingdata' ] = '<b>Loading data...</b>';
+$_LANG[ 'onapperrcantfoundadress' ] = 'OnApp server address (IP or hostname) has not been set for this server';
+$_LANG[ 'onappuserserruserterminate' ] = 'Can\'t terminate account because user has virtual machines';
+$_LANG[ 'onappuserscreateaccount' ] = 'OnApp account created';
+$_LANG['onappwrappernotfound'] = 'Wrapper not found. Please download it from http://onapp.com/downloads and put it into ';
+
+$_LANG[ 'onappusersstatoutstandingdetails' ] = 'Outstanding Details';
+$_LANG[ 'onappusersstatvirtualmachine' ] = 'Virtual Machine';
+$_LANG[ 'onappusersstatvirtualmachineusage_cost' ] = 'Usage cost';
+$_LANG[ 'onappusersstatvirtualmachineresources_cost' ] = 'Resources cost';
+$_LANG[ 'onappusersstatvirtualmachinetotal_cost' ] = 'Total cost';
+$_LANG[ 'onappusersstatdate' ] = 'Date';
+$_LANG[ 'onappusersstatcost' ] = 'Cost';
+$_LANG[ 'onappusersstatstartdate' ] = 'Start date';
+$_LANG[ 'onappusersstatenddate' ] = 'End date';
+$_LANG[ 'onappusersstatapply' ] = '  Apply  ';
+$_LANG[ 'onappusersstattotalamount' ] = 'Total amount for selected period: ';
+$_LANG[ 'onappusersstatnodata' ] = 'There are no data for chosen period';
+
+$_LANG[ 'onappusersstathour' ] = 'Hour';
+$_LANG[ 'onappusersstathours' ] = 'Hours';
+$_LANG[ 'onappusersstatmemory' ] = 'Memory';
+$_LANG[ 'onappusersstatamount' ] = 'Amount';
+$_LANG[ 'onappusersstatnodata' ] = 'There are no data for chosen period';
+
+$_LANG[ 'onappusersstattemplates' ] = 'Templates';
+$_LANG[ 'onappusersstatcpus' ] = 'CPUs';
+$_LANG[ 'onappusersstatcpu_shares' ] = 'CPU shares';
+$_LANG[ 'onappusersstatcpu_usage' ] = 'CPU usage';
+
+$_LANG[ 'onappusersstatnet_interface' ] = 'Interface';
+$_LANG[ 'onappusersstatnet_ips' ] = 'IP';
+$_LANG[ 'onappusersstatnet_rate' ] = 'Rate';
+$_LANG[ 'onappusersstatnet_DR' ] = 'Received';
+$_LANG[ 'onappusersstatnet_DS' ] = 'Sent';
+
+$_LANG[ 'onappusersstatdisk_size' ] = 'Size';
+$_LANG[ 'onappusersstatdisk_DR' ] = 'Data Read';
+$_LANG[ 'onappusersstatdisk_DW' ] = 'Data Written';
+$_LANG[ 'onappusersstatdisk_RC' ] = 'Reads Complited';
+$_LANG[ 'onappusersstatdisk_WC' ] = 'Writes Complited';
+
+
+$_LANG[ 'onappusersstatcurrency' ][ 'USD' ] = '$';
+$_LANG[ 'onappusersstatcurrency' ][ 'EUR' ] = '€';
+$_LANG[ 'onappusersstatcurrency' ][ 'GBP' ] = '£';

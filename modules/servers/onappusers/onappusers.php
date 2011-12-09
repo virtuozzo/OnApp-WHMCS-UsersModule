@@ -1,22 +1,24 @@
 <?php
 
 if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
-    if ( ! defined('ONAPP_WRAPPER_INIT') )
-            define('ONAPP_WRAPPER_INIT', ROOTDIR . '/includes/wrapper/OnAppInit.php');
+	if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
+		define( 'ONAPP_WRAPPER_INIT', ROOTDIR . '/includes/wrapper/OnAppInit.php' );
+	}
 
-    if ( file_exists( ONAPP_WRAPPER_INIT ) )
-         require_once ONAPP_WRAPPER_INIT;
+	if( file_exists( ONAPP_WRAPPER_INIT ) ) {
+		require_once ONAPP_WRAPPER_INIT;
+	}
 
 	function onappusers_ConfigOptions() {
 		global $_LANG;
 
-        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
-            $configarray = array(
-				$_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes' => array()
+		if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+			$configarray = array(
+				$_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes' => array()
 			);
-            return $configarray;
-        }
-            
+			return $configarray;
+		}
+
 		// Should return an array of the module options for each product - maximum of 24
 		if( ( $res = create_table() ) !== true ) {
 			$configarray = array(
@@ -126,10 +128,12 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			}
 
 			$configarray = array(
-				sprintf( $_LANG[ 'onappusersbindingplanstitle' ] )  => array( 'Description' => $js ),
+				sprintf( $_LANG[ 'onappusersbindingplanstitle' ] )  => array(
+					'Description' => $js
+				),
 				sprintf( $_LANG[ 'onappusersbindingrolestitle' ] )  => array(),
-				sprintf( $_LANG[ 'onappuserstimezonetitle' ] )      => array(),
-				sprintf( $_LANG[ 'onappusersusergroupstitle' ] )    => array(),
+				sprintf( $_LANG[ 'onappuserstimezonetitle' ] )	  => array(),
+				sprintf( $_LANG[ 'onappusersusergroupstitle' ] )	=> array(),
 				sprintf( $_LANG[ 'onappusersbindinglocaletitle' ] ) => array(),
 			);
 		}
@@ -140,9 +144,9 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function onappusers_CreateAccount( $params ) {
 		global $CONFIG, $_LANG;
 
-        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
-            return $_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes';
-        }
+		if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+			return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
+		}
 
 		$serviceid = $params[ 'serviceid' ]; // Unique ID of the product/service in the WHMCS Database
 		$pid = $params[ 'pid' ]; // Product/Service ID
@@ -163,7 +167,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		// Save hosting username
 		if( ! $username ) {
-			$username = $serviceid . '_' . $clientsdetails[ 'email' ];
+			$username = $clientsdetails[ 'email' ];
 			full_query( "UPDATE
                 tblhosting
             SET
@@ -238,12 +242,12 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		// Save user data in whmcs db
 		$res_insert = insert_query( 'tblonappusers', array(
-														  'server_id'     => $server_id,
-														  'client_id'     => $clientsdetails[ 'userid' ],
-														  'service_id'    => $serviceid,
+														  'server_id'	 => $server_id,
+														  'client_id'	 => $clientsdetails[ 'userid' ],
+														  'service_id'	=> $serviceid,
 														  'onapp_user_id' => $onapp_user->_obj->_id,
-														  'password'      => $password,
-														  'email'         => $serviceid . '_' . $clientsdetails[ 'email' ]
+														  'password'	  => $password,
+														  'email'		 => $clientsdetails[ 'email' ]
 													 ) );
 
 		sendmessage( $_LANG[ 'onappuserscreateaccount' ], $serviceid );
@@ -254,9 +258,9 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function onappusers_TerminateAccount( $params ) {
 		global $_LANG;
 
-        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
-            return $_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes';
-        }
+		if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+			return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
+		}
 
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
@@ -312,9 +316,9 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function onappusers_SuspendAccount( $params ) {
 		global $_LANG;
 
-        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
-            return $_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes';
-        }
+		if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+			return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
+		}
 
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
@@ -359,9 +363,9 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function onappusers_UnsuspendAccount( $params ) {
 		global $_LANG;
 
-        if ( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
-            return $_LANG['onappwrappernotfound'] . realpath( ROOTDIR ) . '/includes';
-        }
+		if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
+			return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
+		}
 
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
@@ -482,7 +486,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	 * Get an instance of specified wrapper class
 	 * and autorize it on OnApp server;
 	 *
-	 * @param $class     string
+	 * @param $class	 string
 	 * @param $server_ip string
 	 * @param $email	 string
 	 * @param $apikey	string
@@ -564,7 +568,9 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function getJSLang() {
 		$_LANG = array();
 		eval( load_lang() );
+		return json_encode( $_LANG );
 
+		//todo del this stuff
 		$js = '';
 		foreach( $_LANG as $key => $item ) {
 			$js .= $key . ':' . '"' . addslashes( $item ) . '",';
@@ -585,15 +591,156 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		return $html;
 	}
 
-	function curl( $url, $username = '', $password = '', $data = '' ) {
-		$ch = curl_init();
-		curl_setopt( $ch, CURLOPT_URL, $url );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 100 );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		$data = curl_exec( $ch );
-		curl_close( $ch );
+	function onappusers_ClientArea( $params = '' ) {
+		if( isset( $_GET[ 'getstat' ] ) ) {
+			onappusers_OutstandingDetails( $params );
+		}
 
-		return $data;
+		$html = file_get_contents( dirname( __FILE__ ) . '/clientarea.html' );
+		parseLang( $html );
+		$html .= '<script type="text/javascript" src="modules/servers/onappusers/includes/js/onappusers_stat.js"></script>
+				<script type="text/javascript">'
+				. 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
+				. 'var PID = ' . $params[ 'accountid' ] . ';';
+		$html .= 'var LANG = ' . getJSLang() . ';</script>';
+
+		return $html;
+	}
+
+	function onappusers_OutstandingDetails( $params = '' ) {
+		ob_end_clean();
+		$limit = 10;
+		$page = $_GET[ 'page' ];
+		$start = ( $page - 1 ) * $limit;
+
+		$sql = 'SELECT
+					`server_id`,
+					`client_id` AS whmcs_user_id,
+					`onapp_user_id`
+				FROM
+					`tblonappusers`
+				WHERE
+					`service_id` = ' . $params[ 'serviceid' ] . '
+				LIMIT 1';
+
+		$user = mysql_fetch_assoc( full_query( $sql ) );
+
+		$sql = 'SELECT
+					SQL_CALC_FOUND_ROWS
+					`stat`.`date`,
+					`stat`.`currency`,
+					`stat`.`vm_resources_cost`,
+					`stat`.`usage_cost`,
+					`stat`.`total_cost`,
+					vm.*
+				FROM
+					`onapp_itemized_stat` AS stat
+				JOIN `onapp_itemized_virtual_machines` AS vm
+					ON vm.`stat_id` = stat.`id`
+				WHERE
+					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
+					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
+					AND `server_id` = ' . $params[ 'serverid' ] . '
+					AND `date` BETWEEN "' . $_GET[ 'start' ] . '"
+					AND "' . $_GET[ 'end' ] . '"
+				ORDER BY `date` DESC
+				LIMIT ' . $start . ', ' . $limit;
+		$res = full_query( $sql );
+
+		$total = mysql_result( mysql_query( 'SELECT FOUND_ROWS()' ), 0 );
+
+		$stat = array();
+		while( $row = mysql_fetch_assoc( $res ) ) {
+			$tmp = array();
+
+			//get disks
+			$sql = 'SELECT * FROM `onapp_itemized_disks` WHERE `stat_id` = ' . $row[ 'stat_id' ];
+			$res_tmp = full_query( $sql );
+			while( $item = mysql_fetch_assoc( $res_tmp ) ) {
+				$tmp[ 'stat' ][ 'disks' ][ ] = $item;
+			}
+
+			//get networks
+			$sql = 'SELECT * FROM `onapp_itemized_network_interfaces` WHERE `stat_id` = ' . $row[ 'stat_id' ];
+			$res_tmp = full_query( $sql );
+			while( $item = mysql_fetch_assoc( $res_tmp ) ) {
+				$tmp[ 'stat' ][ 'nets' ][ ] = $item;
+			}
+
+			$stat[ ] = array_merge( $row, $tmp );
+		}
+
+		//get total amount
+		$total_amount = 0;
+		//get total amount for vm
+		$sql = 'SELECT
+					(
+					SUM( vm.`cpus_cost` ) +
+					SUM( vm.`cpu_shares_cost` ) +
+					SUM( vm.`memory_cost` ) +
+					SUM( vm.`template_cost` ) +
+					SUM( vm.`cpu_usage_cost` )
+					) AS total
+				FROM
+					`onapp_itemized_stat` AS stat
+				JOIN `onapp_itemized_virtual_machines` AS vm
+					ON vm.`stat_id` = stat.`id`
+				WHERE
+					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
+					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
+					AND `server_id` = ' . $params[ 'serverid' ] . '
+					AND `date` BETWEEN "' . $_GET[ 'start' ] . '"
+					AND "' . $_GET[ 'end' ] . '"';
+		$total_amount += mysql_result( mysql_query( $sql ), 0 );
+		//get total amount for disks
+		$sql = 'SELECT
+					(
+					SUM( dsk.`disk_size_cost` ) +
+					SUM( dsk.`data_read_cost` ) +
+					SUM( dsk.`data_written_cost` ) +
+					SUM( dsk.`reads_completed_cost` ) +
+					SUM( dsk.`writes_completed_cost` )
+					) AS total
+				FROM
+					`onapp_itemized_stat` AS stat
+				JOIN `onapp_itemized_disks` AS dsk
+					ON dsk.`stat_id` = stat.`id`
+				WHERE
+					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
+					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
+					AND `server_id` = ' . $params[ 'serverid' ] . '
+					AND `date` BETWEEN "' . $_GET[ 'start' ] . '"
+					AND "' . $_GET[ 'end' ] . '"';
+		$total_amount += mysql_result( mysql_query( $sql ), 0 );
+		//get total amount for nets
+		$sql = 'SELECT
+					(
+					SUM( net.`ip_addresses_cost` ) +
+					SUM( net.`rate_cost` ) +
+					SUM( net.`data_received_cost` ) +
+					SUM( net.`data_sent_cost` )
+					) AS total
+				FROM
+					`onapp_itemized_stat` AS stat
+				JOIN `onapp_itemized_network_interfaces` AS net
+					ON net.`stat_id` = stat.`id`
+				WHERE
+					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
+					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
+					AND `server_id` = ' . $params[ 'serverid' ] . '
+					AND `date` BETWEEN "' . $_GET[ 'start' ] . '"
+					AND "' . $_GET[ 'end' ] . '"';
+		$total_amount += mysql_result( mysql_query( $sql ), 0 );
+
+		$data = array(
+			'total'        => $total,
+			'page'         => $page,
+			'stat'         => $stat,
+			'limit'        => $limit,
+			'total_amount' => $total_amount,
+		);
+		$data = json_encode( $data );
+		exit( $data );
 	}
 
 	load_lang();
