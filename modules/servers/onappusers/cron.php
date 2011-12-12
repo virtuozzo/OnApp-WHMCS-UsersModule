@@ -123,7 +123,7 @@ function create_onappusers_invoice() {
 			$result = localAPI( 'CreateInvoice', $data, $admin );
 
 			if( $result[ 'result' ] != 'success' ) {
-				echo 'Following error occurred: ' . $results[ 'result' ] . PHP_EOL;
+				echo 'Following error occurred: ' . $result[ 'result' ] . PHP_EOL;
 			}
 			else {
 				$sql = 'UPDATE tblinvoiceitems SET relid = ' . $client[ 'service_id' ] . ', type = "onappusers" WHERE invoiceid = ' . $result[ 'invoiceid' ];
