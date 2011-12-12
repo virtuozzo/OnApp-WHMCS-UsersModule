@@ -70,6 +70,10 @@ input, select, textarea {
 	background-color: #fff;
 }
 
+#start, #end {
+	width: 80px;
+}
+
 /* ||||||||||||||||||||||||||||||||||||||||||||||||||| */
 
 .sel_wrap {

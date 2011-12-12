@@ -1,12 +1,14 @@
 <link rel="stylesheet" href="modules/servers/onappusers/includes/css/style.css" />
+<link rel="stylesheet" href="includes/jscript/css/ui.all.css" />
 
 <h3 id="user-stat">{$LANG.onappusersstatoutstandingdetails}</h3>
 <div id="statcontainer">
 <table width="100%" cellspacing="0" cellpadding="0" class="userstat">
 	<tr class="stat-labels">
 		<td style="text-align: center;">
-			{$LANG.onappusersstatstartdate}
-			<input type="text" value="" name="period[startdate]" id="start" size="11" />
+			{$LANG.onappusersstatstartdate}:
+			<input type="text" value="" name="period[startdate]" id="start" />
+			Time:
 			<select id="start-time">
 				<option value="00">0</option>
 				<option value="01">1</option>
@@ -33,9 +35,10 @@
 				<option value="22">22</option>
 				<option value="23">23</option>
 			</select>
-			&nbsp;&nbsp;&nbsp;&nbsp;
-			{$LANG.onappusersstatenddate}
-			<input type="text" value="" name="period[enddate]" id="end" size="11" />
+			&nbsp;&nbsp;&nbsp;
+			{$LANG.onappusersstatenddate}:
+			<input type="text" value="" name="period[enddate]" id="end" />
+			Time:
 			<select id="end-time">
 				<option value="00">0</option>
 				<option value="01">1</option>
@@ -62,7 +65,7 @@
 				<option value="22">22</option>
 				<option value="23">23</option>
 			</select>
-			&nbsp;&nbsp;&nbsp;&nbsp;
+			&nbsp;&nbsp;&nbsp;
 			<input type="button" value="{$LANG.onappusersstatapply}" id="get-stat">&nbsp;&nbsp;&nbsp;&nbsp;
 			<span id="loading" style="visibility: hidden;">
 				<img src="modules/servers/onappusers/includes/images/loader.gif" alt="">
