@@ -24,7 +24,6 @@ $( document ).ready( function() {
 	if( hr < 10 ) {
 		hr = '0' + hr;
 	}
-	//$( 'select#end-time' ).val( hr );
 
 	var start = now.getFullYear() + '-';
 	start += ( ( now.getMonth() < 9 ) ? '0' + ( now.getMonth() + 1 ) : ( now.getMonth() + 1 ) ) + '-';
@@ -127,6 +126,8 @@ $( document ).ready( function() {
 	} );
 
 	$( 'input#get-stat' ).click();
+	$( "#end" ).datepicker( { dateFormat:'yy-mm-dd' } );
+	$( "#start" ).datepicker( { dateFormat:'yy-mm-dd' } );
 } );
 
 function processData( data ) {

@@ -597,8 +597,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		$html = file_get_contents( dirname( __FILE__ ) . '/clientarea.html' );
 		parseLang( $html );
-		$html .= '<script type="text/javascript" src="modules/servers/onappusers/includes/js/onappusers_stat.js"></script>
-				<script type="text/javascript">'
+		$html .= '<script type="text/javascript">'
 				. 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
 				. 'var PID = ' . $params[ 'accountid' ] . ';';
 		$html .= 'var LANG = ' . getJSLang() . ';</script>';
