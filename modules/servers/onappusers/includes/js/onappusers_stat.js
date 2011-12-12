@@ -31,15 +31,6 @@ $( document ).ready( function() {
 	$( 'input#start' ).val( start );
 	$( 'input#end' ).val( end );
 
-	reselect( '#start-time', 'sec overf' );
-	reselect( '#end-time', 'sec overf' );
-	var INT = setInterval( function() {
-		if( $( 'div.sel_option' ).length = 48 ) {
-			$( 'div.sel_option[value="' + hr + '"]' ).click();
-			clearInterval( INT );
-		}
-	}, 50 );
-
 	var PGN = false;
 	$( 'input#get-stat' ).bind( 'click', function() {
 		$( 'span#loading' ).css( 'visibility', 'visible' );
@@ -125,9 +116,18 @@ $( document ).ready( function() {
 		}
 	} );
 
-	$( 'input#get-stat' ).click();
 	$( "#end" ).datepicker( { dateFormat:'yy-mm-dd' } );
 	$( "#start" ).datepicker( { dateFormat:'yy-mm-dd' } );
+
+	reselect( '#start-time', 'sec overf' );
+	reselect( '#end-time', 'sec overf' );
+	var INT = setInterval( function () {
+		if( $( 'div.sel_option' ).length = 48 ) {
+			$( 'div.sel_option[value="' + hr + '"]' ).click();
+			clearInterval( INT );
+			$( 'input#get-stat' ).click();
+		}
+	}, 50 );
 } );
 
 function processData( data ) {

@@ -17,8 +17,6 @@ include $root . 'includes/currencyfunctions.php';
 @ini_set( 'max_execution_time', 0 );
 @set_time_limit( 0 );
 
-error_reporting( E_ALL );
-ini_set( 'display_errors', 'On' );
 getOnAppUsersStatistic();
 
 function getOnAppUsersStatistic() {
@@ -131,7 +129,7 @@ function getOnAppUsersStatistic() {
 
 		// process SQL
 		foreach( $sql as $record ) {
-			full_query( $record );
+			print_r(full_query( $record ));
 		}
 	}
 }
