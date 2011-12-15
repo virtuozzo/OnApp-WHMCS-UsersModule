@@ -112,7 +112,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			$results = full_query( $sql );
 			$results = mysql_fetch_assoc( $results );
 			$results[ 'options' ] = htmlspecialchars_decode( $results[ 'options' ] );
-			$results[ 'options' ] = substr( $results[ 'options' ], 1, - 1 );
+			$results[ 'options' ] = substr( $results[ 'options' ], 1, -1 );
 			$results[ 'options' ] = $results[ 'options' ] ? $results[ 'options' ] . ',' : '';
 
 			$js_Servers = '{' . $js_Servers . $results[ 'options' ] . 'Group:"' . $results[ 'group' ] . '"}';
@@ -120,7 +120,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			$js_lang = getJSLang();
 			$js .= '<script type="text/javascript">'
 					. 'var ServersData = ' . $js_Servers . ';'
-					. 'var LANG_LOADING = "' . sprintf( $_LANG[ 'onappusersjsloadingdata' ] ) . '";</script>';
+					. 'var ONAPP_LANG = ' . getJSLang() . ';'
+					. '</script>';
 
 			if( isset( $_GET[ 'servergroup' ] ) ) {
 				ob_end_clean();
@@ -128,13 +129,9 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			}
 
 			$configarray = array(
-				sprintf( $_LANG[ 'onappusersbindingplanstitle' ] )  => array(
+				sprintf( '' )  => array(
 					'Description' => $js
 				),
-				sprintf( $_LANG[ 'onappusersbindingrolestitle' ] )  => array(),
-				sprintf( $_LANG[ 'onappuserstimezonetitle' ] )	  => array(),
-				sprintf( $_LANG[ 'onappusersusergroupstitle' ] )	=> array(),
-				sprintf( $_LANG[ 'onappusersbindinglocaletitle' ] ) => array(),
 			);
 		}
 
@@ -591,6 +588,11 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	}
 
 	function onappusers_ClientArea( $params = '' ) {
+		$sets = json_decode( htmlspecialchars_decode( $params[ 'configoption1' ] ), true );
+		if( ! $sets[ 'ShowStat' ][ $params[ 'serverid' ] ] ) {
+			return '';
+		}
+
 		if( isset( $_GET[ 'getstat' ] ) ) {
 			onappusers_OutstandingDetails( $params );
 		}
@@ -599,8 +601,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		parseLang( $html );
 		$html .= '<script type="text/javascript">'
 				. 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
-				. 'var PID = ' . $params[ 'accountid' ] . ';';
-		$html .= 'var LANG = ' . getJSLang() . ';</script>';
+				. 'var PID = ' . $params[ 'accountid' ] . ';'
+				. 'var LANG = ' . getJSLang() . ';</script>';
 
 		return $html;
 	}
