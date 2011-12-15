@@ -73,6 +73,7 @@ function getOnAppUsersStatistic() {
 	$log = 'SERVERS: ' . PHP_EOL . print_r( $servers, true );
 
 	$date = date( 'Y-m-d H:00:00', time() - 3600 );
+	$date = urlencode( $date );
 	$data_url = array(
 		urlencode( 'period[startdate]' ) . '=' . $date,
 		urlencode( 'period[enddate]' ) . '=' . $date,
@@ -133,7 +134,7 @@ function getOnAppUsersStatistic() {
 
 		// process SQL
 		foreach( $sql as $record ) {
-			print_r(full_query( $record ));
+			full_query( $record );
 		}
 	}
 }
