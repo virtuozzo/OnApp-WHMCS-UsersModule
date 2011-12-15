@@ -102,12 +102,14 @@ $( document ).ready( function() {
 		}
 	} );
 
+	// timepicker blur
 	var selenter = false;
 	$( '.sel_imul' ).live( 'mouseenter', function () {
 		selenter = true;
 	} );
 	$( '.sel_imul' ).live( 'mouseleave', function () {
 		selenter = false;
+		$( document ).click();
 	} );
 	$( document ).click( function () {
 		if( !selenter ) {
