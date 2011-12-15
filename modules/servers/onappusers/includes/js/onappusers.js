@@ -1,27 +1,6 @@
 function buildFields( ServersData ) {
 	// Clean up table & store titles
 	var table = $( 'table' ).eq( 5 );
-	if( $( '#titles-holder' ).length ) {
-		var PlansTitle = $( '#titles-holder #plans' ).html();
-		var RolesTitle = $( '#titles-holder #roles' ).html();
-		var TZsTitle = $( '#titles-holder #tzs' ).html();
-		var UserGroupsTitle = $( '#titles-holder #usergroups' ).html();
-		var LocaleTitle = $( '#titles-holder #locale' ).html();
-	}
-	else {
-		var PlansTitle = table.find( 'tr:first' ).find( 'td' ).eq( 0 ).html();
-		var RolesTitle = table.find( 'tr:first' ).find( 'td' ).eq( 2 ).html();
-		var TZsTitle = table.find( 'td' ).eq( 4 ).html();
-		var UserGroupsTitle = table.find( 'td' ).eq( 6 ).html();
-		var LocaleTitle = table.find( 'td' ).eq( 8 ).html();
-		html = '<div id="titles-holder"><span id="plans">' + PlansTitle + '</span>';
-		html += '<span id="roles">' + RolesTitle + '</span>';
-		html += '<span id="tzs">' + TZsTitle + '</span>';
-		html += '<span id="usergroups">' + UserGroupsTitle + '</span>';
-		html += '<span id="locale">' + LocaleTitle + '</span></div>';
-		table.before( html );
-		$( '#titles-holder' ).hide();
-	}
 	table.find( 'tr' ).remove();
 
 	// if no servers in group
@@ -46,32 +25,38 @@ function buildFields( ServersData ) {
 
 		// billing plans row
 		html = '<tr>';
-		html += '<td class="fieldlabel">' + PlansTitle + '</td>';
+		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingplanstitle + '</td>';
 		html += '<td class="fieldlabel" id="plan' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// roles row
 		html = '<tr>';
-		html += '<td class="fieldlabel">' + RolesTitle + '</td>';
+		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingrolestitle + '</td>';
 		html += '<td class="fieldlabel" id="role' + server_id + '" rel="' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// TZs row
 		html = '<tr>';
-		html += '<td class="fieldlabel">' + TZsTitle + '</td>';
+		html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserstimezonetitle + '</td>';
 		html += '<td class="fieldlabel" id="tz' + server_id + '" rel="' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// user groups row
 		html = '<tr>';
-		html += '<td class="fieldlabel">' + UserGroupsTitle + '</td>';
+		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersusergroupstitle + '</td>';
 		html += '<td class="fieldlabel" id="usergroups' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// locale row
 		html = '<tr>';
-		html += '<td class="fieldlabel">' + LocaleTitle + '</td>';
+		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindinglocaletitle + '</td>';
 		html += '<td class="fieldlabel" id="locale' + server_id + '"></td></tr>';
+		table.find( 'tr:last' ).after( html );
+
+		// stat row
+		html = '<tr>';
+		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersshowstatistic + '</td>';
+		html += '<td class="fieldlabel" id="showstat' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// process biling plans
@@ -154,17 +139,24 @@ function buildFields( ServersData ) {
 
 		// process locale
 		input = $( '<input name="locale_packageconfigoption' + ++cnt + '" rel="' + server_id + '" />' );
-		$( '#locale' + server_id ).html( input );
 		// select selected locale
-		if( ServersData.SelectedLocales ) {
-			if( ServersData.Group == $( "select[name$='servergroup']" ).val() ) {
-				$( input ).val( ServersData.SelectedLocales[ server_id ] );
-			}
+		if( ServersData.SelectedLocales && ServersData.SelectedLocales[ server_id ] ) {
+			$( input ).val( ServersData.SelectedLocales[ server_id ] );
 		}
 		else {
 			$( input ).val( 'en' );
 		}
 		$( '#locale' + server_id ).html( input );
+
+		// process show statistic
+		input = $( '<input name="stat_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
+		// checkbox state
+		if( ServersData.ShowStat ) {
+			if( ServersData.ShowStat[ server_id ] ) {
+				$( input ).attr( 'checked', true );
+			}
+		}
+		$( '#showstat' + server_id ).html( input );
 
 		//insert empty row
 		table.find( 'tr:last' ).after( '<tr><td colspan="2" class="fieldlabel">&nbsp;</td></tr>' );
@@ -200,6 +192,10 @@ function buildFields( ServersData ) {
 	$( "input[name^='locale_packageconfigoption']" ).bind( 'keyup', function() {
 		storeSelectedLocales();
 	} );
+	storeShowStat();
+	$( "input[name^='stat_packageconfigoption']" ).bind( 'change', function() {
+		storeShowStat();
+	} );
 
 	// align dropdown lists
 	alignSelects();
@@ -210,9 +206,18 @@ var OnAppUsersData = {
 	SelectedRoles: {},
 	SelectedTZs: {},
 	SelectedUserGroups: {},
-	SelectedLocales: {}
-
+	SelectedLocales: {},
+	ShowStat: {}
 };
+
+function storeShowStat() {
+	$( "input[name^='stat_packageconfigoption']" ).each( function( i, val ) {
+		var index = $( val ).attr( 'rel' );
+		OnAppUsersData.ShowStat[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
+	} );
+
+	$( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
 
 function storeSelectedLocales() {
 	$( "input[name^='locale_packageconfigoption']" ).each( function( i, val ) {
@@ -289,7 +294,7 @@ function alignSelects() {
 $( document ).ready( function() {
 	// Refresh data if server group was changed
 	$( "select[name$='servergroup']" ).bind( 'change', function () {
-		$( 'table' ).eq( 5 ).find( 'tr:first td' ).html( LANG_LOADING );
+		$( 'table' ).eq( 5 ).find( 'tr:first td' ).html( ONAPP_LANG.onappusersjsloadingdata );
 		$.ajax( {
 			url: document.location.href,
 			data: 'servergroup=' + this.value,
