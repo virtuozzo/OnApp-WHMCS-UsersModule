@@ -1,5 +1,5 @@
 -- Create syntax for TABLE 'onapp_itemized_disks'
-CREATE TABLE `onapp_itemized_disks` (
+CREATE TABLE IF NOT EXISTS `onapp_itemized_disks` (
 	`stat_id` int(11) NOT NULL,
 	`id` int(11) NOT NULL,
 	`disk_size` float NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE `onapp_itemized_disks` (
 ) DEFAULT CHARSET=utf8;
 
 -- Create syntax for TABLE 'onapp_itemized_network_interfaces'
-CREATE TABLE `onapp_itemized_network_interfaces` (
+CREATE TABLE IF NOT EXISTS `onapp_itemized_network_interfaces` (
 	`stat_id` int(11) NOT NULL,
 	`id` int(11) NOT NULL,
 	`ip_addresses` float NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE `onapp_itemized_network_interfaces` (
 ) DEFAULT CHARSET=utf8;
 
 -- Create syntax for TABLE 'onapp_itemized_stat'
-CREATE TABLE `onapp_itemized_stat` (
+CREATE TABLE IF NOT EXISTS `onapp_itemized_stat` (
 	`id` int(11) unsigned NOT NULL,
 	`whmcs_user_id` int(11) unsigned NOT NULL,
 	`onapp_user_id` int(11) unsigned NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE `onapp_itemized_stat` (
 ) DEFAULT CHARSET=utf8;
 
 -- Create syntax for TABLE 'onapp_itemized_virtual_machines'
-CREATE TABLE `onapp_itemized_virtual_machines` (
+CREATE TABLE IF NOT EXISTS `onapp_itemized_virtual_machines` (
 	`stat_id` int(11) NOT NULL,
 	`id` int(11) NOT NULL,
 	`cpu_shares` float NOT NULL,
