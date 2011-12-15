@@ -24,6 +24,10 @@ function getOnAppUsersStatistic() {
 	require_once $root . 'modules/servers/onappusers/onappusers.php';
 	require_once dirname( __FILE__ ) . '/includes/php/CURL.php';
 
+	if( file_exists( dirname( __FILE__ ) . '/cron.itemized.sql' ) ) {
+		runSQL();
+	}
+
 	$clients_query = 'SELECT
 			tblonappusers.server_id,
 			tblonappusers.client_id,
@@ -132,4 +136,15 @@ function getOnAppUsersStatistic() {
 			print_r(full_query( $record ));
 		}
 	}
+}
+
+function runSQL() {
+	$file = dirname( __FILE__ ) . '/cron.itemized.sql';
+	$sql = file_get_contents( $file );
+	$sql = explode( PHP_EOL . PHP_EOL, $sql );
+
+	foreach( $sql as $qry ) {
+		full_query( $qry );
+	}
+	unlink( $file );
 }
