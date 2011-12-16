@@ -562,6 +562,10 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	}
 
 	function getJSLang() {
+		global $_LANG;
+		return json_encode( $_LANG );
+
+		//todo del this stuff
 		$_LANG = array();
 		eval( load_lang() );
 		return json_encode( $_LANG );
@@ -608,10 +612,17 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	}
 
 	function onappusers_OutstandingDetails( $params = '' ) {
-		ob_end_clean();
 		$limit = 10;
-		$page = $_GET[ 'page' ];
+		$page = (int)$_GET[ 'page' ];
 		$start = ( $page - 1 ) * $limit;
+		if( $_GET[ 'tz_offset' ] != 0 ) {
+			$date_start = date( 'Y-m-d H:00:00', strtotime( $_GET[ 'start' ] ) + ( $_GET[ 'tz_offset' ] * 60 ) );
+			$date_end = date( 'Y-m-d H:00:00', strtotime( $_GET[ 'end' ] ) + ( $_GET[ 'tz_offset' ] * 60 ) );
+		}
+		else {
+			$date_start = mysql_real_escape_string( $_GET[ 'start' ] );
+			$date_end = mysql_real_escape_string( $_GET[ 'end' ] );
+		}
 
 		$sql = 'SELECT
 					`server_id`,
@@ -627,7 +638,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		$sql = 'SELECT
 					SQL_CALC_FOUND_ROWS
-					`stat`.`date`,
+					-- `stat`.`date` AS ORIGINAL_DATE,
+					ADDTIME( `stat`.`date`, SEC_TO_TIME( -( ' . $_GET[ 'tz_offset' ] . ' ) * 60 ) ) AS `date`,
 					`stat`.`currency`,
 					`stat`.`vm_resources_cost`,
 					`stat`.`usage_cost`,
@@ -641,8 +653,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
 					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
 					AND `server_id` = ' . $params[ 'serverid' ] . '
-					AND `date` BETWEEN "' . $_GET[ 'start' ] . '"
-					AND "' . $_GET[ 'end' ] . '"
+					AND `date` BETWEEN "' . $date_start . '"
+					AND ADDTIME( "' . $date_end . '", "00:10" )
 				ORDER BY `date` DESC
 				LIMIT ' . $start . ', ' . $limit;
 		$res = full_query( $sql );

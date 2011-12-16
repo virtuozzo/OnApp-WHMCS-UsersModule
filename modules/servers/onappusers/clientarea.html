@@ -73,19 +73,28 @@
 			<span id="loading" style="visibility: hidden;">
 				<img src="modules/servers/onappusers/includes/images/loader.gif" alt="">
 			</span>
+			<div id="use-tz">
+				<input type="checkbox" checked="checked" /> {$LANG.onappusersstatuselocaltime}
+			</div>
 		</td>
 	</tr>
 	<tr class="stat-labels">
 		<td style="display: none;" id="stat-nav">
-			<!-- PAGINATION -->
-			<div id="stat-pages">
-				Jump to Page: <select rel="pages"></select>
-			</div>
 			<div style="width: auto; text-align: center;">
-				<a href="#" rel="vms" class="stat-nav-bold">VM</a> |
-				<a href="#" rel="disks">Disks</a> |
-				<a href="#" rel="nets">Networks</a>
+				<a href="#" rel="vms" class="stat-nav-bold">{$LANG.onappusersstatvirtualmachines}</a> |
+				<a href="#" rel="disks">{$LANG.onappusersstatdisks}</a> |
+				<a href="#" rel="nets">{$LANG.onappusersstatnetworks}</a>
 			</div>
+		</td>
+	</tr>
+	<tr class="stat-labels">
+		<td style="display: none;" id="stat-pages">
+			<!-- PAGINATION -->
+			<div class="float_right taright">
+				{$LANG.onappusersstatjumptopage} <span><select rel="pages"></select></span>
+			</div>
+			<div class="float_right tacenter val"></div>
+			<div class="float_right taleft val"></div>
 		</td>
 	</tr>
 	<!-- DATA -->
@@ -93,7 +102,7 @@
 		<td id="stat_data">
 			<div id="stat-vms">
 				<table>
-					<tr class="stat-labels">
+					<tr class="stat-labels caps">
 						<td>{$LANG.onappusersstatdate}</td>
 						<td>{$LANG.onappusersstatvirtualmachine}</td>
 						<td>{$LANG.onappusersstatvirtualmachineusage_cost}</td>

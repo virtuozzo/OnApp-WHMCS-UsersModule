@@ -60,8 +60,32 @@ tr.stat-labels td {
 	overflow-x: auto;
 }
 
-#stat-nav div#stat-pages {
+#stat-pages .float_right {
 	float: right;
+}
+
+.taright {
+	text-align: right;
+}
+
+.taleft {
+	text-align: left;
+}
+
+.tacenter {
+	text-align: center;
+}
+
+.val {
+	padding: 4px 0;
+}
+
+.caps {
+	text-transform: capitalize;
+}
+
+span.disabled {
+	color: #666;
 }
 
 input, select, textarea {
@@ -78,14 +102,15 @@ input, select, textarea {
 	width: 80px;
 }
 
+#use-tz {
+	padding: 10px 0 0 20px;
+	text-align: left;
+}
+
 /* ||||||||||||||||||||||||||||||||||||||||||||||||||| */
 
 .sel_wrap {
 	display: inline-block;
-	1position: relative;
-	1background: #efefef;
-	1margin-bottom: 5px;
-	1padding: 7px;
 }
 
 .sel_wrap select {
@@ -100,8 +125,6 @@ input, select, textarea {
 	background: #fff;
 	border: 1px solid #bbb;
 	padding: 3px 6px;
-	1font-size: 14px;
-	1font-family: Times;
 	cursor: pointer;
 	position: relative;
 }
@@ -142,8 +165,6 @@ input, select, textarea {
 
 .sel_options .sel_option {
 	padding: 3px 4px;
-	1font-size: 14px;
-	1font-family: Times;
 	border: 1px solid #fff;
 	border-right: none;
 	border-left: none;
