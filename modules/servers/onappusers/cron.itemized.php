@@ -13,6 +13,7 @@ include $root . 'includes/invoicefunctions.php';
 include $root . 'includes/backupfunctions.php';
 include $root . 'includes/ticketfunctions.php';
 include $root . 'includes/currencyfunctions.php';
+
 @ini_set( 'memory_limit', '512M' );
 @ini_set( 'max_execution_time', 0 );
 @set_time_limit( 0 );
@@ -70,19 +71,33 @@ function getOnAppUsersStatistic() {
 		$server[ 'password' ] = decrypt( $server[ 'password' ] );
 		$servers[ $server[ 'id' ] ] = $server;
 	}
-	$log = 'SERVERS: ' . PHP_EOL . print_r( $servers, true );
 
-	$date = date( 'Y-m-d H:00:00', time() - 3600 );
-	$date = urlencode( $date );
-	$data_url = array(
-		urlencode( 'period[startdate]' ) . '=' . $date,
-		urlencode( 'period[enddate]' ) . '=' . $date,
-		urlencode( 'period[use_local_time]' ) . '=1',
-	);
-	$data_url = implode( '&', $data_url );
-
+	$date_end = gmdate( 'Y-m-d H:00:00' );
 	$headers = array( 'Accept: application/json', 'Content-type: application/json' );
 	while( $client = mysql_fetch_assoc( $clients_result ) ) {
+		//get last data retrieving date
+		$qry = 'SELECT
+					MAX( `date` )
+				FROM
+					`onapp_itemized_stat`
+				WHERE
+					`whmcs_user_id` = ' . $client[ 'client_id' ];
+		$date_start = mysql_result( mysql_query( $qry ), 0 );
+
+		if( ! $date_start ) {
+			$date_start = gmdate( 'Y-m-01 00:00:00' );
+		}
+		else {
+			$date_start = date( 'Y-m-d H:00:00', strtotime( $date_start ) - ( 2 * 3600 ) );
+			$date_start = substr_replace( $date_start, '00', - 2 );
+		}
+
+		$data_url = array(
+			'period[startdate]' => $date_start,
+			'period[enddate]'   => $date_end,
+		);
+		$data_url = http_build_query( $data_url );
+
 		$url = $servers[ $client[ 'server_id' ] ][ 'ipaddress' ] . '/users/' . $client[ 'onapp_user_id' ] . '/vm_stats.json?' . $data_url;
 
 		$curl = new CURL( );
@@ -137,6 +152,10 @@ function getOnAppUsersStatistic() {
 			full_query( $record );
 		}
 	}
+
+	echo 'Itemized cron job finished successfully', PHP_EOL;
+	echo 'Get data from ', $date_start, ' to ', $date_end;
+	echo ' (UTC)', PHP_EOL;
 }
 
 function runSQL() {
