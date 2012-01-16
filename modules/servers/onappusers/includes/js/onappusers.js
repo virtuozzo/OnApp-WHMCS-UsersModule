@@ -20,43 +20,43 @@ function buildFields( ServersData ) {
 		server = ServersData[ server_id ];
 
 		// server name
-		html = '<tr><td colspan="2" class="fieldlabel"><b>' + server.Name + '</b></td></tr>';
+		html = '<tr><td colspan="2" class="fieldarea"><b>' + server.Name + '</b></td></tr>';
 		table.append( html );
 
 		// billing plans row
 		html = '<tr>';
 		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingplanstitle + '</td>';
-		html += '<td class="fieldlabel" id="plan' + server_id + '"></td></tr>';
+		html += '<td class="fieldarea" id="plan' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// roles row
 		html = '<tr>';
 		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingrolestitle + '</td>';
-		html += '<td class="fieldlabel" id="role' + server_id + '" rel="' + server_id + '"></td></tr>';
+		html += '<td class="fieldarea" id="role' + server_id + '" rel="' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// TZs row
 		html = '<tr>';
 		html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserstimezonetitle + '</td>';
-		html += '<td class="fieldlabel" id="tz' + server_id + '" rel="' + server_id + '"></td></tr>';
+		html += '<td class="fieldarea" id="tz' + server_id + '" rel="' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// user groups row
 		html = '<tr>';
 		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersusergroupstitle + '</td>';
-		html += '<td class="fieldlabel" id="usergroups' + server_id + '"></td></tr>';
+		html += '<td class="fieldarea" id="usergroups' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// locale row
 		html = '<tr>';
 		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindinglocaletitle + '</td>';
-		html += '<td class="fieldlabel" id="locale' + server_id + '"></td></tr>';
+		html += '<td class="fieldarea" id="locale' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// stat row
 		html = '<tr>';
 		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersshowstatistic + '</td>';
-		html += '<td class="fieldlabel" id="showstat' + server_id + '"></td></tr>';
+		html += '<td class="fieldarea" id="showstat' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
 		// process biling plans
