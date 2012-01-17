@@ -638,7 +638,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		$sql = 'SELECT
 					SQL_CALC_FOUND_ROWS
-					-- `stat`.`date` AS ORIGINAL_DATE,
+					`stat`.`date` AS ORIGINAL_DATE,
 					ADDTIME( `stat`.`date`, SEC_TO_TIME( -( ' . $_GET[ 'tz_offset' ] . ' ) * 60 ) ) AS `date`,
 					`stat`.`currency`,
 					`stat`.`vm_resources_cost`,
