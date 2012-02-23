@@ -12,6 +12,8 @@ include $root . 'includes/invoicefunctions.php';
 include $root . 'includes/backupfunctions.php';
 include $root . 'includes/ticketfunctions.php';
 include $root . 'includes/currencyfunctions.php';
+include $root . 'includes/tcpdf.php';
+include $root . 'includes/smarty/Smarty.class.php';
 @ini_set( 'memory_limit', '512M' );
 @ini_set( 'max_execution_time', 0 );
 @set_time_limit( 0 );
@@ -70,8 +72,7 @@ function create_onappusers_invoice() {
 	$res = mysql_query( $sql );
 	$admin = mysql_result( $res, 0 );
 	//calculate invoice dates
-	$date = date( 'Ymd' );
-	$duedate = date( 'Ymd', ( time() + $GLOBALS[ 'CONFIG' ][ 'CreateInvoiceDaysBefore' ] * 86400 ) );
+	$date = $duedate = date( 'Ymd' );
 	while( $client = mysql_fetch_assoc( $clients_result ) ) {
 		$onapp_user = get_onapp_object(
 			'OnApp_User',
