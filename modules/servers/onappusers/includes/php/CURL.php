@@ -15,7 +15,7 @@ class CURL {
 	);
 
 	public function __construct( ) {
-		$cookiesFile = tempnam( '/tmp', 'CURL_' );
+		$cookiesFile = tempnam( '/tmp', 'OnApp_CURL_cookies' );
 		$this->defaultOptions[ CURLOPT_COOKIEFILE ] = $cookiesFile;
 		$this->defaultOptions[ CURLOPT_COOKIEJAR ] = $cookiesFile;
 		$this->customOptions = $this->defaultOptions;
@@ -91,8 +91,8 @@ class CURL {
 		$this->setOptions( );
 		$response = curl_exec( $this->ch );
 
+		$this->data[ 'info' ] = curl_getinfo( $this->ch );
 		if( $this->customOptions[ CURLOPT_HEADER ] ) {
-			$this->data[ 'info' ] = curl_getinfo( $this->ch );
 			$this->data[ 'info' ][ 'request_header' ] = trim( $this->data[ 'info' ][ 'request_header' ] );
 			$this->processHeaders( $response );
 		}

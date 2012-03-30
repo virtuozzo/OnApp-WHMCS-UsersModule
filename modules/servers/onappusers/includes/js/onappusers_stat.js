@@ -6,6 +6,10 @@ $( document ).ready( function() {
 		$( this ).addClass( 'stat-nav-bold' );
 		$( '#stat_data div' ).hide();
 		$( '#stat_data div#stat-' + $( this ).attr( 'rel' ) ).show();
+		$( '#stat-pages' ).show();
+		if( $( this ).attr( 'rel' ) === 'resources' ) {
+			$( '#stat-pages' ).hide();
+		}
 		return false;
 	} );
 
@@ -68,6 +72,7 @@ $( document ).ready( function() {
 				processData( data );
 				processPGN( data );
 				$( 'span#loading' ).css( 'visibility', 'hidden' );
+				$( 'a.stat-nav-bold' ).click();
 			}
 		} );
 	} );
@@ -87,15 +92,12 @@ $( document ).ready( function() {
 
 
 	$( '.sel_option' ).live( 'click', function () {
-		//меняем значение на выбранное
 		var tektext = $( this ).html();
 		$( this ).parent( '.sel_options' ).parent( '.sel_imul' ).children( '.sel_selected' ).children( '.selected-text' ).html( tektext );
 
-		//активируем текущий
 		$( this ).parent( '.sel_options' ).children( '.sel_option' ).removeClass( 'sel_ed' );
 		$( this ).addClass( 'sel_ed' );
 
-		//устанавливаем значение для селекта
 		var tekval = $( this ).attr( 'value' );
 		tekval = typeof(tekval) != 'undefined' ? tekval : tektext;
 		var select = $( this ).parent( '.sel_options' ).parent( '.sel_imul' ).parent( '.sel_wrap' ).children( 'select' );
@@ -144,6 +146,7 @@ $( document ).ready( function() {
 
 function processData( data ) {
 	total = number_format( data.total_amount, 2, '.', ' ' );
+	var resources = data.resources;
 
 	data = data.stat;
 	$( 'div[id^="stat-"]' ).hide();
@@ -256,8 +259,6 @@ function processData( data ) {
 		html_nets += '<td>' + ds + '</td>';
 		html_nets += '<td>' + cst_td + '</td>';
 		html_nets += '</tr>';
-
-		tmp_cur = tmp.currency;
 	}
 
 	//total = cost_vm + cost_disk + cost_net;
@@ -268,16 +269,23 @@ function processData( data ) {
 	$( 'tr#stat_total' ).remove();
 
 	// add VMs total
-	html = '<tr class="stat-labels" id="stat_total"><td colspan="11">' + LANG.onappusersstattotalamount + CUR[ tmp_cur ] + total + '</td></tr>';
+	html = '<tr class="stat-labels" id="stat_total"><td colspan="11">' + LANG.onappusersstattotalamount + CUR[ tmp.currency ] + total + '</td></tr>';
 	$( 'div#stat-vms tr:last' ).after( html );
 
 	// add disks total
-	html = '<tr class="stat-labels" id="stat_total"><td colspan="8">' + LANG.onappusersstattotalamount + CUR[ tmp_cur ] + total + '</td></tr>';
+	html = '<tr class="stat-labels" id="stat_total"><td colspan="8">' + LANG.onappusersstattotalamount + CUR[ tmp.currency ] + total + '</td></tr>';
 	$( 'div#stat-disks tr:last' ).after( html );
 
 	// add nets total
-	html = '<tr class="stat-labels" id="stat_total"><td colspan="7">' + LANG.onappusersstattotalamount + CUR[ tmp_cur ] + CUR[ tmp_cur ] + total + '</td></tr>';
+	html = '<tr class="stat-labels" id="stat_total"><td colspan="7">' + LANG.onappusersstattotalamount + CUR[ tmp.currency ] + total + '</td></tr>';
 	$( 'div#stat-nets tr:last' ).after( html );
+
+	// process used resources stat
+	var j = 0;
+	for( i in resources ) {
+		$( 'div#stat-resources tr' ).eq( j ++ ).children().eq( 1 ).html( CUR[ tmp.currency ] + number_format( resources[ i ], 5, '.', ' ' ) );
+	}
+	$( 'div#stat-resources tr td:first' ).css( 'width', 200 );
 
 	$( '#stat-nav' ).show();
 	$( 'div#stat-' + $( '#stat-nav a.stat-nav-bold' ).attr( 'rel' ) ).show();
@@ -287,10 +295,10 @@ function processData( data ) {
 }
 
 function processPGN( data ) {
+	$( '#stat-pages' ).hide();
 	var pages = Math.ceil( data.total / data.limit );
 
 	if( pages <= 1 ) {
-		$( '#stat-pages' ).hide();
 		return;
 	}
 

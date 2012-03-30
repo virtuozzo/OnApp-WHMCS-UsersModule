@@ -107,6 +107,22 @@ input, select, textarea {
 	text-align: left;
 }
 
+#gotocp {
+    display: none;
+}
+#gotocpserver {
+    float: left;
+    line-height: 24px;
+}
+#gotocpform {
+    float: left;
+    margin-left: 10px;
+}
+
+.font-bold {
+	font-weight: bold;
+}
+
 /* ||||||||||||||||||||||||||||||||||||||||||||||||||| */
 
 .sel_wrap {
