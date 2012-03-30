@@ -64,3 +64,40 @@ CREATE TABLE IF NOT EXISTS `onapp_itemized_virtual_machines` (
 	`label` varchar(255) NOT NULL,
 	UNIQUE KEY `stat_id` (`stat_id`,`id`)
 ) DEFAULT CHARSET=utf8;
+
+-- Create syntax for TABLE 'onapp_itemized_resources'
+CREATE TABLE IF NOT EXISTS `onapp_itemized_resources` (
+	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+	`whmcs_user_id` int(11) unsigned NOT NULL,
+	`onapp_user_id` int(11) unsigned NOT NULL,
+	`server_id` int(11) unsigned NOT NULL,
+	`date` datetime NOT NULL,
+	`backup_cost` float DEFAULT NULL,
+	`edge_group_cost` float DEFAULT NULL,
+	`monit_cost` float DEFAULT NULL,
+	`storage_disk_size_cost` float DEFAULT NULL,
+	`template_cost` float DEFAULT NULL,
+	`vm_cost` float DEFAULT NULL,
+	`user_resources_cost` float DEFAULT NULL,
+	`total_cost` float DEFAULT NULL,
+	`currency` char(3) NOT NULL DEFAULT '',
+	`backup_count_cost` float DEFAULT NULL,
+	`backup_disk_size_cost` float DEFAULT NULL,
+	`template_count_cost` float DEFAULT NULL,
+	`template_disk_size_cost` float DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `date_users_server_integrity` (`whmcs_user_id`,`onapp_user_id`,`server_id`,`date`)
+) DEFAULT CHARSET=utf8;
+
+
+-- Create syntax for TABLE 'onapp_itemized_invoices'
+CREATE TABLE IF NOT EXISTS `onapp_itemized_invoices` (
+	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+	`whmcs_user_id` int(11) unsigned NOT NULL,
+	`onapp_user_id` int(11) unsigned NOT NULL,
+	`server_id` int(11) unsigned NOT NULL,
+	`invoice_id` int(11) unsigned NOT NULL,
+	`date` datetime NOT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `invoive_check_integrity` (`whmcs_user_id`,`onapp_user_id`,`server_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
