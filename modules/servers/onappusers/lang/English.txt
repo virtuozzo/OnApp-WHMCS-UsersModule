@@ -29,6 +29,7 @@ $_LANG[ 'onappusersstatcurrentpage' ] = 'Page';
 $_LANG[ 'onappusersstatcurrentpageof' ] = 'of';
 $_LANG[ 'onappusersstatvirtualmachine' ] = 'Virtual Machine';
 $_LANG[ 'onappusersstatvirtualmachines' ] = 'Virtual Machines';
+$_LANG[ 'onappusersstatusedresources' ] = 'Used Resources';
 $_LANG[ 'onappusersstatnetworks' ] = 'Networks';
 $_LANG[ 'onappusersstatdisks' ] = 'Disks';
 $_LANG[ 'onappusersstatvirtualmachineusage_cost' ] = 'Usage cost';
@@ -43,6 +44,23 @@ $_LANG[ 'onappusersstatuselocaltime' ] = 'Use local time (uncheck to use UTC)';
 $_LANG[ 'onappusersstatapply' ] = '  Apply  ';
 $_LANG[ 'onappusersstattotalamount' ] = 'Total amount for selected period: ';
 $_LANG[ 'onappusersstatnodata' ] = 'There are no data for chosen period';
+
+
+
+$_LANG[ 'onappusersstatbackups' ] = 'Backups';
+$_LANG[ 'onappusersstatmonitis' ] = 'Monitis';
+$_LANG[ 'onappusersstatstoragediskssize' ] = 'Storage Disks Size';
+$_LANG[ 'onappusersstattemplates' ] = 'Templates';
+$_LANG[ 'onappusersstatcdnedgegroup' ] = 'CDN Edge Group';
+$_LANG[ 'onappusersstatusedresourcescost' ] = 'Used Resources Cost';
+$_LANG[ 'onappusersstatvirtualmachines Cost' ] = 'Virtual Machines Cost';
+$_LANG[ 'onappusersstattotalcost' ] = 'Total Cost';
+$_LANG[ 'onappusersstatproduct' ] = 'Product';
+$_LANG[ 'onappusersstatpperiod' ] = 'Period';
+$_LANG[ 'onappusersstatdateformat' ] = 'Y-m-d H:i:s';
+$_LANG[ 'onappusersstatdateformathours' ] = 'Y-m-d H:00:00';
+
+
 
 $_LANG[ 'onappusersstathour' ] = 'Hour';
 $_LANG[ 'onappusersstathours' ] = 'Hours';
@@ -71,3 +89,6 @@ $_LANG[ 'onappusersstatdisk_WC' ] = 'Writes Complited';
 $_LANG[ 'onappusersstatcurrency' ][ 'USD' ] = '$';
 $_LANG[ 'onappusersstatcurrency' ][ 'EUR' ] = '€';
 $_LANG[ 'onappusersstatcurrency' ][ 'GBP' ] = '£';
+
+$_LANG[ 'onappuserslogintocpserver' ] = 'Server:';
+$_LANG[ 'onappuserslogintocpbutton' ] = 'Go to CP';
