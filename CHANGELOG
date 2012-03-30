@@ -1,3 +1,7 @@
+2.3.1.1
+- new cronjobs system
+- add 'signin to OnApp CP' option to WHMCS client area
+
 2.3.1
 - add resource usage statistic to client area
 - add "Default Locale" setting
