@@ -312,6 +312,8 @@ $( document ).ready( function() {
 	$( 'li#tab2' ).bind( 'click', function() {
 		alignSelects();
 	} );
+
+	$( '#authenticity_token' ).val( USERFK );
 } );
 
 function objectToString( o ) {

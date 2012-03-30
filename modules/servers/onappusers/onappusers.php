@@ -564,19 +564,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function getJSLang() {
 		global $_LANG;
 		return json_encode( $_LANG );
-
-		//todo del this stuff
-		$_LANG = array();
-		eval( load_lang() );
-		return json_encode( $_LANG );
-
-		//todo del this stuff
-		$js = '';
-		foreach( $_LANG as $key => $item ) {
-			$js .= $key . ':' . '"' . addslashes( $item ) . '",';
-		}
-
-		return substr( $js, 0, - 1 );
 	}
 
 	function parseLang( &$html ) {
@@ -592,16 +579,16 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	}
 
 	function onappusers_ClientArea( $params = '' ) {
-		$sets = json_decode( htmlspecialchars_decode( $params[ 'configoption1' ] ), true );
-		if( ! $sets[ 'ShowStat' ][ $params[ 'serverid' ] ] ) {
-			return '';
-		}
-
 		if( isset( $_GET[ 'getstat' ] ) ) {
 			onappusers_OutstandingDetails( $params );
 		}
 
-		$html = file_get_contents( dirname( __FILE__ ) . '/clientarea.html' );
+		$html = injectServerRow( $params );
+		$sets = json_decode( htmlspecialchars_decode( $params[ 'configoption1' ] ), true );
+		if( $sets[ 'ShowStat' ][ $params[ 'serverid' ] ] ) {
+			$html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.html' );
+		}
+
 		parseLang( $html );
 		$html .= '<script type="text/javascript">'
 				. 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
@@ -611,8 +598,42 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		return $html;
 	}
 
+	function injectServerRow( $params ) {
+		$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
+		$iv      = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
+		$key     = substr( md5( uniqid( rand( 1, 999999 ), true ) ), 0, 27 );
+
+		$server = ! empty( $params[ 'serverip' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
+		if( strpos( $server, 'http' ) === false ) {
+			$scheme = $params[ 'serversecure' ] ? 'https://' : 'http://';
+			$server = $scheme . $server;
+		}
+
+		$data = array(
+			'login'    => $params[ 'username' ],
+			'password' => $params[ 'password' ],
+			'server'   => $server,
+		);
+		$data = json_encode( $data ) . '%%%';
+
+		$crypttext         = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_ECB, $iv );
+		$_SESSION[ 'utk' ] = array(
+			$key . substr( md5( uniqid( rand( 1, 999999 ), true ) ), rand( 0, 26 ), 5 ),
+			base64_encode( base64_encode( $crypttext ) )
+		);
+
+		$html = file_get_contents( dirname( __FILE__ ) . '/includes/html/serverData.html' );
+		$html .= '<script type="text/javascript">'
+			. 'var SERVER = "' . $server . '";'
+			. 'var USERFK = "' . md5( uniqid( rand( 1, 999999 ), true ) ) . '";'
+			. 'var injTarget = "' . $params[ 'username' ] . ' / ' . $params[ 'password' ] . '";'
+			. '</script>';
+		return $html;
+	}
+
 	function onappusers_OutstandingDetails( $params = '' ) {
 		$limit = 10;
+		$limit = 5;
 		$page = (int)$_GET[ 'page' ];
 		$start = ( $page - 1 ) * $limit;
 		if( $_GET[ 'tz_offset' ] != 0 ) {
@@ -623,6 +644,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			$date_start = mysql_real_escape_string( $_GET[ 'start' ] );
 			$date_end = mysql_real_escape_string( $_GET[ 'end' ] );
 		}
+		$date_end = substr_replace( $date_end, '10', - 5, 2 );
 
 		$sql = 'SELECT
 					`server_id`,
@@ -701,8 +723,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
 					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
 					AND `server_id` = ' . $params[ 'serverid' ] . '
-					AND `date` BETWEEN "' . $_GET[ 'start' ] . '"
-					AND "' . $_GET[ 'end' ] . '"';
+					AND `date` BETWEEN "' . $date_start . '"
+					AND "' . $date_end . '"';
 		$total_amount += mysql_result( mysql_query( $sql ), 0 );
 		//get total amount for disks
 		$sql = 'SELECT
@@ -721,8 +743,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
 					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
 					AND `server_id` = ' . $params[ 'serverid' ] . '
-					AND `date` BETWEEN "' . $_GET[ 'start' ] . '"
-					AND "' . $_GET[ 'end' ] . '"';
+					AND `date` BETWEEN "' . $date_start . '"
+					AND "' . $date_end . '"';
 		$total_amount += mysql_result( mysql_query( $sql ), 0 );
 		//get total amount for nets
 		$sql = 'SELECT
@@ -740,13 +762,34 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
 					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
 					AND `server_id` = ' . $params[ 'serverid' ] . '
-					AND `date` BETWEEN "' . $_GET[ 'start' ] . '"
-					AND "' . $_GET[ 'end' ] . '"';
+					AND `date` BETWEEN "' . $date_start . '"
+					AND "' . $date_end . '"';
 		$total_amount += mysql_result( mysql_query( $sql ), 0 );
+
+		//get used resources stat
+		$sql = 'SELECT
+					SUM( `user_resources_cost` ) AS resources,
+					SUM( `backup_cost` ) AS backup,
+					SUM( `monit_cost` ) AS monitis,
+					SUM( `storage_disk_size_cost` ) AS storage,
+					SUM( `template_cost` ) AS template,
+					SUM( `edge_group_cost` ) AS edgecdn,
+					SUM( `vm_cost` ) AS vm,
+					SUM( `total_cost` ) AS total
+				FROM
+					`onapp_itemized_resources`
+				WHERE
+					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
+					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
+					AND `server_id` = ' . $params[ 'serverid' ] . '
+					AND `date` BETWEEN "' . $date_start . '"
+					AND "' . $date_end . '"';
+		$resources = mysql_fetch_assoc( full_query( $sql ) );
 
 		$data = array(
 			'total'        => $total,
 			'page'         => $page,
+			'resources'    => $resources,
 			'stat'         => $stat,
 			'limit'        => $limit,
 			'total_amount' => $total_amount,
