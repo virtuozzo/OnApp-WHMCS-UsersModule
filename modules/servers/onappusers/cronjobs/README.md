@@ -1,3 +1,11 @@
+## Prerequirement  
+Timezone should be defined in PHP settings. If the timezone is not already set add the following line to your php.ini:
+
+	date.timezone = {desired timezone}
+Line should looks like **_date.timezone = Europe/Stockholm_**  
+All available timezones are listed on http://php.net/manual/en/timezones.php
+
+
 ## Installation  
 Copy all files to the root of your WHMCS directory.  
 Remove any previously used module's cronfiles.
@@ -6,7 +14,7 @@ Remove any previously used module's cronfiles.
 ## Simple automatic usage
 Add the following commands to your cronjobs:  
 
-	30 * * * *    /usr/bin/php {WHMCS}/modules/servers/onappusers/cronjobs/onapp.stat.php
+	15 * * * *    /usr/bin/php {WHMCS}/modules/servers/onappusers/cronjobs/onapp.stat.php
 	30 0 1 * *    /usr/bin/php {WHMCS}/modules/servers/onappusers/cronjobs/onapp.invoices.php
 
 *{WHMCS} is the full path to your WHMCS directory.  
