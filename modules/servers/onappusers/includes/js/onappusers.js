@@ -23,6 +23,13 @@ function buildFields( ServersData ) {
 		html = '<tr><td colspan="2" class="fieldarea"><b>' + server.Name + '</b></td></tr>';
 		table.append( html );
 
+		// if no servers in group
+		if( ServersData[ server_id ].NoAddress ) {
+			html = '<tr><td colspan="2" class="fieldlabel">' + ServersData[ server_id ].NoAddress + '</td></tr>';
+			table.append( html );
+			continue;
+		}
+
 		// billing plans row
 		html = '<tr>';
 		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingplanstitle + '</td>';
@@ -138,6 +145,24 @@ function buildFields( ServersData ) {
 		$( '#usergroups' + server_id ).html( select );
 
 		// process locale
+		if( typeof server.Locales == 'object' ) {
+			select = $( '<select name="locale_packageconfigoption' + ++ cnt + '"></select>' );
+
+			for( code in server.Locales ) {
+				locale = server.Locales[ code ];
+
+				$( select ).append( $( '<option>', { value: server_id + ':' + code } ).text( locale ) );
+			}
+
+			// select selected locale
+			if( ServersData.SelectedLocales ) {
+				if( ServersData.Group == $( "select[name$='servergroup']" ).val() ) {
+					$( select ).val( server_id + ':' + ServersData.SelectedLocales[ server_id ] );
+				}
+			}
+		}
+		$( '#locale' + server_id ).html( select );
+		/*
 		input = $( '<input name="locale_packageconfigoption' + ++cnt + '" rel="' + server_id + '" />' );
 		// select selected locale
 		if( ServersData.SelectedLocales && ServersData.SelectedLocales[ server_id ] ) {
@@ -147,6 +172,7 @@ function buildFields( ServersData ) {
 			$( input ).val( 'en' );
 		}
 		$( '#locale' + server_id ).html( input );
+		*/
 
 		// process show statistic
 		input = $( '<input name="stat_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
@@ -189,7 +215,7 @@ function buildFields( ServersData ) {
 		storeSelectedUserGroups();
 	} );
 	storeSelectedLocales();
-	$( "input[name^='locale_packageconfigoption']" ).bind( 'keyup', function() {
+	$( "select[name^='locale_packageconfigoption']" ).bind( 'change', function() {
 		storeSelectedLocales();
 	} );
 	storeShowStat();
@@ -220,9 +246,9 @@ function storeShowStat() {
 }
 
 function storeSelectedLocales() {
-	$( "input[name^='locale_packageconfigoption']" ).each( function( i, val ) {
-		var index = $( val ).attr( 'rel' );
-		OnAppUsersData.SelectedLocales[ index ] = val.value;
+	$( "select[name^='locale_packageconfigoption']" ).each( function( i, val ) {
+		var tmp = val.value.split( ':' );
+		OnAppUsersData.SelectedLocales[ tmp[ 0 ] ] = tmp[ 1 ];
 	} );
 
 	$( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
@@ -299,9 +325,7 @@ $( document ).ready( function() {
 			url: document.location.href,
 			data: 'servergroup=' + this.value,
 			success: function( data ) {
-				data = 'data = ' + data;
-				eval( data );
-				buildFields( data );
+				buildFields( jQuery.evalJSON( data ) );
 			}
 		} );
 	} );
@@ -312,8 +336,6 @@ $( document ).ready( function() {
 	$( 'li#tab2' ).bind( 'click', function() {
 		alignSelects();
 	} );
-
-	$( '#authenticity_token' ).val( USERFK );
 } );
 
 function objectToString( o ) {

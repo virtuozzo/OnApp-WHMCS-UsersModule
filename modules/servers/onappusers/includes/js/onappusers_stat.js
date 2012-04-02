@@ -67,8 +67,7 @@ $( document ).ready( function() {
 				id: PID
 			},
 			success: function( data ) {
-				data = 'data = ' + data;
-				eval( data );
+				data = jQuery.evalJSON( data );
 				processData( data );
 				processPGN( data );
 				$( 'span#loading' ).css( 'visibility', 'hidden' );
@@ -159,7 +158,6 @@ function processData( data ) {
 		return;
 	}
 
-
 	var CUR = LANG.onappusersstatcurrency;
 	var table_vms = $( 'div#stat-vms tr:first' );
 	var table_disks = $( 'div#stat-disks tr:first' );
@@ -184,9 +182,6 @@ function processData( data ) {
 		html_vms += '<tr>';
 		html_vms += '<td>' + date + '</td>';
 		html_vms += '<td>' + tmp.label + '</td>';
-		html_vms += '<td>' + CUR[ tmp.currency ] + number_format( tmp.usage_cost, 2, '.', ' ' ) + '</td>';
-		html_vms += '<td>' + CUR[ tmp.currency ] + number_format( tmp.vm_resources_cost, 2, '.', ' ' ) + '</td>';
-		html_vms += '<td>' + CUR[ tmp.currency ] + number_format( tmp.total_cost, 2, '.', ' ' ) + '</td>';
 		html_vms += '<td>' + tmp.cpus + ' ' + CUR[ tmp.currency ] + number_format( tmp.cpus_cost, 2, '.', ' ' ) + '</td>';
 		html_vms += '<td>' + tmp.cpu_shares + '% ' + CUR[ tmp.currency ] + number_format( tmp.cpu_shares_cost, 2, '.', ' ' ) + '</td>';
 		html_vms += '<td>' + tmp.cpu_usage + ' ' + CUR[ tmp.currency ] + number_format( tmp.cpu_usage_cost, 2, '.', ' ' ) + '</td>';
@@ -261,24 +256,9 @@ function processData( data ) {
 		html_nets += '</tr>';
 	}
 
-	//total = cost_vm + cost_disk + cost_net;
 	table_vms.after( html_vms );
 	table_disks.after( html_disks );
 	table_nets.after( html_nets );
-
-	$( 'tr#stat_total' ).remove();
-
-	// add VMs total
-	html = '<tr class="stat-labels" id="stat_total"><td colspan="11">' + LANG.onappusersstattotalamount + CUR[ tmp.currency ] + total + '</td></tr>';
-	$( 'div#stat-vms tr:last' ).after( html );
-
-	// add disks total
-	html = '<tr class="stat-labels" id="stat_total"><td colspan="8">' + LANG.onappusersstattotalamount + CUR[ tmp.currency ] + total + '</td></tr>';
-	$( 'div#stat-disks tr:last' ).after( html );
-
-	// add nets total
-	html = '<tr class="stat-labels" id="stat_total"><td colspan="7">' + LANG.onappusersstattotalamount + CUR[ tmp.currency ] + total + '</td></tr>';
-	$( 'div#stat-nets tr:last' ).after( html );
 
 	// process used resources stat
 	var j = 0;

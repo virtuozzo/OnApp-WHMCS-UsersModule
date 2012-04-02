@@ -31,79 +31,70 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			$js .= '<script type="text/javascript" src="../modules/servers/onappusers/includes/js/jquery.json-2.2.min.js"></script>';
 
 			$servergroup = isset( $_GET[ 'servergroup' ] ) ? $_GET[ 'servergroup' ] : (int)$GLOBALS[ 'servergroup' ];
-			$sql = 'SELECT srv.`id`, srv.`name`, srv.`ipaddress`, srv.`hostname`, srv.`username`, srv.`password`'
-					. ' FROM `tblservers` AS srv'
-					. ' LEFT JOIN `tblservergroupsrel` AS rel ON srv.`id` = rel.`serverid`'
-					. ' LEFT JOIN `tblservergroups` AS grp ON grp.`id` = rel.`groupid` WHERE grp.`id` = ' . $servergroup;
+			$sql = 'SELECT
+						srv.`id`,
+						srv.`name`,
+						srv.`ipaddress` AS serverip,
+						srv.`hostname` AS serverhostname,
+						srv.`username` AS serverusername,
+						srv.`password` AS serverpassword
+					FROM
+						`tblservers` AS srv
+					LEFT JOIN
+						`tblservergroupsrel` AS rel ON srv.`id` = rel.`serverid`
+					LEFT JOIN
+						`tblservergroups` AS grp ON grp.`id` = rel.`groupid`
+					WHERE
+						grp.`id` = ' . $servergroup;
 
 			$res = full_query( $sql );
-
-			$js_Servers = '';
+			$serversData = array();
 			if( mysql_num_rows( $res ) == 0 ) {
-				$js_Servers = 'NoServers:"' . addslashes( sprintf( $_LANG[ 'onappuserserrorholder' ], $_LANG[ 'onappuserserrornoserveringroup' ] ) ) . '",';
+				$serversData[ 'NoServers' ] = sprintf( $_LANG[ 'onappuserserrorholder' ], $_LANG[ 'onappuserserrornoserveringroup' ] );
 			}
 			else {
 				while( $onapp_config = mysql_fetch_assoc( $res ) ) {
-					$onapp_config[ 'password' ] = decrypt( $onapp_config[ 'password' ] );
-					$onapp_config[ 'adress' ] = $onapp_config[ 'ipaddress' ] != '' ?
-							$onapp_config[ 'ipaddress' ] : $onapp_config[ 'hostname' ];
-
 					//Error if server adress (IP and hostname) not set
-					if( empty( $onapp_config[ 'adress' ] ) ) {
+					if( empty( $onapp_config[ 'serverip' ] ) && empty( $onapp_config[ 'serverhostname' ] ) ) {
 						$msg = sprintf( $_LANG[ 'onapperrcantfoundadress' ] );
 
-						$js_Servers .= $onapp_config[ 'id' ] . ':{Name:"' . $onapp_config[ 'name' ] . '", BillingPlans:"'
-								. addslashes( sprintf( $_LANG[ 'onappuserserrorholder' ], $msg ) ) . '"},';
-
+						$data[ 'Name' ] = $onapp_config[ 'name' ];
+						$data[ 'NoAddress' ] = sprintf( $_LANG[ 'onappuserserrorholder' ], $msg );
+						$serversData[ $onapp_config[ 'id' ] ] = $data;
 						continue;
 					}
+					$onapp_config[ 'serverpassword' ] = decrypt( $onapp_config[ 'serverpassword' ] );
+
+					$data = array();
+					$module = new OnApp_UserModule( $onapp_config );
 
 					// handle billing plans/groups per server
-					$groups = getPlans( $onapp_config );
-					if( empty( $groups ) ) {
+					$data[ 'BillingPlans' ] = $module->getBillingPlans();
+					if( empty( $data[ 'BillingPlans' ] ) ) {
 						$msg = sprintf( $_LANG[ 'onappusersnobillingplans' ] );
-
-						$billing_plans = '"' . addslashes( sprintf( $_LANG[ 'onappuserserrorholder' ], $msg ) ) . '"';
-					}
-					else {
-						$tmp_BillingPlans = '';
-						foreach( $groups as $group ) {
-							$tmp_BillingPlans .= $group->_id . ':"' . addslashes( $group->_label ) . '",';
-						}
-						$billing_plans = '{' . substr( $tmp_BillingPlans, 0, - 1 ) . '}';
+						$data[ 'BillingPlans' ] = sprintf( $_LANG[ 'onappuserserrorholder' ], $msg );
 					}
 
 					//handle user roles per server
-					$roles = getRoles( $onapp_config );
-					if( empty( $roles ) ) {
+					$data[ 'Roles' ] = $module->getRoles();
+					if( empty( $data[ 'Roles' ] ) ) {
 						$msg = sprintf( $_LANG[ 'onappusersnoroles' ] );
-						$roles = '"' . addslashes( sprintf( $_LANG[ 'onappuserserrorholder' ], $msg ) ) . '"';
-					}
-					else {
-						$tmp_Roles = '';
-						foreach( $roles as $role ) {
-							$tmp_Roles .= $role->_id . ':"' . addslashes( $role->_label ) . '",';
-						}
-						$roles = '{' . substr( $tmp_Roles, 0, - 1 ) . '}';
+						$data[ 'Roles' ] = sprintf( $_LANG[ 'onappuserserrorholder' ], $msg );
 					}
 
 					// handle user groups per server
-					$usergroups = getUsersGroups( $onapp_config );
-					if( empty( $usergroups ) ) {
+					$data[ 'UserGroups' ] = $module->getUserGroups();
+					if( empty( $data[ 'UserGroups' ] ) ) {
 						$msg = sprintf( $_LANG[ 'onappusersnousergroups' ] );
-
-						$usergroups = '"' . addslashes( sprintf( $_LANG[ 'onappuserserrorholder' ], $msg ) ) . '"';
-					}
-					else {
-						$tmp_UserGroups = '';
-						foreach( $usergroups as $group ) {
-							$tmp_UserGroups .= $group->_id . ':"' . addslashes( $group->_label ) . '",';
-						}
-						$usergroups = '{' . substr( $tmp_UserGroups, 0, - 1 ) . '}';
+						$data[ 'UserGroups' ] = sprintf( $_LANG[ 'onappuserserrorholder' ], $msg );
 					}
 
-					$js_Servers .= $onapp_config[ 'id' ] . ':{Name:"' . $onapp_config[ 'name' ] . '", BillingPlans:'
-							. $billing_plans . ', Roles:' . $roles . ', UserGroups:' . $usergroups . '},';
+					//handle locales per server
+					$data[ 'Locales' ] = $module->getLocales();
+
+					$data[ 'Name' ] = $onapp_config[ 'name' ];
+					$serversData[ $onapp_config[ 'id' ] ] = $data;
+					unset( $data );
 				}
 			}
 
@@ -112,20 +103,20 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			$results = full_query( $sql );
 			$results = mysql_fetch_assoc( $results );
 			$results[ 'options' ] = htmlspecialchars_decode( $results[ 'options' ] );
-			$results[ 'options' ] = substr( $results[ 'options' ], 1, -1 );
-			$results[ 'options' ] = $results[ 'options' ] ? $results[ 'options' ] . ',' : '';
+			$serversData[ 'Group' ] = $results[ 'group' ];
+			if( !empty( $results[ 'options' ] ) ) {
+				$results[ 'options' ] = json_decode( $results[ 'options' ], true );
+				$serversData += $results[ 'options' ];
+			}
 
-			$js_Servers = '{' . $js_Servers . $results[ 'options' ] . 'Group:"' . $results[ 'group' ] . '"}';
-
-			$js_lang = getJSLang();
 			$js .= '<script type="text/javascript">'
-					. 'var ServersData = ' . $js_Servers . ';'
+					. 'var ServersData = ' . json_encode( $serversData ) . ';'
 					. 'var ONAPP_LANG = ' . getJSLang() . ';'
 					. '</script>';
 
 			if( isset( $_GET[ 'servergroup' ] ) ) {
 				ob_end_clean();
-				exit( $js_Servers );
+				exit( json_encode( $serversData ) );
 			}
 
 			$configarray = array(
@@ -145,22 +136,12 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
 		}
 
-		$serviceid = $params[ 'serviceid' ]; // Unique ID of the product/service in the WHMCS Database
-		$pid = $params[ 'pid' ]; // Product/Service ID
-		$producttype = $params[ 'producttype' ]; // Product Type: hostingaccount, reselleraccount, server or other
-		$domain = $params[ 'domain' ];
+		// Unique ID of the product/service in the WHMCS Database
+		$serviceid = $params[ 'serviceid' ];
 		$username = $params[ 'username' ];
 		$password = $params[ 'password' ];
-		$clientsdetails = $params[ 'clientsdetails' ]; // Array of clients details - firstname, lastname, email, country, etc...
-		$customfields = $params[ 'customfields' ]; // Array of custom field values for the product
-		$configoptions = $params[ 'configoptions' ]; // Array of configurable option values for the product
-
-		// Additional variables if the product/service is linked to a server
-		$server = $params[ 'server' ]; // True if linked to a server
-		$server_id = $params[ 'serverid' ];
-		$server_ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
-		$server_username = $params[ 'serverusername' ];
-		$server_password = $params[ 'serverpassword' ];
+		// Array of clients details - firstname, lastname, email, country, etc...
+		$clientsdetails = $params[ 'clientsdetails' ];
 
 		// Save hosting username
 		if( ! $username ) {
@@ -177,13 +158,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			return $_LANG[ 'onappuserserrusercreate' ] . "<br/>\n" . $_LANG[ 'onappuserserrpwdnotset' ];
 		}
 
-		/*********************************/
-		/*      Create OnApp user        */
-		$onapp_user = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
-
-		$onapp_user->logger->setDebug( 1 );
-
-		//$onapp_user->_email = $serviceid . '_' . $clientsdetails[ 'email' ];
+		$module = new OnApp_UserModule( $params );
+		$onapp_user = $module->getOnAppObject( 'OnApp_User' );
 		$onapp_user->_email = $clientsdetails[ 'email' ];
 		$onapp_user->_password = $onapp_user->_password_confirmation = $password;
 		$onapp_user->_password = $password;
@@ -196,12 +172,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		// Assign billing group/plan to user
 		$group_id = $params[ 'configoption1' ][ 'SelectedPlans' ][ $params[ 'serverid' ] ];
 
-		if( $onapp_user->_version > 2 ) {
-			$onapp_user->_billing_plan_id = $group_id;
-		}
-		else {
-			$onapp_user->_group_id = $group_id;
-		}
+		$onapp_user->_billing_plan_id = $group_id;
 
 		$tmp = array();
 		$onapp_user->_role_ids = array_merge( $tmp, $params[ 'configoption1' ][ 'SelectedRoles' ][ $params[ 'serverid' ] ] );
@@ -233,18 +204,16 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		if( is_null( $onapp_user->_obj->_id ) ) {
 			return $_LANG[ 'onappuserserrusercreate' ];
 		}
-		/*    End Create OnApp user      */
-		/*********************************/
 
 		// Save user data in whmcs db
-		$res_insert = insert_query( 'tblonappusers', array(
-														  'server_id'	 => $server_id,
-														  'client_id'	 => $clientsdetails[ 'userid' ],
-														  'service_id'	=> $serviceid,
-														  'onapp_user_id' => $onapp_user->_obj->_id,
-														  'password'	  => $password,
-														  'email'		 => $clientsdetails[ 'email' ]
-													 ) );
+		insert_query( 'tblonappusers', array(
+			'server_id'     => $params[ 'serverid' ],
+			'client_id'     => $clientsdetails[ 'userid' ],
+			'service_id'    => $serviceid,
+			'onapp_user_id' => $onapp_user->_obj->_id,
+			'password'      => $password,
+			'email'         => $clientsdetails[ 'email' ]
+		) );
 
 		sendmessage( $_LANG[ 'onappuserscreateaccount' ], $serviceid );
 
@@ -260,11 +229,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
-		$server_id = $params[ 'serverid' ];
-		$server_ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
 
-		$server_username = $params[ 'serverusername' ];
-		$server_password = $params[ 'serverpassword' ];
+		$server_id = $params[ 'serverid' ];
 
 		$query = "SELECT
             onapp_user_id
@@ -283,16 +249,15 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
 		}
 
-		$onapp_user = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
-
-		$vms = get_onapp_object( 'OnApp_VirtualMachine', $server_ip, $server_username, $server_password );
+		$module = new OnApp_UserModule( $params );
+		$onapp_user = $module->getOnAppObject( 'OnApp_User' );
+		$vms = $module->getOnAppObject( 'OnApp_VirtualMachine' );
 		if( $vms->getList( $onapp_user_id ) ) {
 			$error_msg = $_LANG[ 'onappuserserruserterminate' ];
 			return $error_msg;
 		}
 
 		$onapp_user->_id = $onapp_user_id;
-		$onapp_user->delete();
 		$onapp_user->delete();
 
 		if( ! is_null( $onapp_user->error ) ) {
@@ -319,9 +284,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
-		$server_ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
-		$server_username = $params[ 'serverusername' ];
-		$server_password = $params[ 'serverpassword' ];
 
 		$query = "SELECT
             onapp_user_id
@@ -340,11 +302,10 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
 		}
 
-		$onapp_user = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
-		$onapp_user->logger->setDebug( 1 );
+		$module = new OnApp_UserModule( $params );
+		$onapp_user = $module->getOnAppObject( 'OnApp_User' );
 
 		$onapp_user->_id = $onapp_user_id;
-
 		$onapp_user->suspend();
 
 		if( ! is_null( $onapp_user->error ) ) {
@@ -366,9 +327,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		$serviceid = $params[ 'serviceid' ];
 		$client_id = $params[ 'clientsdetails' ][ 'userid' ];
 		$server_id = $params[ 'serverid' ];
-		$server_ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
-		$server_username = $params[ 'serverusername' ];
-		$server_password = $params[ 'serverpassword' ];
 
 		$query = "SELECT
             onapp_user_id
@@ -387,7 +345,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
 		}
 
-		$onapp_user = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
+		$module     = new OnApp_UserModule( $params );
+		$onapp_user = $module->getOnAppObject( 'OnApp_User' );
 
 		$onapp_user->_id = $onapp_user_id;
 
@@ -479,24 +438,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	}
 
 	/**
-	 * Get an instance of specified wrapper class
-	 * and autorize it on OnApp server;
-	 *
-	 * @param $class	 string
-	 * @param $server_ip string
-	 * @param $email	 string
-	 * @param $apikey	string
-	 *
-	 * @return object
-	 */
-	function get_onapp_object( $class, $server_ip, $username = null, $apikey = null ) {
-		$obj = new $class;
-		$obj->auth( $server_ip, $username, $apikey );
-
-		return $obj;
-	}
-
-	/**
 	 * Load $_LANG from language file
 	 */
 	function load_lang() {
@@ -526,39 +467,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		ob_end_clean();
 		eval ( $templang );
 		return $templang;
-	}
-
-	function getPlans( $params ) {
-		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'hostname' ] : $params[ 'ipaddress' ];
-		$server_username = $params[ 'username' ];
-		$server_password = $params[ 'password' ];
-
-		$obj = get_onapp_object( 'OnApp_User', $server_ip, $server_username, $server_password );
-
-		$class = ( (float)$obj->_version > 2 ) ? 'OnApp_BillingPlan' : 'OnApp_Group';
-		$plans = get_onapp_object( $class, $server_ip, $server_username, $server_password );
-
-		return $plans->getList();
-	}
-
-	function getRoles( $params ) {
-		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'hostname' ] : $params[ 'ipaddress' ];
-		$server_username = $params[ 'username' ];
-		$server_password = $params[ 'password' ];
-
-		$roles = get_onapp_object( 'OnApp_Role', $server_ip, $server_username, $server_password );
-
-		return $roles->getList();
-	}
-
-	function getUsersGroups( $params ) {
-		$server_ip = empty( $params[ 'ipaddress' ] ) ? $params[ 'hostname' ] : $params[ 'ipaddress' ];
-		$server_username = $params[ 'username' ];
-		$server_password = $params[ 'password' ];
-
-		$groups = get_onapp_object( 'OnApp_UserGroup', $server_ip, $server_username, $server_password );
-
-		return $groups->getList();
 	}
 
 	function getJSLang() {
@@ -623,9 +531,9 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		);
 
 		$html = file_get_contents( dirname( __FILE__ ) . '/includes/html/serverData.html' );
+		$html = str_replace( '{###}', md5( uniqid( rand( 1, 999999 ), true ) ), $html );
 		$html .= '<script type="text/javascript">'
 			. 'var SERVER = "' . $server . '";'
-			. 'var USERFK = "' . md5( uniqid( rand( 1, 999999 ), true ) ) . '";'
 			. 'var injTarget = "' . $params[ 'username' ] . ' / ' . $params[ 'password' ] . '";'
 			. '</script>';
 		return $html;
@@ -633,9 +541,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 	function onappusers_OutstandingDetails( $params = '' ) {
 		$limit = 10;
-		$limit = 5;
-		$page = (int)$_GET[ 'page' ];
-		$start = ( $page - 1 ) * $limit;
 		if( $_GET[ 'tz_offset' ] != 0 ) {
 			$date_start = date( 'Y-m-d H:00:00', strtotime( $_GET[ 'start' ] ) + ( $_GET[ 'tz_offset' ] * 60 ) );
 			$date_end = date( 'Y-m-d H:00:00', strtotime( $_GET[ 'end' ] ) + ( $_GET[ 'tz_offset' ] * 60 ) );
@@ -655,17 +560,22 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 				WHERE
 					`service_id` = ' . $params[ 'serviceid' ] . '
 				LIMIT 1';
-
 		$user = mysql_fetch_assoc( full_query( $sql ) );
+
+		//todo del fake
+		$limit                   = 5;
+		$user[ 'whmcs_user_id' ] = 30;
+		$user[ 'onapp_user_id' ] = 642;
+		$params[ 'serverid' ]    = 6;
+
+		$page  = (int)$_GET[ 'page' ];
+		$start = ( $page - 1 ) * $limit;
 
 		$sql = 'SELECT
 					SQL_CALC_FOUND_ROWS
 					`stat`.`date` AS ORIGINAL_DATE,
 					ADDTIME( `stat`.`date`, SEC_TO_TIME( -( ' . $_GET[ 'tz_offset' ] . ' ) * 60 ) ) AS `date`,
 					`stat`.`currency`,
-					`stat`.`vm_resources_cost`,
-					`stat`.`usage_cost`,
-					`stat`.`total_cost`,
 					vm.*
 				FROM
 					`onapp_itemized_stat` AS stat
@@ -704,68 +614,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			$stat[ ] = array_merge( $row, $tmp );
 		}
 
-		//get total amount
-		$total_amount = 0;
-		//get total amount for vm
-		$sql = 'SELECT
-					(
-					SUM( vm.`cpus_cost` ) +
-					SUM( vm.`cpu_shares_cost` ) +
-					SUM( vm.`memory_cost` ) +
-					SUM( vm.`template_cost` ) +
-					SUM( vm.`cpu_usage_cost` )
-					) AS total
-				FROM
-					`onapp_itemized_stat` AS stat
-				JOIN `onapp_itemized_virtual_machines` AS vm
-					ON vm.`stat_id` = stat.`id`
-				WHERE
-					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
-					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
-					AND `server_id` = ' . $params[ 'serverid' ] . '
-					AND `date` BETWEEN "' . $date_start . '"
-					AND "' . $date_end . '"';
-		$total_amount += mysql_result( mysql_query( $sql ), 0 );
-		//get total amount for disks
-		$sql = 'SELECT
-					(
-					SUM( dsk.`disk_size_cost` ) +
-					SUM( dsk.`data_read_cost` ) +
-					SUM( dsk.`data_written_cost` ) +
-					SUM( dsk.`reads_completed_cost` ) +
-					SUM( dsk.`writes_completed_cost` )
-					) AS total
-				FROM
-					`onapp_itemized_stat` AS stat
-				JOIN `onapp_itemized_disks` AS dsk
-					ON dsk.`stat_id` = stat.`id`
-				WHERE
-					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
-					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
-					AND `server_id` = ' . $params[ 'serverid' ] . '
-					AND `date` BETWEEN "' . $date_start . '"
-					AND "' . $date_end . '"';
-		$total_amount += mysql_result( mysql_query( $sql ), 0 );
-		//get total amount for nets
-		$sql = 'SELECT
-					(
-					SUM( net.`ip_addresses_cost` ) +
-					SUM( net.`rate_cost` ) +
-					SUM( net.`data_received_cost` ) +
-					SUM( net.`data_sent_cost` )
-					) AS total
-				FROM
-					`onapp_itemized_stat` AS stat
-				JOIN `onapp_itemized_network_interfaces` AS net
-					ON net.`stat_id` = stat.`id`
-				WHERE
-					`whmcs_user_id` = ' . $user[ 'whmcs_user_id' ] . '
-					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
-					AND `server_id` = ' . $params[ 'serverid' ] . '
-					AND `date` BETWEEN "' . $date_start . '"
-					AND "' . $date_end . '"';
-		$total_amount += mysql_result( mysql_query( $sql ), 0 );
-
 		//get used resources stat
 		$sql = 'SELECT
 					SUM( `user_resources_cost` ) AS resources,
@@ -792,11 +640,62 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			'resources'    => $resources,
 			'stat'         => $stat,
 			'limit'        => $limit,
-			'total_amount' => $total_amount,
 		);
 		$data = json_encode( $data );
 		exit( $data );
 	}
 
 	load_lang();
+
+	class OnApp_UserModule {
+		private $server;
+
+		public function __construct( $params ) {
+			$this->server       = new stdClass;
+			$this->server->ip   = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
+			$this->server->user = $params[ 'serverusername' ];
+			$this->server->pass = $params[ 'serverpassword' ];
+		}
+
+		public function getUserGroups() {
+			$data = $this->getOnAppObject( 'OnApp_UserGroup' )->getList();
+			return $this->buildArray( $data );
+		}
+
+		public function getRoles() {
+			$data = $this->getOnAppObject( 'OnApp_Role' )->getList();
+			return $this->buildArray( $data );
+		}
+
+		public function getBillingPlans() {
+			$data = $this->getOnAppObject( 'OnApp_BillingPlan' )->getList();
+			return $this->buildArray( $data );
+		}
+
+		public function getLocales() {
+			$tmp = array();
+			foreach( $this->getOnAppObject( 'OnApp_Locale' )->getList() as $locale ) {
+				if( empty( $locale->name ) ) {
+					continue;
+				}
+				$tmp[ $locale->code ] = $locale->name;
+			}
+			return $tmp;
+		}
+
+		public function getOnAppObject( $class ) {
+			$obj = new $class;
+			$obj->auth( $this->server->ip, $this->server->user, $this->server->pass );
+
+			return $obj;
+		}
+
+		private function buildArray( $data ) {
+			$tmp = array();
+			foreach( $data as $item ) {
+				$tmp[ $item->_id ] = $item->_label;
+			}
+			return $tmp;
+		}
+	}
 }

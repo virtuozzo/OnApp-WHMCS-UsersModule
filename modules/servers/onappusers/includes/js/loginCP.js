@@ -8,5 +8,4 @@ $( document ).ready( function () {
 
 	server = '<div id="gotocpserver">' + SERVER + '</div>' + $( '#gotocp' ).html();
 	$( 'table#LoginDetails tr:last td:last' ).html( server );
-	$( '#authenticity_token' ).val( USERFK );
 } );
