@@ -1,3 +1,9 @@
+2.3.1.2
+- rewrite paid invoices processing
+- fix errors in autosuspension function
+- add autotermination for overdue accounts
+- add locales retrieving from OnApp server
+
 2.3.1.1
 - new cronjobs system
 - add 'signin to OnApp CP' option to WHMCS client area
