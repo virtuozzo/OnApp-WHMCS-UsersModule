@@ -87,8 +87,10 @@ abstract class OnApp_UserModule_Cron {
 	}
 
 	private function checkCLIMode() {
-		if( ! defined( 'STDIN' ) ) {
-			exit( 'Not allowed!' );
+		if( php_sapi_name() != 'cli' ) {
+			if( ! empty( $_SERVER[ 'REMOTE_ADDR' ] ) ) {
+				exit( 'Not allowed!' );
+			}
 		}
 	}
 
