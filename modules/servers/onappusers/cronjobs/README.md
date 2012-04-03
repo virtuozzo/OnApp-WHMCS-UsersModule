@@ -15,8 +15,8 @@ Remove any previously used module's cronfiles.
 ## Simple automatic usage
 Add the following commands to your cronjobs:  
 
-	15 * * * *    /usr/bin/php {WHMCS}/modules/servers/onappusers/cronjobs/onapp.stat.php
-	30 0 1 * *    /usr/bin/php {WHMCS}/modules/servers/onappusers/cronjobs/onapp.invoices.php
+	15 * * * *    /usr/bin/php -q {WHMCS}/modules/servers/onappusers/cronjobs/onapp.stat.php
+	30 0 1 * *    /usr/bin/php -q {WHMCS}/modules/servers/onappusers/cronjobs/onapp.invoices.php
 
 *{WHMCS} is the full path to your WHMCS directory.  
 First command is usage statistics collector.  
@@ -30,7 +30,7 @@ By default it starts grab data since last usage date (or the begining of the mon
 
 You can force collector to grab more data by passing desired starting date in format 'YYYY-MM-DD HH:MM:SS' as a parameter:
 
-	/usr/bin/php {WHMCS}/modules/servers/onappusers/cronjobs/onapp.stat.php '2012-01-01 00:00:00'
+	/usr/bin/php -q {WHMCS}/modules/servers/onappusers/cronjobs/onapp.stat.php '2012-01-01 00:00:00'
 
 
 **_Invoice generator_**  
@@ -42,7 +42,7 @@ Invoice generator can be run any time you want generate invoices. In such case i
 You can force generator to generate invoices for the certain period by passing  
 desired starting and ending dates in format 'YYYY-MM-DD HH:MM:SS' as a parameter:
 
-	/usr/bin/php {WHMCS}/modules/servers/onappusers/cronjobs/onapp.invoices.php '2012-03-14 00:00:00' '2012-03-28 00:00:00'
+	/usr/bin/php -q {WHMCS}/modules/servers/onappusers/cronjobs/onapp.invoices.php '2012-03-14 00:00:00' '2012-03-28 00:00:00'
 
 **_for the proper calculation all dates should be entered in the server's timezone_**
 
@@ -51,5 +51,5 @@ desired starting and ending dates in format 'YYYY-MM-DD HH:MM:SS' as a parameter
 We strongly recommend to test invoice generator before using in production to be sure that it works properly.  
 For testing you should setup statistics collector (or run it from console) and run tester:
 
-	/usr/bin/php	{WHMCS}/modules/servers/onappusers/cronjobs/onapp.invoices.test.php
+	/usr/bin/php -q	{WHMCS}/modules/servers/onappusers/cronjobs/onapp.invoices.test.php
 Tester functionally is the same as generator itself, but it writes processed data to the file for review instead of generating real invoices.
