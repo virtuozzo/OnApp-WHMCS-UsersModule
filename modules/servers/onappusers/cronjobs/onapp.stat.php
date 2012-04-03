@@ -131,7 +131,12 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 		$url = $this->servers[ $client[ 'server_id' ] ][ 'ipaddress' ] . '/users/' . $client[ 'onapp_user_id' ] . '/user_statistics.json?' . $date;
 		$data = $this->sendRequest( $url, $this->servers[ $client[ 'server_id' ] ][ 'username' ], $this->servers[ $client[ 'server_id' ] ][ 'password' ] );
 
-		return json_decode( $data );
+		if( $data ) {
+			return json_decode( $data );
+		}
+		else {
+			return array();
+		}
 	}
 
 	private function getVMData( $client, $date ) {
@@ -140,7 +145,12 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 		$url = $this->servers[ $client[ 'server_id' ] ][ 'ipaddress' ] . '/users/' . $client[ 'onapp_user_id' ] . '/vm_stats.json?' . $date;
 		$data = $this->sendRequest( $url, $this->servers[ $client[ 'server_id' ] ][ 'username' ], $this->servers[ $client[ 'server_id' ] ][ 'password' ] );
 
-		return json_decode( $data, true );
+		if( $data ) {
+			return json_decode( $data, true );
+		}
+		else {
+			return array();
+		}
 	}
 
 	private function sendRequest( $url, $user, $password ) {
@@ -148,7 +158,17 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 		$curl->addOption( CURLOPT_USERPWD, $user . ':' . $password );
 		$curl->addOption( CURLOPT_HTTPHEADER, array( 'Accept: application/json', 'Content-type: application/json' ) );
 		$curl->addOption( CURLOPT_HEADER, true );
-		return $curl->get( $url );
+		$data = $curl->get( $url );
+
+		if( $curl->getRequestInfo( 'http_code' ) != 200 ) {
+			echo 'ERROR: ', PHP_EOL;
+			echo "\trequest URL:\t\t", $url, PHP_EOL;
+			echo "\trequest response:\t", $curl->getRequestInfo( 'response_body' ), PHP_EOL;
+			return false;
+		}
+		else {
+			return $data;
+		}
 	}
 
 	private function getAdditionalFiles() {
