@@ -562,12 +562,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 				LIMIT 1';
 		$user = mysql_fetch_assoc( full_query( $sql ) );
 
-		//todo del fake
-		$limit                   = 5;
-		$user[ 'whmcs_user_id' ] = 30;
-		$user[ 'onapp_user_id' ] = 642;
-		$params[ 'serverid' ]    = 6;
-
 		$page  = (int)$_GET[ 'page' ];
 		$start = ( $page - 1 ) * $limit;
 
