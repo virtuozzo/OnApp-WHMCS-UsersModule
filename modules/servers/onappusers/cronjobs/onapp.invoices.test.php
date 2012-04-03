@@ -12,14 +12,6 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 	}
 
 	private function process() {
-		//get admin
-		$sql   = 'SELECT
-					`username`
-				FROM
-					`tbladmins`
-				LIMIT 1';
-		$res   = mysql_query( $sql );
-		$admin = mysql_result( $res, 0 );
 		//calculate invoice due date
 		$this->dueDate = date( 'Ymd' );
 
@@ -43,6 +35,7 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 
 	private function generateInvoiceData( $data, array $client ) {
 		global $_LANG;
+		eval( file_get_contents( dirname( dirname( __FILE__ ) ) . '/lang/English.txt' ) );
 		//check if the item should be taxed
 		$taxed = empty( $client[ 'taxexempt' ] ) && (int)$client[ 'tax' ];
 		if( $taxed ) {
