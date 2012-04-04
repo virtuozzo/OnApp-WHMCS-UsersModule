@@ -9,31 +9,35 @@ function hook_onappusers_invoice_paid( $vars ) {
 	}
 
 	$invoice_id = $vars[ 'invoiceid' ];
-	$qry  = 'SELECT
-			tblonappusers.client_id,
-			tblonappusers.server_id,
-			tblonappusers.onapp_user_id,
-			tblhosting.id AS service_id,
-			tblinvoices.subtotal AS amount
-		FROM
-			tblinvoices
-		LEFT JOIN tblonappusers ON
-				tblinvoices.userid = tblonappusers.client_id
-		LEFT JOIN tblhosting ON
-				tblhosting.userid = tblonappusers.client_id
-				AND tblhosting.server = tblonappusers.server_id
-		RIGHT JOIN tblinvoiceitems ON
-				tblinvoiceitems.invoiceid = tblinvoices.id
-				AND tblinvoiceitems.relid = tblhosting.id
-		LEFT JOIN tblproducts ON
-				tblproducts.id = tblhosting.packageid
-		WHERE
-			tblinvoices.id = ' . $invoice_id . '
-			AND tblinvoices.status = "Paid"
-			AND tblproducts.servertype = "onappusers"
-			AND tblinvoiceitems.type = "onappusers"
-		GROUP BY tblinvoices.id';
+	$qry = 'SELECT
+				tblonappusers.`client_id`,
+				tblonappusers.`server_id`,
+				tblonappusers.`onapp_user_id`,
+				tblhosting.`id` AS service_id,
+				tblinvoices.`subtotal` AS subtotal,
+				tblinvoices.`total` AS total,
+				tblproducts.`configoption1` AS settings,
+				tblhosting.`domainstatus` AS status
+			FROM
+				tblinvoices
+			LEFT JOIN tblonappusers ON
+				tblinvoices.`userid` = tblonappusers.`client_id`
+			LEFT JOIN tblhosting ON
+				tblhosting.`userid` = tblonappusers.`client_id`
+				AND tblhosting.`server` = tblonappusers.`server_id`
+			RIGHT JOIN tblinvoiceitems ON
+				tblinvoiceitems.`invoiceid` = tblinvoices.`id`
+				AND tblinvoiceitems.`relid` = tblhosting.`id`
+			LEFT JOIN tblproducts ON
+				tblproducts.`id` = tblhosting.`packageid`
+			WHERE
+				tblinvoices.`id` = ' . $invoice_id . '
+				AND tblinvoices.`status` = "Paid"
+				AND tblproducts.`servertype` = "onappusers"
+				AND tblinvoiceitems.`type` = "onappusers"
+			GROUP BY tblinvoices.`id`';
 	$result = full_query( $qry );
+	echo '<pre>';
 
 	if( mysql_num_rows( $result ) == 0 ) {
 		return;
@@ -42,62 +46,58 @@ function hook_onappusers_invoice_paid( $vars ) {
 	$data = mysql_fetch_assoc( $result );
 
 	$qry  = 'SELECT
-			`ipaddress` AS serverip,
-			`username` AS serverusername,
-			`password` AS serverpassword
-		FROM
-			`tblservers`
-		WHERE
-			`type` = "onappusers"
-			AND `id` = ' . $data[ 'server_id' ];
+				`ipaddress` AS serverip,
+				`username` AS serverusername,
+				`password` AS serverpassword
+			FROM
+				`tblservers`
+			WHERE
+				`type` = "onappusers"
+				AND `id` = ' . $data[ 'server_id' ];
 	$result = full_query( $qry );
 	$server = mysql_fetch_assoc( $result );
 	$server[ 'serverpassword' ] = decrypt( $server[ 'serverpassword' ] );
 
-	$module = new OnApp_UserModule( $server );
-	$payment = $module->getOnAppObject( 'OnApp_Payment' );
+	$productSettings = json_decode( htmlspecialchars_decode( $data[ 'settings' ] ) );
+	if( $productSettings->PassTaxes->$data[ 'server_id' ] == 0 ) {
+		$amount = $data[ 'subtotal' ];
+	}
+	else {
+		$amount = $data[ 'total' ];
+	}
+
+	$payment = new OnApp_Payment;
+	$payment->auth( $server[ 'serverip' ], $server[ 'serverusername' ], $server[ 'serverpassword' ] );
 	$payment->_user_id        = $data[ 'onapp_user_id' ];
-	$payment->_amount         = $data[ 'amount' ];
+	$payment->_amount         = $amount;
 	$payment->_invoice_number = $invoice_id;
 	$payment->save();
 
 	$error = $payment->getErrorsAsString();
 	if( empty( $error ) ) {
-		logactivity( 'OnApp payment was sent. Service ID #' . $data[ 'service_id' ] . ', amount: ' . $data[ 'amount' ] );
+		logactivity( 'OnApp payment was sent. Service ID #' . $data[ 'service_id' ] . ', amount: ' . $amount );
 	}
 	else {
 		logactivity( 'ERROR with OnApp payment for service ID #' . $data[ 'service_id' ] . ': ' . $error );
 	}
 
-	// check for other unpaid invoices for this service
-	$qry = 'SELECT
-			tblonappusers.client_id,
-			tblonappusers.server_id,
-			tblonappusers.onapp_user_id,
-			tblhosting.id AS service_id,
-			tblinvoices.subtotal AS amount
-		FROM
-			tblinvoices
-		LEFT JOIN tblonappusers ON
-				tblinvoices.userid = tblonappusers.client_id
-		LEFT JOIN tblhosting ON
-				tblhosting.userid = tblonappusers.client_id
-				AND tblhosting.server = tblonappusers.server_id
-		RIGHT JOIN tblinvoiceitems ON
-				tblinvoiceitems.invoiceid = tblinvoices.id
-				AND tblinvoiceitems.relid = tblhosting.id
-		LEFT JOIN tblproducts ON
-				tblproducts.id = tblhosting.packageid
-		WHERE
-			tblinvoiceitems.relid = ' . $data[ 'service_id' ] . '
-			AND tblinvoices.status = "Unpaid"
-			AND tblproducts.servertype = "onappusers"
-			AND tblinvoiceitems.type = "onappusers"
-		GROUP BY tblinvoices.id';
-	$result = full_query( $qry );
+	if( $data[ 'status' ] == 'Suspended' ) {
+		// check for other unpaid invoices for this service
+		$qry = 'SELECT
+					tblinvoices.`id`
+				FROM
+					tblinvoices
+				RIGHT JOIN tblinvoiceitems ON
+					tblinvoiceitems.`invoiceid` = tblinvoices.`id`
+					AND tblinvoiceitems.`relid` = ' . $data[ 'service_id' ] . '
+				WHERE
+					tblinvoices.`status` = "Unpaid"
+				GROUP BY tblinvoices.`id`';
+		$result = full_query( $qry );
 
-	if( mysql_num_rows( $result ) == 0 ) {
-		serverunsuspendaccount( $data[ 'service_id' ] );
+		if( mysql_num_rows( $result ) == 0 ) {
+			serverunsuspendaccount( $data[ 'service_id' ] );
+		}
 	}
 }
 
