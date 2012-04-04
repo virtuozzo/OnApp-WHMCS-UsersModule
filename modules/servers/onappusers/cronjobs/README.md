@@ -1,5 +1,5 @@
 ## Prerequirements  
-Make sure that you use the latest [OnApp PHP Wrapper](https://github.com/OnApp/OnApp-PHP-Wrapper/tree/master/wrapper) version.  
+Make sure that you use the latest [OnApp PHP Wrapper](https://github.com/OnApp/OnApp-PHP-Wrapper/tree/master/wrapper) version (located in `{WHMCS}/includes/wrapper/`).  
 Timezone should be defined in PHP settings. If the timezone is not already set add the following line to your php.ini:
 
 	date.timezone = {desired timezone}
