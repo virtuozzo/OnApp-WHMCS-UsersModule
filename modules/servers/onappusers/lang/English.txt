@@ -14,6 +14,7 @@ $_LANG[ 'onappusersbindinglocaletitle' ] = 'Default Locale';
 $_LANG[ 'onappuserstimezonetitle' ] = 'Time Zone';
 $_LANG[ 'onappusersusergroupstitle' ] = 'User Groups';
 $_LANG[ 'onappusersshowstatistic' ] = 'Show advanced statistics in client area';
+$_LANG[ 'onappuserspassthrutaxes' ] = 'Passthru taxes in OnApp payments';
 $_LANG[ 'onappusersnobillingplans' ] = 'There are no configured billing plans/groups on this server';
 $_LANG[ 'onappusersnousergroups' ] = 'There are no configured user groups on this server';
 $_LANG[ 'onappusersnoroles' ] = 'There are no configured roles on this server';
@@ -59,6 +60,9 @@ $_LANG[ 'onappusersstatproduct' ] = 'Product';
 $_LANG[ 'onappusersstatpperiod' ] = 'Period';
 $_LANG[ 'onappusersstatdateformat' ] = 'Y-m-d H:i:s';
 $_LANG[ 'onappusersstatdateformathours' ] = 'Y-m-d H:00:00';
+$_LANG[ 'onappusersstatproduct' ] = 'Product: ';
+$_LANG[ 'onappusersstatperiod' ] = 'Period: ';
+
 
 
 
