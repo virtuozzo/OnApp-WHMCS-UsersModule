@@ -65,6 +65,9 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 
 	private function generateInvoiceData( $data, array $client ) {
 		global $_LANG;
+		if( ! isset( $_LANG[ 'onappusersstatvirtualmachines' ] ) ) {
+			eval( file_get_contents( dirname( dirname( __FILE__ ) ) . '/lang/English.txt' ) );
+		}
 		//check if the item should be taxed
 		$taxed = empty( $client[ 'taxexempt' ] ) && (int)$client[ 'tax' ];
 		if( $taxed ) {
@@ -75,35 +78,50 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 			$taxrate = '';
 		}
 
-		$invoiceCurrency = getCurrency( $client[ 'client_id' ] );
-		$invoiceCurrency = $invoiceCurrency[ 'prefix' ];
-
-		$timeZone           = ' UTC' . ( $this->timeZoneOffset >= 0 ? '+' : '-' ) . ( $this->timeZoneOffset / 3600 );
-		$this->tillDate     = date( 'Y-m-d H:00:00', strtotime( $data->date ) + $this->timeZoneOffset );
+		$timeZone = ' UTC' . ( $this->timeZoneOffset >= 0 ? '+' : '-' ) . ( $this->timeZoneOffset / 3600 );
+		$this->fromDate = date( $_LANG[ 'onappusersstatdateformathours' ], strtotime( $this->fromDate ) );
+		$this->tillDate = date( $_LANG[ 'onappusersstatdateformathours' ], strtotime( $data->date ) + $this->timeZoneOffset );
 		$invoiceDescription = array(
-			'Product: ' . $client[ 'packagename' ],
-			'Period: ' . $this->fromDate . ' - ' . $this->tillDate . $timeZone,
-			$_LANG[ 'onappusersstatbackups' ] . ': ' . $invoiceCurrency . number_format( $data->backup, 4, '.', ' ' ),
-			$_LANG[ 'onappusersstatmonitis' ] . ': ' . $invoiceCurrency . number_format( $data->monitis, 4, '.', ' ' ),
-			$_LANG[ 'onappusersstattemplates' ] . ': ' . $invoiceCurrency . number_format( $data->templates, 4, '.', '' ),
-			$_LANG[ 'onappusersstatstoragediskssize' ] . ': ' . $invoiceCurrency . number_format( $data->storage, 4, '.', ' ' ),
-			$_LANG[ 'onappusersstatcdnedgegroup' ] . ': ' . $invoiceCurrency . number_format( $data->edgecdn, 4, '.', ' ' ),
-			$_LANG[ 'onappusersstatvirtualmachines' ] . ': ' . $invoiceCurrency . number_format( $data->vm, 4, '.', ' ' ),
+			$_LANG[ 'onappusersstatproduct' ] . $client[ 'packagename' ],
+			$_LANG[ 'onappusersstatperiod' ] . $this->fromDate . ' - ' . $this->tillDate . $timeZone,
 		);
 		$invoiceDescription = implode( PHP_EOL, $invoiceDescription );
 
 		return array(
-			'userid'           => $client[ 'client_id' ],
-			'date'             => $this->dueDate,
-			'duedate'          => $this->dueDate,
-			'paymentmethod'    => $client[ 'paymentmethod' ],
-			'taxrate'          => $taxrate,
-			'sendinvoice'      => true,
+			'userid' => $client[ 'client_id' ],
+			'date' => $this->dueDate,
+			'duedate' => $this->dueDate,
+			'paymentmethod' => $client[ 'paymentmethod' ],
+			'taxrate' => $taxrate,
+			'sendinvoice' => true,
 
 			'itemdescription1' => $invoiceDescription,
-			'itemamount1'      => number_format( $data->total, 4, '.', '' ),
-			'itemtaxed1'       => $taxed,
+			'itemamount1' => 0,
+			'itemtaxed1' => $taxed,
 
+			'itemdescription2' => $_LANG[ 'onappusersstatvirtualmachines' ],
+			'itemamount2' => $data->vm,
+			'itemtaxed2' => $taxed,
+
+			'itemdescription3' => $_LANG[ 'onappusersstatbackups' ],
+			'itemamount3' => $data->backup,
+			'itemtaxed3' => $taxed,
+
+			'itemdescription4' => $_LANG[ 'onappusersstatmonitis' ],
+			'itemamount4' => $data->monitis,
+			'itemtaxed4' => $taxed,
+
+			'itemdescription5' => $_LANG[ 'onappusersstattemplates' ],
+			'itemamount5' => $data->templates,
+			'itemtaxed5' => $taxed,
+
+			'itemdescription6' => $_LANG[ 'onappusersstatstoragediskssize' ],
+			'itemamount6' => $data->storage,
+			'itemtaxed6' => $taxed,
+
+			'itemdescription7' => $_LANG[ 'onappusersstatcdnedgegroup' ],
+			'itemamount7' => $data->edgecdn,
+			'itemtaxed7' => $taxed,
 		);
 	}
 
