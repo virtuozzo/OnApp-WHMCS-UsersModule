@@ -66,6 +66,12 @@ function buildFields( ServersData ) {
 		html += '<td class="fieldarea" id="showstat' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
+		// pass taxes row
+		html = '<tr>';
+		html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserspassthrutaxes + '</td>';
+		html += '<td class="fieldarea" id="passtaxes' + server_id + '"></td></tr>';
+		table.find( 'tr:last' ).after( html );
+
 		// process biling plans
 		if( typeof server.BillingPlans == 'object' ) {
 			select = $( '<select name="bills_packageconfigoption' + ++cnt + '"></select>' );
@@ -161,18 +167,17 @@ function buildFields( ServersData ) {
 				}
 			}
 		}
+        else {
+            select = $( '<input name="locale_packageconfigoption' + ++ cnt + '" rel="' + server_id + '" />' );
+            // select selected locale
+            if( ServersData.SelectedLocales && ServersData.SelectedLocales[ server_id ] ) {
+                $( select ).val( ServersData.SelectedLocales[ server_id ] );
+            }
+            else {
+                $( select ).val( 'en' );
+            }
+        }
 		$( '#locale' + server_id ).html( select );
-		/*
-		input = $( '<input name="locale_packageconfigoption' + ++cnt + '" rel="' + server_id + '" />' );
-		// select selected locale
-		if( ServersData.SelectedLocales && ServersData.SelectedLocales[ server_id ] ) {
-			$( input ).val( ServersData.SelectedLocales[ server_id ] );
-		}
-		else {
-			$( input ).val( 'en' );
-		}
-		$( '#locale' + server_id ).html( input );
-		*/
 
 		// process show statistic
 		input = $( '<input name="stat_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
@@ -183,6 +188,16 @@ function buildFields( ServersData ) {
 			}
 		}
 		$( '#showstat' + server_id ).html( input );
+
+		// process passthru taxes to OnApp
+		input = $( '<input name="passtaxes_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
+		// checkbox state
+		if( ServersData.PassTaxes ) {
+			if( ServersData.PassTaxes[ server_id ] ) {
+				$( input ).attr( 'checked', true );
+			}
+		}
+		$( '#passtaxes' + server_id ).html( input );
 
 		//insert empty row
 		table.find( 'tr:last' ).after( '<tr><td colspan="2" class="fieldlabel">&nbsp;</td></tr>' );
@@ -222,6 +237,10 @@ function buildFields( ServersData ) {
 	$( "input[name^='stat_packageconfigoption']" ).bind( 'change', function() {
 		storeShowStat();
 	} );
+	storePassTaxes();
+	$( "input[name^='passtaxes_packageconfigoption']" ).bind( 'change', function() {
+		storePassTaxes();
+	} );
 
 	// align dropdown lists
 	alignSelects();
@@ -233,8 +252,18 @@ var OnAppUsersData = {
 	SelectedTZs: {},
 	SelectedUserGroups: {},
 	SelectedLocales: {},
-	ShowStat: {}
+	ShowStat: {},
+    PassTaxes: {}
 };
+
+function storePassTaxes() {
+	$( "input[name^='passtaxes_packageconfigoption']" ).each( function( i, val ) {
+		var index = $( val ).attr( 'rel' );
+		OnAppUsersData.PassTaxes[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
+	} );
+
+	$( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
 
 function storeShowStat() {
 	$( "input[name^='stat_packageconfigoption']" ).each( function( i, val ) {
@@ -246,10 +275,18 @@ function storeShowStat() {
 }
 
 function storeSelectedLocales() {
-	$( "select[name^='locale_packageconfigoption']" ).each( function( i, val ) {
-		var tmp = val.value.split( ':' );
-		OnAppUsersData.SelectedLocales[ tmp[ 0 ] ] = tmp[ 1 ];
-	} );
+    if( $( "select[name^='locale_packageconfigoption']" ).length ) {
+        $( "select[name^='locale_packageconfigoption']" ).each( function ( i, val ) {
+            var tmp = val.value.split( ':' );
+            OnAppUsersData.SelectedLocales[ tmp[ 0 ] ] = tmp[ 1 ];
+        } );
+    }
+    else {
+        $( "input[name^='locale_packageconfigoption']" ).each( function ( i, val ) {
+            var index = $( val ).attr( 'rel' );
+            OnAppUsersData.SelectedLocales[ index ] = val.value;
+        } );
+    }
 
 	$( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
 }
