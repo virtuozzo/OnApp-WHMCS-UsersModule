@@ -1,11 +1,10 @@
 <?php
 
 function hook_onappusers_invoice_paid( $vars ) {
+	$path = dirname( dirname( __FILE__ ) );
 	if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-		$path = dirname( dirname( __FILE__ ) );
 		define( 'ONAPP_WRAPPER_INIT', $path . '/wrapper/OnAppInit.php' );
 		require_once ONAPP_WRAPPER_INIT;
-		require_once $path . '/modulefunctions.php';
 	}
 
 	$invoice_id = $vars[ 'invoiceid' ];
@@ -37,7 +36,6 @@ function hook_onappusers_invoice_paid( $vars ) {
 				AND tblinvoiceitems.`type` = "onappusers"
 			GROUP BY tblinvoices.`id`';
 	$result = full_query( $qry );
-	echo '<pre>';
 
 	if( mysql_num_rows( $result ) == 0 ) {
 		return;
@@ -96,6 +94,9 @@ function hook_onappusers_invoice_paid( $vars ) {
 		$result = full_query( $qry );
 
 		if( mysql_num_rows( $result ) == 0 ) {
+			if( ! function_exists( 'serverunsuspendaccount' ) ) {
+				require_once $path . '/modulefunctions.php';
+			}
 			serverunsuspendaccount( $data[ 'service_id' ] );
 		}
 	}
