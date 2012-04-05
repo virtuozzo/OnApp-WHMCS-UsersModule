@@ -15,11 +15,13 @@ class CURL {
 	);
 
 	public function __construct( ) {
+		$this->ch = curl_init( );
+	}
+
+	public function saveCookies() {
 		$cookiesFile = tempnam( '/tmp', 'OnApp_CURL_cookies' );
 		$this->defaultOptions[ CURLOPT_COOKIEFILE ] = $cookiesFile;
-		$this->defaultOptions[ CURLOPT_COOKIEJAR ] = $cookiesFile;
-		$this->customOptions = $this->defaultOptions;
-		$this->ch = curl_init( );
+		$this->defaultOptions[ CURLOPT_COOKIEJAR ]  = $cookiesFile;
 	}
 
 	public function addOption( $name, $value ) {
