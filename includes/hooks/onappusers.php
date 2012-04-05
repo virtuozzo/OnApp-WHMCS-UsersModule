@@ -109,21 +109,22 @@ function hook_onappusers_autosuspend() {
 		return;
 	}
 
-	$qry = 'SELECT tblhosting.id
-		FROM
-			tblinvoices
-		LEFT JOIN tblinvoiceitems ON
-				tblinvoiceitems.invoiceid = tblinvoices.id
-		LEFT JOIN tblhosting ON
-				tblhosting.id = tblinvoiceitems.relid
-		WHERE
-			tblinvoices.status = "Unpaid"
-			AND tblinvoiceitems.type = "onappusers"
-			AND tblhosting.domainstatus = "Active"
-			AND tblinvoices.duedate <= DATE_ADD( `tblinvoices`.duedate, INTERVAL ' . $CONFIG[ 'AutoSuspensionDays' ] . ' DAY )
-			AND tblhosting.overideautosuspend != "on"
-		GROUP BY
-			tblhosting.id';
+	$qry = 'SELECT
+				tblhosting.`id`
+			FROM
+				tblinvoices
+			LEFT JOIN tblinvoiceitems ON
+				tblinvoiceitems.`invoiceid` = tblinvoices.`id`
+			LEFT JOIN tblhosting ON
+				tblhosting.`id` = tblinvoiceitems.`relid`
+			WHERE
+				tblinvoices.`status` = "Unpaid"
+				AND tblinvoiceitems.`type` = "onappusers"
+				AND tblhosting.`domainstatus` = "Active"
+				AND tblinvoices.`duedate` <= DATE_ADD( `tblinvoices`.duedate, INTERVAL ' . $CONFIG[ 'AutoSuspensionDays' ] . ' DAY )
+				AND tblhosting.`overideautosuspend` != "on"
+			GROUP BY
+				tblhosting.`id`';
 	$result = full_query( $qry );
 
 	while( $data = mysql_fetch_assoc( $result ) ) {
@@ -138,21 +139,22 @@ function hook_onappusers_autoterminate() {
 		return;
 	}
 
-	$qry = 'SELECT tblhosting.id
-		FROM
-			tblinvoices
-		LEFT JOIN tblinvoiceitems ON
-				tblinvoiceitems.invoiceid = tblinvoices.id
-		LEFT JOIN tblhosting ON
-				tblhosting.id = tblinvoiceitems.relid
-		WHERE
-			tblinvoices.status = "Unpaid"
-			AND tblinvoiceitems.type = "onappusers"
-			AND tblhosting.domainstatus = "Suspended"
-			AND tblinvoices.duedate <= DATE_ADD( `tblinvoices`.duedate, INTERVAL ' . $CONFIG[ 'AutoTerminationDays' ] . ' DAY )
-			AND tblhosting.overideautosuspend != "on"
-		GROUP BY
-			tblhosting.id';
+	$qry = 'SELECT
+				tblhosting.`id`
+			FROM
+				tblinvoices
+			LEFT JOIN tblinvoiceitems ON
+				tblinvoiceitems.`invoiceid` = tblinvoices.`id`
+			LEFT JOIN tblhosting ON
+				tblhosting.`id` = tblinvoiceitems.`relid`
+			WHERE
+				tblinvoices.`status` = "Unpaid"
+				AND tblinvoiceitems.`type` = "onappusers"
+				AND tblhosting.`domainstatus` = "Suspended"
+				AND tblinvoices.`duedate` <= DATE_ADD( `tblinvoices`.duedate, INTERVAL ' . $CONFIG[ 'AutoTerminationDays' ] . ' DAY )
+				AND tblhosting.`overideautosuspend` != "on"
+			GROUP BY
+				tblhosting.`id`';
 	$result = full_query( $qry );
 
 	while( $data = mysql_fetch_assoc( $result ) ) {
