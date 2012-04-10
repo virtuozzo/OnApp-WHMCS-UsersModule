@@ -30,11 +30,12 @@ function hook_onappusers_invoice_paid( $vars ) {
 			LEFT JOIN tblproducts ON
 				tblproducts.`id` = tblhosting.`packageid`
 			WHERE
-				tblinvoices.`id` = ' . $invoice_id . '
+				tblinvoices.`id` = :invoiceID
 				AND tblinvoices.`status` = "Paid"
 				AND tblproducts.`servertype` = "onappusers"
 				AND tblinvoiceitems.`type` = "onappusers"
 			GROUP BY tblinvoices.`id`';
+	$qry = str_replace( ':invoiceID', $invoice_id, $qry );
 	$result = full_query( $qry );
 
 	if( mysql_num_rows( $result ) == 0 ) {
@@ -48,10 +49,11 @@ function hook_onappusers_invoice_paid( $vars ) {
 				`username` AS serverusername,
 				`password` AS serverpassword
 			FROM
-				`tblservers`
+				tblservers
 			WHERE
 				`type` = "onappusers"
-				AND `id` = ' . $data[ 'server_id' ];
+				AND `id` = :serverID';
+	$qry = str_replace( ':serverID', $data[ 'server_id' ], $qry );
 	$result = full_query( $qry );
 	$server = mysql_fetch_assoc( $result );
 	$server[ 'serverpassword' ] = decrypt( $server[ 'serverpassword' ] );
@@ -87,10 +89,11 @@ function hook_onappusers_invoice_paid( $vars ) {
 					tblinvoices
 				RIGHT JOIN tblinvoiceitems ON
 					tblinvoiceitems.`invoiceid` = tblinvoices.`id`
-					AND tblinvoiceitems.`relid` = ' . $data[ 'service_id' ] . '
+					AND tblinvoiceitems.`relid` = :serviceID
 				WHERE
 					tblinvoices.`status` = "Unpaid"
 				GROUP BY tblinvoices.`id`';
+		$qry = str_replace( ':serviceID', $data[ 'service_id' ], $qry );
 		$result = full_query( $qry );
 
 		if( mysql_num_rows( $result ) == 0 ) {
@@ -121,10 +124,11 @@ function hook_onappusers_autosuspend() {
 				tblinvoices.`status` = "Unpaid"
 				AND tblinvoiceitems.`type` = "onappusers"
 				AND tblhosting.`domainstatus` = "Active"
-				AND tblinvoices.`duedate` <= DATE_ADD( `tblinvoices`.duedate, INTERVAL ' . $CONFIG[ 'AutoSuspensionDays' ] . ' DAY )
+				AND tblinvoices.`duedate` <= DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
 				AND tblhosting.`overideautosuspend` != "on"
 			GROUP BY
 				tblhosting.`id`';
+	$qry = str_replace( ':days', $CONFIG[ 'AutoSuspensionDays' ], $qry );
 	$result = full_query( $qry );
 
 	while( $data = mysql_fetch_assoc( $result ) ) {
@@ -151,10 +155,11 @@ function hook_onappusers_autoterminate() {
 				tblinvoices.`status` = "Unpaid"
 				AND tblinvoiceitems.`type` = "onappusers"
 				AND tblhosting.`domainstatus` = "Suspended"
-				AND tblinvoices.`duedate` <= DATE_ADD( `tblinvoices`.duedate, INTERVAL ' . $CONFIG[ 'AutoTerminationDays' ] . ' DAY )
+				AND tblinvoices.`duedate` <= DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
 				AND tblhosting.`overideautosuspend` != "on"
 			GROUP BY
 				tblhosting.`id`';
+	$qry = str_replace( ':days', $CONFIG[ 'AutoTerminationDays' ], $qry );
 	$result = full_query( $qry );
 
 	while( $data = mysql_fetch_assoc( $result ) ) {
