@@ -18,7 +18,7 @@ class CURL {
 		$this->ch = curl_init( );
 	}
 
-	public function saveCookies() {
+	public function useCookies() {
 		$cookiesFile = tempnam( '/tmp', 'OnApp_CURL_cookies' );
 		$this->defaultOptions[ CURLOPT_COOKIEFILE ] = $cookiesFile;
 		$this->defaultOptions[ CURLOPT_COOKIEJAR ]  = $cookiesFile;

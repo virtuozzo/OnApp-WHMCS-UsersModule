@@ -109,6 +109,7 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 			);
 
 			$data = $this->getResourcesData( $client, $date )->user_stat;
+
 			if( $data->total_cost == 0 ) {
 				continue;
 			}

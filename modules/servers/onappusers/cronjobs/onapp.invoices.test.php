@@ -2,7 +2,7 @@
 
 require dirname( __FILE__ ) . '/onapp.cron.php';
 class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
-	private $fromDate, $tillDate, $timeZoneOffset, $dueDate;
+	private $fromDate, $timeZoneOffset, $dueDate;
 	private $logFile, $logText = array();
 
 	protected function run() {
@@ -19,6 +19,9 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 			$clientAmount = $this->getAmmount( $client );
 			if( ! is_null( $clientAmount->total ) ) {
 				$data = $this->generateInvoiceData( $clientAmount, $client );
+				if( $data == false ) {
+					continue;
+				}
 
 				$tmp = '';
 				$tmp .= 'WHMCS user ID: ' . $client[ 'client_id' ] . PHP_EOL;
@@ -35,7 +38,17 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 
 	private function generateInvoiceData( $data, array $client ) {
 		global $_LANG;
-		eval( file_get_contents( dirname( dirname( __FILE__ ) ) . '/lang/English.txt' ) );
+		if( ! isset( $_LANG[ 'onappusersstatvirtualmachines' ] ) ) {
+			eval( file_get_contents( dirname( dirname( __FILE__ ) ) . '/lang/English.txt' ) );
+		}
+
+		//check if invoice should be generated
+		$fromTime = strtotime( $this->fromDate );
+		$tillTime = strtotime( $data->date ) + $this->timeZoneOffset;
+		if( $fromTime >= $tillTime ) {
+			return false;
+		}
+
 		//check if the item should be taxed
 		$taxed = empty( $client[ 'taxexempt' ] ) && (int)$client[ 'tax' ];
 		if( $taxed ) {
@@ -50,8 +63,9 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 		$invoiceCurrency = $invoiceCurrency[ 'prefix' ];
 
 		$timeZone           = ' UTC' . ( $this->timeZoneOffset >= 0 ? '+' : '-' ) . ( $this->timeZoneOffset / 3600 );
-		$this->fromDate     = date( $_LANG[ 'onappusersstatdateformathours' ], strtotime( $this->fromDate ) );
-		$this->tillDate     = date( $_LANG[ 'onappusersstatdateformathours' ], strtotime( $data->date ) + $this->timeZoneOffset );
+		$this->fromDate = date( $_LANG[ 'onappusersstatdateformat' ], $fromTime );
+		$this->tillDate = date( $_LANG[ 'onappusersstatdateformat' ], $tillTime );
+		$this->tillDate = substr_replace( $this->tillDate, '59:59', - 5 );
 		$invoiceDescription = array(
 			$_LANG[ 'onappusersstatproduct' ] . ': ' . $client[ 'packagename' ],
 			$_LANG[ 'onappusersstatpperiod' ] . ': ' . $this->fromDate . ' - ' . $this->tillDate . $timeZone,
@@ -111,7 +125,6 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 		}
 		$tillDateUTC    = substr_replace( $tillDateUTC, '30', - 5, 2 );
 		$this->fromDate = $fromDate;
-		$this->tillDate = $tillDate;
 
 		$qry  = 'SELECT
 					SUM( `backup_cost` ) AS backup,
@@ -165,7 +178,7 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 		$splitter = PHP_EOL . str_repeat( '=', 60 ) . PHP_EOL . PHP_EOL;
 		$log = implode( $splitter, $this->logText );
 		file_put_contents( $this->logFile, $log );
-		echo 'Open file {WHMCS}/modules/servers/onappusers/cronjobs/onapp_invoices_test.txt in browser!', PHP_EOL;
+		echo 'Open file {WHMCS}/modules/servers/onappusers/cronjobs/onapp_invoices_test.txt in browser or console!', PHP_EOL;
 	}
 }
 new OnApp_UserModule_Cron_Invoices_Test;

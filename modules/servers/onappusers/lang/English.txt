@@ -59,7 +59,6 @@ $_LANG[ 'onappusersstattotalcost' ] = 'Total Cost';
 $_LANG[ 'onappusersstatproduct' ] = 'Product';
 $_LANG[ 'onappusersstatpperiod' ] = 'Period';
 $_LANG[ 'onappusersstatdateformat' ] = 'Y-m-d H:i:s';
-$_LANG[ 'onappusersstatdateformathours' ] = 'Y-m-d H:00:00';
 $_LANG[ 'onappusersstatproduct' ] = 'Product: ';
 $_LANG[ 'onappusersstatperiod' ] = 'Period: ';
 

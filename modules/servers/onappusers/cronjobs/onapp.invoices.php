@@ -2,7 +2,7 @@
 
 require dirname( __FILE__ ) . '/onapp.cron.php';
 class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
-	private $fromDate, $tillDate, $timeZoneOffset, $dueDate;
+	private $fromDate, $timeZoneOffset, $dueDate;
 
 	protected  function run() {
 		$this->getAdditionalFiles();
@@ -11,12 +11,12 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 
 	private function process() {
 		//get admin
-		$sql   = 'SELECT
+		$qry   = 'SELECT
 					`username`
 				FROM
 					`tbladmins`
 				LIMIT 1';
-		$res   = mysql_query( $sql );
+		$res   = mysql_query( $qry );
 		$admin = mysql_result( $res, 0 );
 		//calculate invoice due date
 		$this->dueDate = date( 'Ymd' );
@@ -26,21 +26,25 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 
 			if( ! is_null( $clientAmount->total ) ) {
 				$data = $this->generateInvoiceData( $clientAmount, $client );
-
+				if( $data == false ) {
+					continue;
+				}
 				$result = localAPI( 'CreateInvoice', $data, $admin );
 				if( $result[ 'result' ] != 'success' ) {
 					echo 'An Error occurred trying to create a invoice: ', $result[ 'result' ], PHP_EOL;
 				}
 				else {
-					$sql = 'UPDATE
+					$qry = 'UPDATE
 								`tblinvoiceitems`
 							SET
-								`relid` = ' . $client[ 'service_id' ] . ',
-								type = "onappusers"
+								`relid` = :WHMCSUserID,
+								`type` = "onappusers"
 							WHERE
-								invoiceid = ' . $result[ 'invoiceid' ];
-					full_query( $sql );
-					$sql = 'INSERT INTO
+								`invoiceid` = :invoiceID';
+					$qry = str_replace( ':WHMCSUserID', $client[ 'service_id' ], $qry );
+					$qry = str_replace( ':invoiceID', $result[ 'invoiceid' ], $qry );
+					full_query( $qry );
+					$qry = 'INSERT INTO
 								`onapp_itemized_invoices` (
 									`whmcs_user_id`,
 									`onapp_user_id`,
@@ -49,15 +53,21 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 									`date`
 								)
 							VALUES (
-								' . $client[ 'client_id' ] . ',
-								' . $client[ 'onapp_user_id' ] . ',
-								' . $client[ 'server_id' ] . ',
-								' . $result[ 'invoiceid' ] . ',
-								' . '"' . $clientAmount->date . '"' .
-							')
+								:WHMCSUserID,
+								:OnAppUserID,
+								:serverID,
+								:invoiceID,
+								":invoiceDate"
+							)
 							ON DUPLICATE KEY UPDATE
-								`date` = "' . $clientAmount->date . '"';
-					full_query( $sql );
+								`date` = ":invoiceDate"';
+					$qry = str_replace( ':WHMCSUserID', $client[ 'client_id' ], $qry );
+					$qry = str_replace( ':OnAppUserID', $client[ 'onapp_user_id' ], $qry );
+					$qry = str_replace( ':serverID', $client[ 'server_id' ], $qry );
+					$qry = str_replace( ':invoiceID', $result[ 'invoiceid' ], $qry );
+					$qry = str_replace( ':invoiceDate', $clientAmount->date, $qry );
+
+					full_query( $qry );
 				}
 			}
 		}
@@ -68,6 +78,14 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 		if( ! isset( $_LANG[ 'onappusersstatvirtualmachines' ] ) ) {
 			eval( file_get_contents( dirname( dirname( __FILE__ ) ) . '/lang/English.txt' ) );
 		}
+
+		//check if invoice should be generated
+		$fromTime = strtotime( $this->fromDate );
+		$tillTime = strtotime( $data->date ) + $this->timeZoneOffset;
+		if( $fromTime >= $tillTime ) {
+			return false;
+		}
+
 		//check if the item should be taxed
 		$taxed = empty( $client[ 'taxexempt' ] ) && (int)$client[ 'tax' ];
 		if( $taxed ) {
@@ -78,9 +96,11 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 			$taxrate = '';
 		}
 
-		$timeZone = ' UTC' . ( $this->timeZoneOffset >= 0 ? '+' : '-' ) . ( $this->timeZoneOffset / 3600 );
-		$this->fromDate = date( $_LANG[ 'onappusersstatdateformathours' ], strtotime( $this->fromDate ) );
-		$this->tillDate = date( $_LANG[ 'onappusersstatdateformathours' ], strtotime( $data->date ) + $this->timeZoneOffset );
+		$timeZone           = ' UTC' . ( $this->timeZoneOffset >= 0 ? '+' : '-' ) . ( $this->timeZoneOffset / 3600 );
+
+		$this->fromDate = date( $_LANG[ 'onappusersstatdateformat' ], $fromTime );
+		$this->tillDate = date( $_LANG[ 'onappusersstatdateformat' ], $tillTime );
+		$this->tillDate = substr_replace( $this->tillDate, '59:59', - 5 );
 		$invoiceDescription = array(
 			$_LANG[ 'onappusersstatproduct' ] . $client[ 'packagename' ],
 			$_LANG[ 'onappusersstatperiod' ] . $this->fromDate . ' - ' . $this->tillDate . $timeZone,
@@ -88,40 +108,40 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 		$invoiceDescription = implode( PHP_EOL, $invoiceDescription );
 
 		return array(
-			'userid' => $client[ 'client_id' ],
-			'date' => $this->dueDate,
-			'duedate' => $this->dueDate,
-			'paymentmethod' => $client[ 'paymentmethod' ],
-			'taxrate' => $taxrate,
-			'sendinvoice' => true,
+			'userid'           => $client[ 'client_id' ],
+			'date'             => $this->dueDate,
+			'duedate'          => $this->dueDate,
+			'paymentmethod'    => $client[ 'paymentmethod' ],
+			'taxrate'          => $taxrate,
+			'sendinvoice'      => true,
 
 			'itemdescription1' => $invoiceDescription,
-			'itemamount1' => 0,
-			'itemtaxed1' => $taxed,
+			'itemamount1'      => 0,
+			'itemtaxed1'       => $taxed,
 
 			'itemdescription2' => $_LANG[ 'onappusersstatvirtualmachines' ],
-			'itemamount2' => $data->vm,
-			'itemtaxed2' => $taxed,
+			'itemamount2'      => $data->vm,
+			'itemtaxed2'       => $taxed,
 
 			'itemdescription3' => $_LANG[ 'onappusersstatbackups' ],
-			'itemamount3' => $data->backup,
-			'itemtaxed3' => $taxed,
+			'itemamount3'      => $data->backup,
+			'itemtaxed3'       => $taxed,
 
 			'itemdescription4' => $_LANG[ 'onappusersstatmonitis' ],
-			'itemamount4' => $data->monitis,
-			'itemtaxed4' => $taxed,
+			'itemamount4'      => $data->monitis,
+			'itemtaxed4'       => $taxed,
 
 			'itemdescription5' => $_LANG[ 'onappusersstattemplates' ],
-			'itemamount5' => $data->templates,
-			'itemtaxed5' => $taxed,
+			'itemamount5'      => $data->templates,
+			'itemtaxed5'       => $taxed,
 
 			'itemdescription6' => $_LANG[ 'onappusersstatstoragediskssize' ],
-			'itemamount6' => $data->storage,
-			'itemtaxed6' => $taxed,
+			'itemamount6'      => $data->storage,
+			'itemtaxed6'       => $taxed,
 
 			'itemdescription7' => $_LANG[ 'onappusersstatcdnedgegroup' ],
-			'itemamount7' => $data->edgecdn,
-			'itemtaxed7' => $taxed,
+			'itemamount7'      => $data->edgecdn,
+			'itemtaxed7'       => $taxed,
 		);
 	}
 
@@ -157,7 +177,6 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 		}
 		$tillDateUTC = substr_replace( $tillDateUTC, '30', -5, 2 );
 		$this->fromDate = $fromDate;
-		$this->tillDate = $tillDate;
 
 		$qry = 'SELECT
 					SUM( `backup_cost` ) AS backup,
@@ -172,11 +191,16 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 				FROM
 					`onapp_itemized_resources`
 				WHERE
-					`whmcs_user_id` = ' . $user[ 'client_id' ] . '
-					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
-					AND `server_id` = ' . $user[ 'server_id' ] . '
-					AND `date` BETWEEN "' . $fromDateUTC . '"
-					AND "' . $tillDateUTC . '"';
+					`whmcs_user_id` = :WHMCSUserID
+					AND `onapp_user_id` = :OnAppUserID
+					AND `server_id` = :serverID
+					AND `date` BETWEEN ":dateFrom"
+					AND ":dateTill"';
+		$qry = str_replace( ':WHMCSUserID', $user[ 'client_id' ], $qry );
+		$qry = str_replace( ':OnAppUserID', $user[ 'onapp_user_id' ], $qry );
+		$qry = str_replace( ':serverID', $user[ 'server_id' ], $qry );
+		$qry = str_replace( ':dateFrom', $fromDateUTC, $qry );
+		$qry = str_replace( ':dateTill', $tillDateUTC, $qry );
 		$data = mysql_fetch_assoc( full_query( $qry ) );
 		return (object)$data;
 	}
@@ -187,9 +211,12 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 				FROM
 					`onapp_itemized_invoices`
 				WHERE
-					`whmcs_user_id` = ' . $user[ 'client_id' ] . '
-					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
-					AND `server_id` = ' . $user[ 'server_id' ];
+					`whmcs_user_id` = :WHMCSUserID
+					AND `onapp_user_id` = :OnAppUserID
+					AND `server_id` = :serverID';
+		$qry = str_replace( ':WHMCSUserID', $user[ 'client_id' ], $qry );
+		$qry = str_replace( ':OnAppUserID', $user[ 'onapp_user_id' ], $qry );
+		$qry = str_replace( ':serverID', $user[ 'server_id' ], $qry );
 		return mysql_result( mysql_query( $qry ), 0 );
 	}
 
