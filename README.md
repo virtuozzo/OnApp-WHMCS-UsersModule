@@ -1,4 +1,18 @@
 ## Prerequirements  
+PHP 5.1.2+ built with IPv6 support enabled
+
+PHP extensions:
+JSON (is builtin since PHP 5.2+ or could be installed from PECL http://php.net/manual/en/json.installation.php )
+SimpleXML (http://php.net/manual/en/simplexml.installation.php)
+Mcrypt (http://php.net/manual/en/mcrypt.installation.php)
+
+
+
+
+
+
+
+Make sure that you use the latest [OnApp PHP Wrapper](https://github.com/OnApp/OnApp-PHP-Wrapper/tree/master/wrapper) version.  
 Timezone should be defined in PHP settings. If the timezone is not already set add the following line to your php.ini:
 
 	date.timezone = {desired timezone}
@@ -8,7 +22,7 @@ All available timezones are listed on http://php.net/manual/en/timezones.php
 
 ## Installation  
 Copy all files to the root of your WHMCS directory.  
-Remove any previously used module's cronfiles (such as `cron.itemized.php` and `cron.php`).
+Remove any previously used module's cronfiles.
 
 
 ## Simple automatic usage
