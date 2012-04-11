@@ -1,7 +1,0 @@
-REQUIREMENTS:
-PHP 5.1.2+ built with IPv6 support enabled
-
-PHP extensions:
-JSON (is builtin since PHP 5.2+ or could be installed from PECL http://php.net/manual/en/json.installation.php )
-SimpleXML (http://php.net/manual/en/simplexml.installation.php)
-Mcrypt (http://php.net/manual/en/mcrypt.installation.php)
