@@ -150,7 +150,7 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 
 	private function getLastInvoiceDate( array $user ) {
 		$qry = 'SELECT
-					MAX( `date` )
+					IFNULL( ADDTIME( MAX( `date` ), "00:00:01" ), NULL )
 				FROM
 					`onapp_itemized_invoices`
 				WHERE
