@@ -674,6 +674,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 				}
 				$tmp[ $locale->code ] = $locale->name;
 			}
+
 			return $tmp;
 		}
 

@@ -135,7 +135,8 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 					SUM( `vm_cost` ) AS vm,
 					SUM( `user_resources_cost` ) AS resources,
 					SUM( `total_cost` ) AS total,
-					MAX( `date` ) AS date
+					"' . $tillDateUTC . '" AS date
+					-- MAX( `date` ) AS date
 				FROM
 					`onapp_itemized_resources`
 				WHERE

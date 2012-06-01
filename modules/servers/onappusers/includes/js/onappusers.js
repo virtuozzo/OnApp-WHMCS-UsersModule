@@ -151,7 +151,7 @@ function buildFields( ServersData ) {
 		$( '#usergroups' + server_id ).html( select );
 
 		// process locale
-		if( typeof server.Locales == 'object' ) {
+		if( typeof server.Locales == 'object' && Object.size( server.Locales ) ) {
 			select = $( '<select name="locale_packageconfigoption' + ++ cnt + '"></select>' );
 
 			for( code in server.Locales ) {
@@ -378,3 +378,13 @@ $( document ).ready( function() {
 function objectToString( o ) {
 	return jQuery.toJSON( o );
 }
+
+Object.size = function ( obj ) {
+	var size = 0, key;
+	for( key in obj ) {
+		if( obj.hasOwnProperty( key ) ) {
+			size ++;
+		}
+	}
+	return size;
+};
