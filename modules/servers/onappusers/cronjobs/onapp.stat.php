@@ -40,6 +40,7 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 
 			// process SQL
 			foreach( $sql as $record ) {
+				$record .= ' ON DUPLICATE KEY UPDATE id = id';
 				full_query( $record );
 			}
 		}
