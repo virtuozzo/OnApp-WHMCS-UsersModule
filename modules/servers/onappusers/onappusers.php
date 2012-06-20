@@ -423,11 +423,11 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			$insert_fields[ 'type' ] = 'product';
 			$insert_fields[ 'name' ] = $_LANG[ 'onappuserscreateaccount' ];
 			$insert_fields[ 'subject' ] = 'OnApp account has been created';
-			$insert_fields[ 'message' ] = ' < p>Dear {$client_name}</p > ' .
-					'<p > Your OnApp account has been created<br />' .
-					'login: {$service_username}<br />' .
-					'password: {$service_password}</p > ' .
-					'<p ></p > To login, visit http://{$service_server_ip}';
+			$insert_fields[ 'message' ] = '<p>Dear {$client_name}</p>
+					<p>Your OnApp account has been created<br />
+					login: {$service_username}<br />
+					password: {$service_password}</p>
+					<p></p> To login, visit http://{$service_server_ip}';
 			$insert_fields[ 'plaintext' ] = 0;
 			if( ! insert_query( 'tblemailtemplates', $insert_fields ) ) {
 				return sprintf( $_LANG[ 'onappuserserrtmpladd' ], $_LANG[ 'onappuserscreateaccount' ] );
