@@ -27,7 +27,6 @@ else {
 <base href="<?php echo $data->server ?>">
 <div id="cpform" style="display: none;">
 <?php
-
 	require 'CURL.php';
 	$curl = new CURL;
 	$curl->addOption( CURLOPT_RETURNTRANSFER, true );
@@ -40,6 +39,7 @@ else {
 			$( '#session_password' ).val( '{$data->password}' );
 			var form = $( 'form' );
 			form.attr( 'action', '{$data->server}/session' );
+			form.attr( 'autocomplete', 'off' );
 			form.submit();
 			$( '#getcp' ).remove();
 JS;
@@ -49,6 +49,5 @@ JS;
 		$js = '<script type="text/javascript">document.getElementById( "cpform" ).style.display = "block";</script>';
 	}
 	echo $cp . $js;
-
 ?>
 </div>
