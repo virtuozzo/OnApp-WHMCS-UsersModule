@@ -81,7 +81,7 @@ class CURL {
 	}
 
 	private function setOptions( ) {
-		if( $this->customOptions[ CURLOPT_HEADER ] ) {
+		if( isset( $this->customOptions[ CURLOPT_HEADER ] ) && $this->customOptions[ CURLOPT_HEADER ] ) {
 			$this->addOption( CURLINFO_HEADER_OUT, true );
 		}
 
@@ -94,7 +94,7 @@ class CURL {
 		$response = curl_exec( $this->ch );
 
 		$this->data[ 'info' ] = curl_getinfo( $this->ch );
-		if( $this->customOptions[ CURLOPT_HEADER ] ) {
+		if( isset( $this->customOptions[ CURLOPT_HEADER ] ) && $this->customOptions[ CURLOPT_HEADER ] ) {
 			$this->data[ 'info' ][ 'request_header' ] = trim( $this->data[ 'info' ][ 'request_header' ] );
 			$this->processHeaders( $response );
 		}
