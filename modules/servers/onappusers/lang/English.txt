@@ -94,4 +94,4 @@ $_LANG[ 'onappusersstatcurrency' ][ 'EUR' ] = '€';
 $_LANG[ 'onappusersstatcurrency' ][ 'GBP' ] = '£';
 
 $_LANG[ 'onappuserslogintocpserver' ] = 'Server:';
-$_LANG[ 'onappuserslogintocpbutton' ] = 'Go to CP';
+$_LANG[ 'onappuserslogintocpbutton' ] = 'Manage My Cloud';
