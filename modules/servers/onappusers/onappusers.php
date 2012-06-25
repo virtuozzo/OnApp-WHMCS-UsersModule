@@ -491,8 +491,13 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			onappusers_OutstandingDetails( $params );
 		}
 
-		$html = injectServerRow( $params );
 		$sets = json_decode( htmlspecialchars_decode( $params[ 'configoption1' ] ), true );
+
+		$html = '';
+		if( $sets[ 'ShowControlPanel' ][ $params[ 'serverid' ] ] ) {
+			$html .= injectServerRow( $params );
+		}
+
 		if( $sets[ 'ShowStat' ][ $params[ 'serverid' ] ] ) {
 			$html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.html' );
 		}

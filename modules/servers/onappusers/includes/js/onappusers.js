@@ -72,6 +72,12 @@ function buildFields( ServersData ) {
 		html += '<td class="fieldarea" id="passtaxes' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
+		// show control panel row
+		html = '<tr>';
+		html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersshowcontrolpanel + '</td>';
+		html += '<td class="fieldarea" id="controlpanel' + server_id + '"></td></tr>';
+		table.find( 'tr:last' ).after( html );
+
 		// process biling plans
 		if( typeof server.BillingPlans == 'object' ) {
 			select = $( '<select name="bills_packageconfigoption' + ++cnt + '"></select>' );
@@ -199,11 +205,18 @@ function buildFields( ServersData ) {
 		}
 		$( '#passtaxes' + server_id ).html( input );
 
-		//insert empty row
-		table.find( 'tr:last' ).after( '<tr><td colspan="2" class="fieldlabel">&nbsp;</td></tr>' );
+		// process show control panel
+		input = $( '<input name="controlpanel_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
+		// checkbox state
+		if( ServersData.ShowControlPanel ) {
+			if( ServersData.ShowControlPanel[ server_id ] ) {
+				$( input ).attr( 'checked', true );
+			}
+		}
+		$( '#controlpanel' + server_id ).html( input );
 	}
 
-	// inputs for storing selected values
+	// input for storing selected values
 	html = '<tr><td colspan="2" class="fieldlabel">';
 	html += '<input type="text" name="packageconfigoption[1]" id="bp2s" value="" size="200" />';
 	html += '</td></tr>';
@@ -241,6 +254,10 @@ function buildFields( ServersData ) {
 	$( "input[name^='passtaxes_packageconfigoption']" ).bind( 'change', function() {
 		storePassTaxes();
 	} );
+	storeShowControlPanel();
+	$( "input[name^='controlpanel_packageconfigoption']" ).bind( 'change', function() {
+		storeShowControlPanel();
+	} );
 
 	// align dropdown lists
 	alignSelects();
@@ -253,8 +270,18 @@ var OnAppUsersData = {
 	SelectedUserGroups: {},
 	SelectedLocales: {},
 	ShowStat: {},
-    PassTaxes: {}
+    PassTaxes: {},
+	ShowControlPanel: {}
 };
+
+function storeShowControlPanel() {
+	$( "input[name^='controlpanel_packageconfigoption']" ).each( function( i, val ) {
+		var index = $( val ).attr( 'rel' );
+		OnAppUsersData.ShowControlPanel[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
+	} );
+
+	$( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
 
 function storePassTaxes() {
 	$( "input[name^='passtaxes_packageconfigoption']" ).each( function( i, val ) {
