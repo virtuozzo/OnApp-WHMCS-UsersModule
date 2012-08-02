@@ -179,15 +179,17 @@ function processData( data ) {
 		cst = parseFloat( tmp.cpus_cost ) + parseFloat( tmp.cpu_shares_cost ) + parseFloat( tmp.cpu_usage_cost ) + parseFloat( tmp.memory_cost ) + parseFloat( tmp.template_cost );
 		cost_vm += cst;
 
+		var currency = CUR[ tmp.currency ] ? CUR[ tmp.currency ] : tmp.currency;
+
 		html_vms += '<tr>';
 		html_vms += '<td>' + date + '</td>';
 		html_vms += '<td>' + tmp.label + '</td>';
-		html_vms += '<td>' + tmp.cpus + ' ' + CUR[ tmp.currency ] + number_format( tmp.cpus_cost, 2, '.', ' ' ) + '</td>';
-		html_vms += '<td>' + tmp.cpu_shares + '% ' + CUR[ tmp.currency ] + number_format( tmp.cpu_shares_cost, 2, '.', ' ' ) + '</td>';
-		html_vms += '<td>' + tmp.cpu_usage + ' ' + CUR[ tmp.currency ] + number_format( tmp.cpu_usage_cost, 2, '.', ' ' ) + '</td>';
-		html_vms += '<td>' + tmp.memory + 'MB ' + CUR[ tmp.currency ] + number_format( tmp.memory_cost, 2, '.', ' ' ) + '</td>';
-		html_vms += '<td>' + tmp.template + ' ' + CUR[ tmp.currency ] + number_format( tmp.template_cost, 2, '.', ' ' ) + '</td>';
-		html_vms += '<td>' + CUR[ tmp.currency ] + cst.toFixed( 2 ) + '</td>';
+		html_vms += '<td>' + tmp.cpus + ' ' + currency + number_format( tmp.cpus_cost, 2, '.', ' ' ) + '</td>';
+		html_vms += '<td>' + tmp.cpu_shares + '% ' + currency + number_format( tmp.cpu_shares_cost, 2, '.', ' ' ) + '</td>';
+		html_vms += '<td>' + tmp.cpu_usage + ' ' + currency + number_format( tmp.cpu_usage_cost, 2, '.', ' ' ) + '</td>';
+		html_vms += '<td>' + tmp.memory + 'MB ' + currency + number_format( tmp.memory_cost, 2, '.', ' ' ) + '</td>';
+		html_vms += '<td>' + tmp.template + ' ' + currency + number_format( tmp.template_cost, 2, '.', ' ' ) + '</td>';
+		html_vms += '<td>' + currency + cst.toFixed( 2 ) + '</td>';
 		html_vms += '</tr>';
 
 		// process disks
@@ -208,13 +210,13 @@ function processData( data ) {
 
 			var d = tmp.stat.disks[ j ];
 			var cst = parseFloat( d.disk_size_cost ) + parseFloat( d.data_read_cost ) + parseFloat( d.data_written_cost ) + parseFloat( d.reads_completed_cost ) + parseFloat( d.writes_completed_cost );
-			size += d.label + ' ' + d.disk_size + 'GB ' + CUR[ tmp.currency ] + number_format( d.disk_size_cost, 2, '.', ' ' );
-			dr += d.data_read + ' ' + CUR[ tmp.currency ] + number_format( d.data_read_cost, 2, '.', ' ' );
-			dw += d.data_written + ' ' + CUR[ tmp.currency ] + number_format( d.data_written_cost, 2, '.', ' ' );
-			rc += d.reads_completed + ' ' + CUR[ tmp.currency ] + number_format( d.reads_completed_cost, 2, '.', ' ' );
-			wc += d.writes_completed + ' ' + CUR[ tmp.currency ] + number_format( d.writes_completed_cost, 2, '.', ' ' );
+			size += d.label + ' ' + d.disk_size + 'GB ' + currency + number_format( d.disk_size_cost, 2, '.', ' ' );
+			dr += d.data_read + ' ' + currency + number_format( d.data_read_cost, 2, '.', ' ' );
+			dw += d.data_written + ' ' + currency + number_format( d.data_written_cost, 2, '.', ' ' );
+			rc += d.reads_completed + ' ' + currency + number_format( d.reads_completed_cost, 2, '.', ' ' );
+			wc += d.writes_completed + ' ' + currency + number_format( d.writes_completed_cost, 2, '.', ' ' );
 			cost_disk += cst;
-			cst_td += CUR[ tmp.currency ] + number_format( cst, 2, '.', ' ' );
+			cst_td += currency + number_format( cst, 2, '.', ' ' );
 		}
 		html_disks += '<td>' + size + '</td>';
 		html_disks += '<td>' + dr + '</td>';
@@ -241,12 +243,12 @@ function processData( data ) {
 
 			var d = tmp.stat.nets[ j ];
 			var cst = parseFloat( d.ip_addresses_cost ) + parseFloat( d.data_received_cost ) + parseFloat( d.data_sent_cost ) + parseFloat( d.rate_cost );
-			int += d.label + ' ' + d.ip_addresses + ' ' + LANG.onappusersstatnet_ips + ' ' + CUR[ tmp.currency ] + number_format( d.ip_addresses_cost, 2, '.', ' ' );
-			dr += d.data_received + ' ' + CUR[ tmp.currency ] + number_format( d.data_received_cost, 2, '.', ' ' );
-			ds += d.data_sent + ' ' + CUR[ tmp.currency ] + number_format( d.data_sent_cost, 2, '.', ' ' );
-			rate += d.rate + ' ' + CUR[ tmp.currency ] + number_format( d.rate_cost, 2, '.', ' ' );
+			int += d.label + ' ' + d.ip_addresses + ' ' + LANG.onappusersstatnet_ips + ' ' + currency + number_format( d.ip_addresses_cost, 2, '.', ' ' );
+			dr += d.data_received + ' ' + currency + number_format( d.data_received_cost, 2, '.', ' ' );
+			ds += d.data_sent + ' ' + currency + number_format( d.data_sent_cost, 2, '.', ' ' );
+			rate += d.rate + ' ' + currency + number_format( d.rate_cost, 2, '.', ' ' );
 			cost_net += cst;
-			cst_td += CUR[ tmp.currency ] + number_format( cst, 2, '.', ' ' );
+			cst_td += currency + number_format( cst, 2, '.', ' ' );
 		}
 		html_nets += '<td>' + int + '</td>';
 		html_nets += '<td>' + rate + '</td>';
@@ -263,7 +265,7 @@ function processData( data ) {
 	// process used resources stat
 	var j = 0;
 	for( i in resources ) {
-		$( 'div#stat-resources tr' ).eq( j ++ ).children().eq( 1 ).html( CUR[ tmp.currency ] + number_format( resources[ i ], 5, '.', ' ' ) );
+		$( 'div#stat-resources tr' ).eq( j ++ ).children().eq( 1 ).html( currency + number_format( resources[ i ], 5, '.', ' ' ) );
 	}
 	$( 'div#stat-resources tr td:first' ).css( 'width', 200 );
 
