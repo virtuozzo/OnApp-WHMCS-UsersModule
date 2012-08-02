@@ -35,10 +35,10 @@ else {
 
 	if( $curl->getRequestInfo( 'http_code' ) == 200 ) {
 		$js = <<<JS
-			$( '#session_login' ).val( '{$data->login}' );
-			$( '#session_password' ).val( '{$data->password}' );
+			$( '#user_login' ).val( '{$data->login}' );
+			$( '#user_password' ).val( '{$data->password}' );
 			var form = $( 'form' );
-			form.attr( 'action', '{$data->server}/session' );
+			form.attr( 'action', '{$data->server}/users/sign_in' );
 			form.attr( 'autocomplete', 'off' );
 			form.submit();
 			$( '#getcp' ).remove();
