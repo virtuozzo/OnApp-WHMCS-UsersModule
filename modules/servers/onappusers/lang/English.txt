@@ -5,6 +5,7 @@ $_LANG[ 'onappuserserrusercreate' ] = 'Can\'t create OnApp User';
 $_LANG[ 'onappuserserrassociateuser' ] = 'Can\'t find OnApp User for client #%s on server #%s';
 $_LANG[ 'onappuserserrusersuspend' ] = 'Can\'t suspend OnApp User';
 $_LANG[ 'onappuserserruserunsuspend' ] = 'Can\'t unsuspend OnApp User';
+$_LANG[ 'onappuserserruserdelete' ] = 'Can\'t delete OnApp User';
 
 $_LANG[ 'onappuserserrorholder' ] = '<b style="color:red;">%s</b>';
 $_LANG[ 'onappuserserrornoserveringroup' ] = 'There are no servers in selected server group';
