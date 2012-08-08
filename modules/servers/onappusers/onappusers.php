@@ -190,14 +190,14 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		$onapp_user->save();
 		if( ! is_null( $onapp_user->getErrorsAsArray() ) ) {
-			$error_msg = $_LANG[ 'onappuserserrusercreate' ] . ':<br/>';
-			$error_msg .= $onapp_user->getErrorsAsString( '<br/>' );
+			$error_msg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
+			$error_msg .= $onapp_user->getErrorsAsString( ', ' );
 			return $error_msg;
 		}
 
 		if( ! is_null( $onapp_user->_obj->getErrorsAsArray() ) ) {
-			$error_msg = $_LANG[ 'onappuserserrusercreate' ] . ':<br/>';
-			$error_msg .= $onapp_user->_obj->getErrorsAsString( '<br/>' );
+			$error_msg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
+			$error_msg .= $onapp_user->_obj->getErrorsAsString( ', ' );
 			return $error_msg;
 		}
 
@@ -260,9 +260,9 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		$onapp_user->_id = $onapp_user_id;
 		$onapp_user->delete();
 
-		if( ! is_null( $onapp_user->error ) ) {
-			$error_msg = $_LANG[ 'onappuserserrusercreate' ] . ':<br/>';
-			$error_msg .= $onapp_user->getErrorsAsString( '<br/>' );
+		if( ! empty( $onapp_user->error ) ) {
+			$error_msg = $_LANG[ 'onappuserserruserdelete' ] . ': ';
+			$error_msg .= $onapp_user->getErrorsAsString( ', ' );
 			return $error_msg;
 		}
 		else {
