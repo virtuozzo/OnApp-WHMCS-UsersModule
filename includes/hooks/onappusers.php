@@ -124,7 +124,7 @@ function hook_onappusers_autosuspend() {
 				tblinvoices.`status` = "Unpaid"
 				AND tblinvoiceitems.`type` = "onappusers"
 				AND tblhosting.`domainstatus` = "Active"
-				AND tblinvoices.`duedate` <= DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
+				AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
 				AND tblhosting.`overideautosuspend` != "on"
 			GROUP BY
 				tblhosting.`id`';
@@ -155,7 +155,7 @@ function hook_onappusers_autoterminate() {
 				tblinvoices.`status` = "Unpaid"
 				AND tblinvoiceitems.`type` = "onappusers"
 				AND tblhosting.`domainstatus` = "Suspended"
-				AND tblinvoices.`duedate` <= DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
+				AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
 				AND tblhosting.`overideautosuspend` != "on"
 			GROUP BY
 				tblhosting.`id`';
