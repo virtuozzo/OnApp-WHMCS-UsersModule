@@ -1,6 +1,7 @@
 #!/bin/sh
 
 tmpDir='/tmp/OnAppWHMCSUserModule'
+installator=`pwd`/`basename $0`
 
 echo
 i=true
@@ -14,7 +15,7 @@ do
 		then
 			i=false
 		else
-			echo "Entered value [ ${OnAppVersion} ] does not seem to be a valid version number"
+			echo "Entered value [ ${OnAppVersion} ] seems to be not valid version number"
 	fi
 done
 
@@ -29,7 +30,7 @@ do
 		then
 			i=false
 		else
-			echo "Entered value [ ${WHMCSDir} ] does not seem to be a valid WHMCS directory"
+			echo "Entered value [ ${WHMCSDir} ] seems to be not valid WHMCS directory"
 	fi
 done
 
@@ -60,8 +61,9 @@ zip -rq9m "./onappusers-`date "+%Y-%m-%d %H-%M-%S"`" "onappusers.php" > /dev/nul
 # copy new files
 cp -r ${tmpDir}/OnApp-WHMCS-UsersModule/* ${WHMCSDir}
 
-# delete tmp folder
+# delete tmp stuff
 rm -rf ${tmpDir}
+rm ${installator}
 
 echo
 echo 'Installation finished'
