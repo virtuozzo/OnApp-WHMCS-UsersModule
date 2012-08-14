@@ -51,12 +51,22 @@ find ./OnApp-WHMCS-UsersModule -type f -maxdepth 1 | xargs rm -rf
 mv ./OnApp-PHP-Wrapper-External/* ./OnApp-WHMCS-UsersModule/includes/wrapper
 
 # backup previous module/wrapper/hooks versions
-cd "${modulesDir}"
-zip -rq9m "./onappusers-`date "+%Y-%m-%d %H-%M-%S"`" "onappusers"  > /dev/null
-cd "${WHMCSDir}/includes"
-zip -rq9m "./wrapper-`date "+%Y-%m-%d %H-%M-%S"`" "wrapper" > /dev/null
-cd "${WHMCSDir}/includes/hooks"
-zip -rq9m "./onappusers-`date "+%Y-%m-%d %H-%M-%S"`" "onappusers.php" > /dev/null
+date=`date "+%Y-%m-%d %H-%M-%S"`
+if command -v zip &> /dev/null
+    then
+		cd "${modulesDir}"
+		zip -rq9m "./onappusers-${date}" "onappusers"  > /dev/null
+		cd "${WHMCSDir}/includes"
+		zip -rq9m "./wrapper-${date}" "wrapper" > /dev/null
+		cd "${WHMCSDir}/includes/hooks"
+		zip -rq9m "./onappusers.php-${date}" "onappusers.php" > /dev/null
+    else
+		echo
+		echo 'zip command was not found, so just rename files'
+		mv "${modulesDir}/onappusers" "${modulesDir}/onappusers-${date}"
+		mv "${WHMCSDir}/includes/wrapper" "${WHMCSDir}/includes/wrapper-${date}"
+		mv "${WHMCSDir}/includes/hooks/onappusers.php" "${WHMCSDir}/includes/hooks/onappusers.php-${date}"
+fi
 
 # copy new files
 cp -r ${tmpDir}/OnApp-WHMCS-UsersModule/* ${WHMCSDir}
