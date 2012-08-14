@@ -2,10 +2,13 @@
 
 // make order
 $I->amOnPage( '/admin/ordersadd.php' );
-$I->selectOption( 'userid', 'LBTest User' );
+$I->selectOption( 'userid', 'Codeception User' );
 $I->selectOption( 'paymentmethod', 'Bank Transfer' );
 $I->selectOption( 'pid0', 'ONAPP Group - OnAppUser' );
-$I->fillField( 'domain0', 'lb.test' );
+$I->fillField( 'domain0', $clientUID . '.codeception.test' );
+$I->uncheckOption( 'adminorderconf' );
+$I->uncheckOption( 'admingenerateinvoice' );
+$I->uncheckOption( 'adminsendinvoice' );
 $I->click( 'Submit Order' );
 $I->see( 'Manage Orders' );
 $I->click( 'Accept Order' );
