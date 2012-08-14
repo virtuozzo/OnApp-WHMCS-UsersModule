@@ -9,8 +9,7 @@ JSON (is builtin since PHP 5.2 or could be installed from [PECL](http://php.net/
 
 
 ## Installation  
-* make any directory
-* go to that directory
-* execute `git clone --recursive git://github.com/OnApp/OnApp-WHMCS-UsersModule.git .`
-* move `includes` and `modules` directories inside your WHMCS root directory
+* execute any of the following commands in your terminal (without asterisk):  
+\* `curl https://raw.github.com/OnApp/OnApp-WHMCS-UsersModule/master/install.sh --O install.sh && sh ./install.sh`  
+\* `wget https://raw.github.com/OnApp/OnApp-WHMCS-UsersModule/master/install.sh && sh ./install.sh`
 * setup cronjobs according to [instruction](https://github.com/OnApp/OnApp-WHMCS-UsersModule/blob/master/modules/servers/onappusers/cronjobs/README.md)
