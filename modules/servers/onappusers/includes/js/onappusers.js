@@ -217,8 +217,8 @@ function buildFields( ServersData ) {
 	}
 
 	// input for storing selected values
-	html = '<tr><td colspan="2" class="fieldlabel">';
-	html += '<input type="text" name="packageconfigoption[1]" id="bp2s" value="" size="200" />';
+	html = '<tr><td colspan="2" class="fieldarea">';
+	html += '<input type="text" name="packageconfigoption[1]" id="bp2s" value="" size="230" />';
 	html += '</td></tr>';
 
 	table.append( $( html ) );

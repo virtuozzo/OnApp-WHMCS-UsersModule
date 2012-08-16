@@ -4,7 +4,7 @@
 $I->amOnPage( '/admin/ordersadd.php' );
 $I->selectOption( 'userid', 'Codeception User' );
 $I->selectOption( 'paymentmethod', 'Bank Transfer' );
-$I->selectOption( 'pid0', 'ONAPP Group - OnAppUser' );
+$I->selectOption( 'pid0', $server[ 'onappusers' ][ 'name' ] );
 $I->fillField( 'domain0', $clientUID . '.codeception.test' );
 $I->uncheckOption( 'adminorderconf' );
 $I->uncheckOption( 'admingenerateinvoice' );
