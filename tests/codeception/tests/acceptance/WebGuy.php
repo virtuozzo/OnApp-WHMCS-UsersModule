@@ -595,6 +595,51 @@ class WebGuy extends \Codeception\AbstractGuy
    /**
     * This method is generated. DO NOT EDIT.
     *
+    * @see \Codeception\Module\WebHelper::getServerID()
+    */
+    public function getServerID() {
+        $this->scenario->action('getServerID', func_get_args());
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+   /**
+    * This method is generated. DO NOT EDIT.
+    *
+    * @see \Codeception\Module\WebHelper::getServerGroupID()
+    */
+    public function getServerGroupID() {
+        $this->scenario->action('getServerGroupID', func_get_args());
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+   /**
+    * This method is generated. DO NOT EDIT.
+    *
+    * @see \Codeception\Module\WebHelper::getTokenFromPage()
+    */
+    public function getTokenFromPage() {
+        $this->scenario->action('getTokenFromPage', func_get_args());
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+   /**
+    * This method is generated. DO NOT EDIT.
+    *
     * @see \Codeception\Module\WebDebug::makeAScreenshot()
     */
     public function makeAScreenshot($name = null) {
