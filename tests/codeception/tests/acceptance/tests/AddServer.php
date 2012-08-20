@@ -1,5 +1,7 @@
 <?php
 
+$I->amOnPage( '/admin/configservers.php' );
+$I->dontSee( $server[ 'onappusers' ][ 'name' ] );
 $I->amOnPage( '/admin/configservers.php?action=manage' );
 $I->see( 'Add Server', 'h2' );
 

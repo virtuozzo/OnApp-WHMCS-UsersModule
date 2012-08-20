@@ -625,10 +625,70 @@ class WebGuy extends \Codeception\AbstractGuy
    /**
     * This method is generated. DO NOT EDIT.
     *
+    * @see \Codeception\Module\WebHelper::getProductID()
+    */
+    public function getProductID() {
+        $this->scenario->action('getProductID', func_get_args());
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+   /**
+    * This method is generated. DO NOT EDIT.
+    *
+    * @see \Codeception\Module\WebHelper::getProductGroupID()
+    */
+    public function getProductGroupID() {
+        $this->scenario->action('getProductGroupID', func_get_args());
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+   /**
+    * This method is generated. DO NOT EDIT.
+    *
     * @see \Codeception\Module\WebHelper::getTokenFromPage()
     */
     public function getTokenFromPage() {
         $this->scenario->action('getTokenFromPage', func_get_args());
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+   /**
+    * This method is generated. DO NOT EDIT.
+    *
+    * @see \Codeception\Module\WebHelper::cleanUPStore()
+    */
+    public function cleanUPStore() {
+        $this->scenario->action('cleanUPStore', func_get_args());
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+   /**
+    * This method is generated. DO NOT EDIT.
+    *
+    * @see \Codeception\Module\WebHelper::doCleanUP()
+    */
+    public function doCleanUP() {
+        $this->scenario->action('doCleanUP', func_get_args());
         if ($this->scenario->running()) {
             $result = $this->scenario->runStep();
             return new Maybe($result);

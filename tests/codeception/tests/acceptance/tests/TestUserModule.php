@@ -22,6 +22,9 @@ $I->click( "//input[@value='Create']" );
 $I->click( "//div[11]/div[3]/div/button[1]" );
 $I->see( 'Service Created Successfully' );
 
+// store data for cleanup
+$I->cleanUPStore();
+
 // suspend service
 $I->click( "//input[@value='Suspend']" );
 $I->click( "//div[12]/div[3]/div/button[1]" );

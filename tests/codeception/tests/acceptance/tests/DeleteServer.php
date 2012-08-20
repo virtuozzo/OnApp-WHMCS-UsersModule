@@ -4,7 +4,6 @@ $I->amOnPage( '/admin/configservers.php' );
 $I->see( 'Servers', 'h1' );
 
 // delete server
-$token = $I->getTokenFromPage();
 $I->amOnPage( '/admin/configservers.php?action=delete&id=' . $I->getServerID() . '&token=' . $token );
 $I->see( 'Server Deleted Successfully!' );
 

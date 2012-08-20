@@ -1,6 +1,8 @@
 <?php
 
 // create product group
+$I->amOnPage( '/admin/configproducts.php' );
+$I->dontSee( $server[ 'onappusers' ][ 'name' ] );
 $I->amOnPage( '/admin/configproducts.php?action=creategroup' );
 $I->see( 'Create Group' );
 $I->fillField( 'name', $server[ 'onappusers' ][ 'name' ] );
