@@ -670,36 +670,6 @@ class WebGuy extends \Codeception\AbstractGuy
    /**
     * This method is generated. DO NOT EDIT.
     *
-    * @see \Codeception\Module\WebHelper::cleanUPStore()
-    */
-    public function cleanUPStore() {
-        $this->scenario->action('cleanUPStore', func_get_args());
-        if ($this->scenario->running()) {
-            $result = $this->scenario->runStep();
-            return new Maybe($result);
-        }
-        return new Maybe();
-    }
-
- 
-   /**
-    * This method is generated. DO NOT EDIT.
-    *
-    * @see \Codeception\Module\WebHelper::doCleanUP()
-    */
-    public function doCleanUP() {
-        $this->scenario->action('doCleanUP', func_get_args());
-        if ($this->scenario->running()) {
-            $result = $this->scenario->runStep();
-            return new Maybe($result);
-        }
-        return new Maybe();
-    }
-
- 
-   /**
-    * This method is generated. DO NOT EDIT.
-    *
     * @see \Codeception\Module\WebDebug::makeAScreenshot()
     */
     public function makeAScreenshot($name = null) {

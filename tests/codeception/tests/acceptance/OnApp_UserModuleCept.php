@@ -10,5 +10,3 @@ include 'tests/TestUserModule.php';
 include 'tests/DeleteClient.php';
 include 'tests/DeleteServer.php';
 include 'tests/DeleteProduct.php';
-
-$I->doCleanUP();
