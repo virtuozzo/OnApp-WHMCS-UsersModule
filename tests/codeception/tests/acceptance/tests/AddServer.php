@@ -7,7 +7,7 @@ $I->see( 'Add Server', 'h2' );
 
 // add server
 $I->fillField( 'name', $server[ 'onappusers' ][ 'name' ] );
-$I->fillField( 'ipaddress', $server[ 'onappusers' ][ 'IP' ] );
+$I->fillField( 'ipaddress', $server[ 'onappusers' ][ 'host' ] );
 $I->fillField( 'username', $server[ 'onappusers' ][ 'user' ] );
 $I->fillField( 'password', $server[ 'onappusers' ][ 'pass' ] );
 $I->selectOption( 'type', $server[ 'onappusers' ][ 'type' ] );
