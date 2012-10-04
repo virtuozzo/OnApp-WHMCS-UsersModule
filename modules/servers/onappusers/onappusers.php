@@ -98,8 +98,14 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 				}
 			}
 
-			$sql = 'SELECT prod.`configoption1` AS options, prod.`servergroup` AS `group`'
-					. ' FROM `tblproducts` AS prod WHERE prod.`id` = ' . (int)$_GET[ 'id' ];
+			$sql = 'SELECT
+						prod.`configoption1` AS options,
+						prod.`servergroup` AS `group`
+					FROM
+						`tblproducts` AS prod
+					WHERE
+						prod.`id` = :id';
+			$sql = str_replace( ':id', (int)$_GET[ 'id' ], $sql );
 			$results = full_query( $sql );
 			$results = mysql_fetch_assoc( $results );
 			$results[ 'options' ] = htmlspecialchars_decode( $results[ 'options' ] );
