@@ -264,7 +264,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		}
 
 		$onapp_user->_id = $onapp_user_id;
-		$onapp_user->delete();
+		$onapp_user->delete( true );
 
 		if( ! empty( $onapp_user->error ) ) {
 			$error_msg = $_LANG[ 'onappuserserruserdelete' ] . ': ';
@@ -272,8 +272,12 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			return $error_msg;
 		}
 		else {
-			$query = 'DELETE FROM tblonappusers WHERE service_id = ' . (int)$serviceid
-					. ' AND client_id = ' . (int)$client_id . ' AND server_id = ' . (int)$server_id;
+			$query = 'DELETE FROM
+						tblonappusers
+					WHERE
+						service_id = ' . (int)$serviceid . '
+						AND client_id = ' . (int)$client_id . '
+						AND server_id = ' . (int)$server_id;
 			full_query( $query );
 		}
 
