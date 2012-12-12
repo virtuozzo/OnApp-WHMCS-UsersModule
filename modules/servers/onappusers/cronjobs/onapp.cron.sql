@@ -89,7 +89,6 @@ CREATE TABLE IF NOT EXISTS `onapp_itemized_resources` (
 	UNIQUE KEY `date_users_server_integrity` (`whmcs_user_id`,`onapp_user_id`,`server_id`,`date`)
 ) DEFAULT CHARSET=utf8;
 
-
 -- Create syntax for TABLE 'onapp_itemized_invoices'
 CREATE TABLE IF NOT EXISTS `onapp_itemized_invoices` (
 	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -100,4 +99,22 @@ CREATE TABLE IF NOT EXISTS `onapp_itemized_invoices` (
 	`date` datetime NOT NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE KEY `invoive_check_integrity` (`whmcs_user_id`,`onapp_user_id`,`server_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
+
+-- Create syntax for TABLE 'onapp_itemized_last_check'
+CREATE TABLE IF NOT EXISTS `onapp_itemized_last_check` (
+	`serverID` int(10) unsigned NOT NULL,
+	`WHMCSUserID` int(10) unsigned NOT NULL,
+	`OnAppUserID` int(10) unsigned NOT NULL,
+	`Date` datetime NOT NULL,
+	UNIQUE KEY `integrety` (`serverID`,`WHMCSUserID`,`OnAppUserID`)
+) DEFAULT CHARSET=utf8;
+
+-- Add OnApp 3 columns
+-- Table `onapp_itemized_disks`
+ALTER TABLE `onapp_itemized_disks` ADD `disk_min_iops` FLOAT(10, 2) NOT NULL;
+
+ALTER TABLE `onapp_itemized_disks` ADD `disk_min_iops_cost` FLOAT(10, 2) NOT NULL;
+
+-- Table `onapp_itemized_resources`
+ALTER TABLE `onapp_itemized_resources` ADD `customer_network_cost` FLOAT(10, 2) NOT NULL;
