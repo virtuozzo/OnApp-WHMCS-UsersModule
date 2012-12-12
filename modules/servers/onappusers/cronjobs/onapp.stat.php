@@ -22,12 +22,16 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 			if( isset( $_SERVER[ 'argv' ][ 1 ] ) && $this->validateDate( $_SERVER[ 'argv' ][ 1 ] ) ) {
 				$startDate = $_SERVER[ 'argv' ][ 1 ];
 			}
-			elseif( ! $startDate = mysql_result( mysql_query( $qry ), 0 ) ) {
-				$startDate = gmdate( 'Y-m-01 00:00:00' );
-			}
 			else {
-				$startDate = date( 'Y-m-d H:00:00', strtotime( $startDate ) - ( 2 * 3600 ) );
-				$startDate = substr_replace( $startDate, '00', - 2 );
+				$startDate = mysql_query( $qry );
+				if( ( $startDate === false ) || ( mysql_num_rows( $startDate ) == 0 ) ) {
+					$startDate = gmdate( 'Y-m-01 00:00:00' );
+				}
+				else {
+					$startDate = mysql_result( $startDate, 0 );
+					$startDate = date( 'Y-m-d H:00:00', strtotime( $startDate ) - ( 2 * 3600 ) );
+					$startDate = substr_replace( $startDate, '00', - 2 );
+				}
 			}
 
 			$date = array(
