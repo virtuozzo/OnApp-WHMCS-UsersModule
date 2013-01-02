@@ -13,11 +13,12 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 		while( $client = mysql_fetch_assoc( $this->clients ) ) {
 			//get last stat retrieving date
 			$qry = 'SELECT
-					MAX( `date` )
-				FROM
-					`onapp_itemized_stat`
-				WHERE
-					`whmcs_user_id` = ' . $client[ 'client_id' ];
+						MAX( `date` )
+					FROM
+						`onapp_itemized_stat`
+					WHERE
+						`whmcs_user_id` = :id';
+			$qry = str_replace( ':id', $client[ 'client_id' ], $qry );
 
 			if( isset( $_SERVER[ 'argv' ][ 1 ] ) && $this->validateDate( $_SERVER[ 'argv' ][ 1 ] ) ) {
 				$startDate = $_SERVER[ 'argv' ][ 1 ];
