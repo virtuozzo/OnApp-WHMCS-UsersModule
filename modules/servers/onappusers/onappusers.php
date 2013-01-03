@@ -19,7 +19,6 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 			return $configarray;
 		}
 
-		// Should return an array of the module options for each product - maximum of 24
 		if( ( $res = create_table() ) !== true ) {
 			$configarray = array(
 				'<b style="color:red;">' . $res . '</b>' => array()
@@ -45,7 +44,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 					LEFT JOIN
 						`tblservergroups` AS grp ON grp.`id` = rel.`groupid`
 					WHERE
-						grp.`id` = ' . $servergroup;
+						grp.`id` = :servergroup';
+			$sql = str_replace( ':servergroup', $servergroup, $sql );
 
 			$res = full_query( $sql );
 			$serversData = array();
