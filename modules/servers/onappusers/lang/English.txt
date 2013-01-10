@@ -97,3 +97,13 @@ $_LANG[ 'onappusersstatcurrency' ][ 'GBP' ] = '£';
 
 $_LANG[ 'onappuserslogintocpserver' ] = 'Server:';
 $_LANG[ 'onappuserslogintocpbutton' ] = 'Manage My Cloud';
+
+
+$_LANG[ 'onapptimetocrackseconds' ] = 'seconds';
+$_LANG[ 'onapptimetocrackminutes' ] = 'minutes';
+$_LANG[ 'onapptimetocrackhours' ] = 'hours';
+$_LANG[ 'onapptimetocrackdays' ] = 'days';
+$_LANG[ 'onapptimetocrackmonths' ] = 'months';
+$_LANG[ 'onapptimetocrackyears' ] = 'years';
+$_LANG[ 'onapptimetocrack' ] = 'to crack';
+$_LANG[ 'onapppasswordstrenght' ] = 'Password should be at least 6 characters';
