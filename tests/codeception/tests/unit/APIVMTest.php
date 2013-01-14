@@ -34,8 +34,6 @@ class APIVMTest extends \Codeception\TestCase\Test {
 
 	// tests
 	public function testCreateVM() {
-		//$this->markTestSkipped();
-
 		$this->getTempateIds();
 		$this->getHypervisorsIDs();
 		$this->getDataStores();
@@ -57,7 +55,6 @@ class APIVMTest extends \Codeception\TestCase\Test {
 		$vm->template_id                    = $this->templatesIDs[ 0 ];
 		$vm->initial_root_password          = 'testpwd';
 		$vm->primary_disk_size              = 5;
-		//$vm->hypervisor_id                  = $this->hypervisorsIDs[ 5 ];
 
 		$vm->save();
 		$this->assertEmpty( $vm->getErrorsAsArray(), 'There are errors while creating VM' );
