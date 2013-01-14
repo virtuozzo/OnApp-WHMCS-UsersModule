@@ -35,11 +35,10 @@ class APIUserTest extends \Codeception\TestCase\Test {
 		$user->last_name = $rand;
 		$user->login = $rand;
 		$user->password = $rand;
-		$user->locale = 'ru';
 		$user->role_ids = array( 2 );
 		$user->user_group_id = $this->getUserGroup();
 		$user->save();
-		$this->assertEquals( $user->inheritedObject->status, 'active' );
+		$this->assertEquals( $user->loadedObject->status, 'active' );
 		self::$dataStorage[ 'user_object' ] = $user;
 	}
 
@@ -48,7 +47,7 @@ class APIUserTest extends \Codeception\TestCase\Test {
 		$user = self::$dataStorage[ 'user_object' ];
 		$user->first_name .= $rand;
 		$user->last_name .= $rand;
-		unset( $user->login, $user->inheritedObject->login );
+		unset( $user->login, $user->loadedObject->login );
 		$user->save();
 		$this->assertNull( $user->getErrorsAsArray() );
 	}
@@ -56,31 +55,31 @@ class APIUserTest extends \Codeception\TestCase\Test {
 	public function testSuspendUser() {
 		$user = self::$dataStorage[ 'user_object' ];
 		$user->suspend();
-		$this->assertEquals( $user->inheritedObject->status, 'suspended' );
+		$this->assertEquals( $user->loadedObject->status, 'suspended' );
 	}
 
 	public function testUnsuspendUser() {
 		$user = self::$dataStorage[ 'user_object' ];
 		$user->activate_user();
-		$this->assertEquals( $user->inheritedObject->status, 'active' );
+		$this->assertEquals( $user->loadedObject->status, 'active' );
 	}
 
 	public function testDeleteUser() {
 		$user = self::$dataStorage[ 'user_object' ];
-		$user->delete( TRUE );
+		$user->delete( true );
 		$this->assertNull( $user->getErrorsAsArray() );
 	}
 
 	private function getUserGroup() {
 		$groups = $this->getObject( 'OnApp_UserGroup' )->getList();
-		$this->assertFalse( empty( $groups ), 'Can\t get user groups' );
+		$this->assertFalse( empty( $groups ), 'Can\'t get user groups' );
 		return $groups[ 0 ]->id;
 	}
 
 	private function getObject( $class ) {
 		$obj = new $class;
 		$obj->auth( self::$dataStorage[ 'host' ], self::$dataStorage[ 'user' ], self::$dataStorage[ 'pass' ] );
-		$this->assertTrue( $obj->_is_auth, 'Authorization failed' );
+		$this->assertTrue( empty( $obj->getErrorsAsArray ), 'Authorization failed' );
 		return $obj;
 	}
 }

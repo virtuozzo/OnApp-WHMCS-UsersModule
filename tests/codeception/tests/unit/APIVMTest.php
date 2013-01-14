@@ -34,18 +34,12 @@ class APIVMTest extends \Codeception\TestCase\Test {
 
 	// tests
 	public function testCreateVM() {
-		$this->markTestSkipped();
+		//$this->markTestSkipped();
 
 		$this->getTempateIds();
 		$this->getHypervisorsIDs();
 		$this->getDataStores();
 		$this->getNetworks();
-
-		//		$vm = $this->getObject( 'OnApp_VirtualMachine' );
-		//		$vm->load('hspvsz1nkpe0q8');
-		//		self::$dataStorage[ 'vm_object' ] = $vm;
-		//		return;
-		//		$this->TMPtestCreateVM();return;
 
 		$vm = $this->getObject( 'OnApp_VirtualMachine' );
 
@@ -57,82 +51,57 @@ class APIVMTest extends \Codeception\TestCase\Test {
 		$vm->cpus                           = 1;
 		$vm->cpu_shares                     = 1;
 		$vm->swap_disk_size                 = 1;
-		$vm->required_virtual_machine_build = FALSE;
-		$vm->allowed_hot_migrate            = FALSE;
-		$vm->required_automatic_backup      = FALSE;
+		$vm->required_virtual_machine_build = false;
+		$vm->allowed_hot_migrate            = false;
+		$vm->required_automatic_backup      = false;
 		$vm->template_id                    = $this->templatesIDs[ 0 ];
 		$vm->initial_root_password          = 'testpwd';
 		$vm->primary_disk_size              = 5;
-		$vm->hypervisor_id                  = $this->hypervisorsIDs[ 5 ];
+		//$vm->hypervisor_id                  = $this->hypervisorsIDs[ 5 ];
 
 		$vm->save();
 		$this->assertEmpty( $vm->getErrorsAsArray(), 'There are errors while creating VM' );
 
 		$repeat_times = round( 60 / 5 );
-		for( $i = 0; ( $vm->inheritedObject->locked == 'true' && $i < $repeat_times ); $i ++ ) {
+		for( $i = 0; ( $vm->loadedObject->locked == 'true' && $i < $repeat_times ); $i ++ ) {
 			sleep( 5 );
 			$vm->load();
 		}
 		self::$dataStorage[ 'vm_object' ] = $vm;
 	}
 
-	public function TMPtestCreateVM() {
-		$vm = $this->getObject( 'OnApp_VirtualMachine' );
+	public function testBuildVM() {
+		$this->markTestSkipped();
 
-		$vm->label                          = 'testvm' . time();
-		$vm->hostname                       = 'test.com';
-		$vm->primary_network_id             = 1;
-		$vm->required_ip_address_assignment = 1;
-		$vm->memory                         = 256;
-		$vm->cpus                           = 1;
-		$vm->cpu_shares                     = 1;
-		$vm->swap_disk_size                 = 1;
-		$vm->required_virtual_machine_build = FALSE;
-		$vm->allowed_hot_migrate            = FALSE;
-		$vm->required_automatic_backup      = FALSE;
-		$vm->template_id                    = 1;
-		$vm->initial_root_password          = 'testpwd';
-		$vm->primary_disk_size              = 5;
-		$vm->hypervisor_id                  = 28;
-
-		$vm->save();
-		//		mail( 'devman@localhost', __METHOD__ . ' | ' . __LINE__, print_r( $vm, 1 ) );
-		$this->assertEmpty( $vm->getErrorsAsArray(), 'There are errors while creating VM' );
-
-		$repeat_times = round( 60 / 5 );
-		for( $i = 0; ( $vm->inheritedObject->locked == 'true' && $i < $repeat_times ); $i ++ ) {
-			sleep( 5 );
-			$vm->load();
-		}
-		self::$dataStorage[ 'vm_object' ] = $vm;
-	}
-
-	public function QtestBuildVM() {
 		$vm = self::$dataStorage[ 'vm_object' ];
 		$vm->build();
 		$msg = '';
-		if( ! empty( $vm->inheritedObject->errors ) ) {
-			$msg = implode( PHP_EOL, $vm->inheritedObject->errors );
+		if( ! empty( $vm->loadedObject->errors ) ) {
+			$msg = implode( PHP_EOL, $vm->loadedObject->errors );
 		}
 		else {
 			$i = 1;
-			while( ( $vm->inheritedObject->built != TRUE ) || ( $i > 30 ) ) {
+			while( ( $vm->loadedObject->built != true ) || ( $i > 30 ) ) {
 				sleep( 5 );
 				$vm->load();
 				++$i;
 			}
 		}
-		$this->assertTrue( $vm->inheritedObject->built, $msg );
+		$this->assertTrue( $vm->loadedObject->built, $msg );
 	}
 
-	public function QtestEditVM() {
+	public function testEditVM() {
+		$this->markTestSkipped();
+
 		$vm        = self::$dataStorage[ 'vm_object' ];
 		$vm->label = 'Edited';
 		$vm->save();
 		$this->assertEmpty( $vm->getErrorsAsArray(), 'There are errors while editing VM' );
 	}
 
-	public function QtestAddNetworkInterfaceToVM() {
+	public function testAddNetworkInterfaceToVM() {
+		$this->markTestSkipped();
+
 		$vm               = self::$dataStorage[ 'vm_object' ];
 		$networkInterface = $this->getObject( 'OnApp_VirtualMachine_NetworkInterface' );
 		$networkJoin      = $this->getObject( 'OnApp_Hypervisor_NetworkJoin' );
@@ -141,7 +110,7 @@ class APIVMTest extends \Codeception\TestCase\Test {
 			$this->fail( 'There are no networks assigned to this Hypervisor ( id = ' . $vm->hypervisor_id . ' )' );
 		}
 
-		$networkInterface->virtual_machine_id = $vm->inheritedObject->id;
+		$networkInterface->virtual_machine_id = $vm->loadedObject->id;
 		$networkInterface->label              = 'test' . time();
 		$networkInterface->network_join_id    = $networkJoinList[ 0 ]->id;
 
@@ -152,19 +121,14 @@ class APIVMTest extends \Codeception\TestCase\Test {
 	}
 
 	public function testAddIP() {
-		$vm = new stdClass();
-		$vm->inheritedObject = new stdClass();
-		$vm->inheritedObject->id = 6384;
-		$vm->inheritedObject->hypervisor_id = 28;
-
-		//$vm               = self::$dataStorage[ 'vm_object' ];
+		$vm               = self::$dataStorage[ 'vm_object' ];
 		$networkInterface = $this->getObject( 'OnApp_VirtualMachine_NetworkInterface' );
 		$networkJoin      = $this->getObject( 'OnApp_Hypervisor_NetworkJoin' );
-		$networkJoinList  = $networkJoin->getList( $vm->inheritedObject->hypervisor_id );
+		$networkJoinList  = $networkJoin->getList( $vm->loadedObject->hypervisor_id );
 		if( empty( $networkJoinList ) ) {
-			$this->fail( 'There are no networks assigned to this Hypervisor ( id = ' . $vm->inheritedObject->hypervisor_id . ' )' );
+			$this->fail( 'There are no networks assigned to this Hypervisor ( id = ' . $vm->loadedObject->hypervisor_id . ' )' );
 		}
-		$networkInterfaceList = $networkInterface->getList( $vm->inheritedObject->id );
+		$networkInterfaceList = $networkInterface->getList( $vm->loadedObject->id );
 
 		if( empty( $networkInterfaceList ) ) {
 			$this->fail( 'VM has no Network Interfaces' );
@@ -201,7 +165,7 @@ class APIVMTest extends \Codeception\TestCase\Test {
 
 		if( ! is_null( $IPsList ) ) {
 			foreach( $IPsList as $item ) {
-				if( $item->free == TRUE ) {
+				if( $item->free == true ) {
 					$freeIPsIDs[ ] = $item->id;
 				}
 			}
@@ -228,7 +192,6 @@ class APIVMTest extends \Codeception\TestCase\Test {
 		foreach( $dataStoresList as $item ) {
 			$this->dataStoresIDs[ ] = $item->id;
 		}
-		//		mail( 'devman@localhost', __METHOD__.' | '.__LINE__, print_r( $this->dataStoresIDs, 1 ) );
 	}
 
 	private function getHypervisorsIDs() {
@@ -237,7 +200,6 @@ class APIVMTest extends \Codeception\TestCase\Test {
 		foreach( $hypervisorsList as $item ) {
 			$this->hypervisorsIDs[ ] = $item->id;
 		}
-		//		mail( 'devman@localhost', __METHOD__ . ' | ' . __LINE__, print_r( $this->hypervisorsIDs, 1 ) );
 	}
 
 	private function getTempateIds() {
@@ -258,13 +220,12 @@ class APIVMTest extends \Codeception\TestCase\Test {
 				}
 			}
 		}
-		//		mail( 'devman@localhost', __METHOD__ . ' | ' . __LINE__, print_r( $this->templatesIDs, 1 ) );
 	}
 
 	private function getObject( $class ) {
 		$obj = new $class;
 		$obj->auth( self::$dataStorage[ 'host' ], self::$dataStorage[ 'user' ], self::$dataStorage[ 'pass' ] );
-		$this->assertTrue( $obj->is_auth, 'Authorization failed' );
+		$this->assertTrue( empty( $obj->getErrorsAsArray ), 'Authorization failed' );
 		return $obj;
 	}
 }
