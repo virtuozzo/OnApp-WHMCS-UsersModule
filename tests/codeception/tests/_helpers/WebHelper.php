@@ -7,10 +7,10 @@ class WebHelper extends \Codeception\Module {
 	protected $data;
 
 	public function __construct() {
-		$path = \Codeception\Configuration::projectDir() . \Codeception\Configuration::config()[ 'paths' ][ 'tests' ];
+		$path = \Codeception\Configuration::config();
+		$path = \Codeception\Configuration::projectDir() . $path[ 'paths' ][ 'tests' ];
 		include_once $path . '/acceptance/_bootstrap.php';
 		$this->data = $server[ 'onappusers' ];
-
 	}
 
 	public function getServerID() {

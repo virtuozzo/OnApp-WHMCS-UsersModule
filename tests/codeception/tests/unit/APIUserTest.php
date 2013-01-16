@@ -18,6 +18,7 @@ class APIUserTest extends \Codeception\TestCase\Test {
 
 		$this->dispatcher->dispatch( 'test.before', new \Codeception\Event\Test( $this ) );
 		$this->codeGuy = new CodeGuy( $scenario = new \Codeception\Scenario( $this ) );
+		$this->expectedException = false;
 		$scenario->run();
 		// initialization code
 	}
@@ -43,31 +44,37 @@ class APIUserTest extends \Codeception\TestCase\Test {
 	}
 
 	public function testEditUser() {
-		$rand = 'Edit';
+		$this->assertNotNull( self::$dataStorage[ 'user_object' ], 'Can\'t get active user' );
 		$user = self::$dataStorage[ 'user_object' ];
+		$rand = 'Edit';
 		$user->first_name .= $rand;
 		$user->last_name .= $rand;
 		unset( $user->login, $user->loadedObject->login );
 		$user->save();
-		$this->assertNull( $user->getErrorsAsArray() );
+		$this->assertFalse( $user->isError(), $user->getErrorsAsString() );
 	}
 
 	public function testSuspendUser() {
+		$this->assertNotNull( self::$dataStorage[ 'user_object' ], 'Can\'t get active user' );
 		$user = self::$dataStorage[ 'user_object' ];
 		$user->suspend();
 		$this->assertEquals( $user->loadedObject->status, 'suspended' );
+		$this->assertFalse( $user->isError(), $user->getErrorsAsString() );
 	}
 
 	public function testUnsuspendUser() {
+		$this->assertNotNull( self::$dataStorage[ 'user_object' ], 'Can\'t get active user' );
 		$user = self::$dataStorage[ 'user_object' ];
 		$user->activate_user();
 		$this->assertEquals( $user->loadedObject->status, 'active' );
+		$this->assertFalse( $user->isError(), $user->getErrorsAsString() );
 	}
 
 	public function testDeleteUser() {
+		$this->assertNotNull( self::$dataStorage[ 'user_object' ], 'Can\'t get active user' );
 		$user = self::$dataStorage[ 'user_object' ];
 		$user->delete( true );
-		$this->assertNull( $user->getErrorsAsArray() );
+		$this->assertFalse( $user->isError(), $user->getErrorsAsString() );
 	}
 
 	private function getUserGroup() {
@@ -76,10 +83,16 @@ class APIUserTest extends \Codeception\TestCase\Test {
 		return $groups[ 0 ]->id;
 	}
 
+	/**
+	 * @param $class
+	 *
+	 * @return OnApp_User
+	 */
 	private function getObject( $class ) {
 		$obj = new $class;
 		$obj->auth( self::$dataStorage[ 'host' ], self::$dataStorage[ 'user' ], self::$dataStorage[ 'pass' ] );
-		$this->assertTrue( empty( $obj->getErrorsAsArray ), 'Authorization failed' );
+		$obj->getOnAppVersion();
+		$this->assertFalse( $obj->isError(), $obj->getErrorsAsString() );
 		return $obj;
 	}
 }
