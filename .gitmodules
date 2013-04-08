@@ -1,3 +1,0 @@
-[submodule "includes/wrapper"]
-	path = includes/wrapper
-	url = https://github.com/OnApp/OnApp-PHP-Wrapper-External.git
