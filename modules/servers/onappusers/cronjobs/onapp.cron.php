@@ -66,7 +66,7 @@ abstract class OnApp_UserModule_Cron {
 	}
 
 	protected function getRequiredFiles() {
-		global $whmcsmysql, $cc_encryption_hash, $templates_compiledir, $CONFIG, $_LANG;
+		global $whmcsmysql, $cc_encryption_hash, $templates_compiledir, $CONFIG, $_LANG, $whmcs;
 		require_once $this->root . 'dbconnect.php';
 		include_once $this->root . 'includes/functions.php';
 
