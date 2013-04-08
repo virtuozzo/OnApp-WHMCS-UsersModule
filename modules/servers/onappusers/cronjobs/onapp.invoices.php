@@ -223,8 +223,6 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 	private function getAdditionalFiles() {
 		include_once $this->root . 'includes/processinvoices.php';
 		include_once $this->root . 'includes/invoicefunctions.php';
-		include_once $this->root . 'includes/tcpdf.php';
-		include_once $this->root . 'includes/smarty/Smarty.class.php';
 	}
 }
 new OnApp_UserModule_Cron_Invoices;
