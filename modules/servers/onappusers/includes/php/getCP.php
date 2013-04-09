@@ -1,10 +1,13 @@
 <?php
 
-session_start();
-
 if( !isset( $_POST[ 'authenticity_token' ] ) ) {
 	exit( 'Don\'t allowed!' );
 }
+
+$root = dirname( dirname( dirname( dirname( dirname( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) ) ) ) ) ) . DIRECTORY_SEPARATOR;
+require $root . 'dbconnect.php';
+require $root . 'includes/functions.php';
+require $root . 'includes/clientareafunctions.php';
 
 $iv_size   = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
 $iv        = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
