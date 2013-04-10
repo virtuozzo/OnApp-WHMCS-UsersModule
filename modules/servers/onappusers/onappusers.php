@@ -451,7 +451,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	 * Load $_LANG from language file
 	 */
 	function load_lang() {
-		global $_LANG;
+		global $_LANG, $CONFIG;
 		$dh = opendir( dirname( __FILE__ ) . '/lang/' );
 
 		while( false !== $file2 = readdir( $dh ) ) {
@@ -465,14 +465,15 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		closedir( $dh );
 
-		$language = @$_SESSION[ 'Language' ];
+		$language = isset( $_SESSION[ 'Language' ] ) ? $_SESSION[ 'Language' ] : $CONFIG[ 'Language' ];
+		$language = ucfirst( $language );
 
 		if( ! in_array( $language, $arrayoflanguagefiles ) ) {
 			$language = "English";
 		}
 
 		ob_start();
-		include dirname( __FILE__ ) . "/lang/$language.txt";
+		include dirname( __FILE__ ) . '/lang/' . $language . '.txt';
 		$templang = ob_get_contents();
 		ob_end_clean();
 		eval ( $templang );
