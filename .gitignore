@@ -9,3 +9,4 @@ build_*
 *.bak*
 TODO
 tests/codeception/tests/acceptance/_bootstrap.php
+Swedish.txt
