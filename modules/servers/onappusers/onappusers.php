@@ -452,32 +452,19 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	 */
 	function load_lang() {
 		global $_LANG, $CONFIG;
-		$dh = opendir( dirname( __FILE__ ) . '/lang/' );
 
-		while( false !== $file2 = readdir( $dh ) ) {
-			if( ! is_dir( '' . 'lang/' . $file2 ) ) {
-				$pieces = explode( '.', $file2 );
-				if( $pieces[ 1 ] == 'txt' ) {
-					$arrayoflanguagefiles[ ] = $pieces[ 0 ];
-				}
-			}
-		}
-
-		closedir( $dh );
+		chdir( dirname( __FILE__ ) . '/lang/' );
+		$availableLangs = glob( '*.txt' );
 
 		$language = isset( $_SESSION[ 'Language' ] ) ? $_SESSION[ 'Language' ] : $CONFIG[ 'Language' ];
-		$language = ucfirst( $language );
+		$language = ucfirst( $language ) . '.txt';
 
-		if( ! in_array( $language, $arrayoflanguagefiles ) ) {
-			$language = "English";
+		if( ! in_array( $language, $availableLangs ) ) {
+			$language = 'English.txt';
 		}
 
-		ob_start();
-		include dirname( __FILE__ ) . '/lang/' . $language . '.txt';
-		$templang = ob_get_contents();
-		ob_end_clean();
+		$templang = file_get_contents( dirname( __FILE__ ) . '/lang/' . $language );
 		eval ( $templang );
-		return $templang;
 	}
 
 	function getJSLang() {
