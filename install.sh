@@ -16,7 +16,7 @@ do
 	regex="^[2-3]\.[0-5]\.[0-5]$"
 	if [[ "${OnAppVersion}" =~ $regex ]]
 		then
-			if git ls-remote --tags https://github.com/OnApp/OnApp-WHMCS-UsersModule.git | grep refs/tags/${OnAppVersion} &> /dev/null
+			if git ls-remote --tags https://github.com/OnApp/OnApp-WHMCS-UsersModule.git | grep refs/tags/v${OnAppVersion} &> /dev/null
 				then
 					i=false
 				else
@@ -49,8 +49,8 @@ mkdir ${tmpDir}
 pushd ${tmpDir}
 
 # get module
-wget "https://github.com/OnApp/OnApp-WHMCS-UsersModule/archive/${OnAppVersion}.tar.gz"
-tar -zxvf "${OnAppVersion}.tar.gz"
+wget "https://github.com/OnApp/OnApp-WHMCS-UsersModule/archive/v${OnAppVersion}.tar.gz"
+tar -zxvf "v${OnAppVersion}.tar.gz"
 
 # clone wrapper
 git clone https://github.com/OnApp/OnApp-PHP-Wrapper-External.git -b ${OnAppVersion}
@@ -62,7 +62,6 @@ rm -rf ./OnApp-WHMCS-UsersModule-${OnAppVersion}/tests
 
 # copy wrapper into module
 mv ./OnApp-PHP-Wrapper-External ./OnApp-WHMCS-UsersModule-${OnAppVersion}/includes/wrapper
-echo "mv ./OnApp-PHP-Wrapper-External ./OnApp-WHMCS-UsersModule-${OnAppVersion}/includes/wrapper"
 
 # backup previous module/wrapper/hooks versions
 date=`date "+%Y-%m-%d %H-%M-%S"`
