@@ -4,6 +4,7 @@ tests/codeception/tests/_log/
 
 
 build_*
+rewrite.sh
 *.dev.php
 *.zip
 *.bak*
