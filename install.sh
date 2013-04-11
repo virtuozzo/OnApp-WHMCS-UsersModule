@@ -16,7 +16,7 @@ do
 	regex="^[2-3]\.[0-5]\.[0-5]$"
 	if [[ "${OnAppVersion}" =~ $regex ]]
 		then
-			if git ls-remote --heads https://github.com/OnApp/OnApp-WHMCS-UsersModule.git | grep refs/heads/${OnAppVersion} &> /dev/null
+			if git ls-remote --tags https://github.com/OnApp/OnApp-WHMCS-UsersModule.git | grep refs/tags/${OnAppVersion} &> /dev/null
 				then
 					i=false
 				else
@@ -45,21 +45,24 @@ do
 	fi
 done
 
-echo
 mkdir ${tmpDir}
-cd ${tmpDir}
+pushd ${tmpDir}
 
-# clone module
-git clone https://github.com/OnApp/OnApp-WHMCS-UsersModule.git -b ${OnAppVersion}
+# get module
+wget "https://github.com/OnApp/OnApp-WHMCS-UsersModule/archive/${OnAppVersion}.tar.gz"
+tar -zxvf "${OnAppVersion}.tar.gz"
+
 # clone wrapper
 git clone https://github.com/OnApp/OnApp-PHP-Wrapper-External.git -b ${OnAppVersion}
 
 # delete unnecessary stuff
 find . -name '.git*' | xargs rm -rf
-find ./OnApp-WHMCS-UsersModule -type f -maxdepth 1 | xargs rm -rf
+find ./OnApp-WHMCS-UsersModule-${OnAppVersion} -type f -maxdepth 1 | xargs rm -rf
+rm -rf ./OnApp-WHMCS-UsersModule-${OnAppVersion}/tests
 
 # copy wrapper into module
-mv ./OnApp-PHP-Wrapper-External/* ./OnApp-WHMCS-UsersModule/includes/wrapper
+mv ./OnApp-PHP-Wrapper-External ./OnApp-WHMCS-UsersModule-${OnAppVersion}/includes/wrapper
+echo "mv ./OnApp-PHP-Wrapper-External ./OnApp-WHMCS-UsersModule-${OnAppVersion}/includes/wrapper"
 
 # backup previous module/wrapper/hooks versions
 date=`date "+%Y-%m-%d %H-%M-%S"`
@@ -80,11 +83,12 @@ if command -v zip &> /dev/null
 fi
 
 # copy new files
-cp -r ${tmpDir}/OnApp-WHMCS-UsersModule/* ${WHMCSDir}
+cp -r ${tmpDir}/OnApp-WHMCS-UsersModule-${OnAppVersion}/* ${WHMCSDir}
 
 # delete tmp stuff
 rm -rf ${tmpDir}
 rm ${installator}
+popd
 
 echo
 echo 'Installation finished.'
