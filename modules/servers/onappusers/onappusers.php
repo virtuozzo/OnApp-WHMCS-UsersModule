@@ -44,7 +44,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 					LEFT JOIN
 						`tblservergroups` AS grp ON grp.`id` = rel.`groupid`
 					WHERE
-						grp.`id` = :servergroup';
+						grp.`id` = :servergroup
+						AND srv.`disabled` = 0';
 			$sql = str_replace( ':servergroup', $servergroup, $sql );
 
 			$res = full_query( $sql );
