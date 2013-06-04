@@ -126,25 +126,30 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 		$tillDateUTC    = substr_replace( $tillDateUTC, '30', - 5, 2 );
 		$this->fromDate = $fromDate;
 
-		$qry  = 'SELECT
-					SUM( `backup_cost` ) AS backup,
-					SUM( `edge_group_cost` ) AS edgecdn,
-					SUM( `monit_cost` ) AS monitis,
-					SUM( `storage_disk_size_cost` ) AS storage,
-					SUM( `template_cost` ) AS templates,
-					SUM( `vm_cost` ) AS vm,
-					SUM( `user_resources_cost` ) AS resources,
-					SUM( `total_cost` ) AS total,
-					"' . $tillDateUTC . '" AS date
-					-- MAX( `date` ) AS date
+		$qry = 'SELECT
+					SUM( `backup_cost` ) * :Rate AS backup,
+					SUM( `edge_group_cost` ) * :Rate AS edgecdn,
+					SUM( `monit_cost` ) * :Rate AS monitis,
+					SUM( `storage_disk_size_cost` ) * :Rate AS storage,
+					SUM( `template_cost` ) * :Rate AS templates,
+					SUM( `vm_cost` ) * :Rate AS vm,
+					SUM( `user_resources_cost` ) * :Rate AS resources,
+					SUM( `total_cost` ) * :Rate AS total,
+					MAX( `date` ) AS date
 				FROM
 					`onapp_itemized_resources`
 				WHERE
-					`whmcs_user_id` = ' . $user[ 'client_id' ] . '
-					AND `onapp_user_id` = ' . $user[ 'onapp_user_id' ] . '
-					AND `server_id` = ' . $user[ 'server_id' ] . '
-					AND `date` BETWEEN "' . $fromDateUTC . '"
-					AND "' . $tillDateUTC . '"';
+					`whmcs_user_id` = :WHMCSUserID
+					AND `onapp_user_id` = :OnAppUserID
+					AND `server_id` = :serverID
+					AND `date` BETWEEN ":dateFrom"
+					AND ":dateTill"';
+		$qry = str_replace( ':WHMCSUserID', $user[ 'client_id' ], $qry );
+		$qry = str_replace( ':OnAppUserID', $user[ 'onapp_user_id' ], $qry );
+		$qry = str_replace( ':serverID', $user[ 'server_id' ], $qry );
+		$qry = str_replace( ':dateFrom', $fromDateUTC, $qry );
+		$qry = str_replace( ':dateTill', $tillDateUTC, $qry );
+		$qry = str_replace( ':Rate', $user[ 'rate' ], $qry );
 		$data = mysql_fetch_assoc( full_query( $qry ) );
 		return (object)$data;
 	}

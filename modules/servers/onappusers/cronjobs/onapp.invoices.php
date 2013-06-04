@@ -107,7 +107,7 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 		);
 		$invoiceDescription = implode( PHP_EOL, $invoiceDescription );
 
-		return array(
+		$return = array(
 			'userid'           => $client[ 'client_id' ],
 			'date'             => $this->dueDate,
 			'duedate'          => $this->dueDate,
@@ -118,31 +118,63 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 			'itemdescription1' => $invoiceDescription,
 			'itemamount1'      => 0,
 			'itemtaxed1'       => $taxed,
-
-			'itemdescription2' => $_LANG[ 'onappusersstatvirtualmachines' ],
-			'itemamount2'      => $data->vm,
-			'itemtaxed2'       => $taxed,
-
-			'itemdescription3' => $_LANG[ 'onappusersstatbackups' ],
-			'itemamount3'      => $data->backup,
-			'itemtaxed3'       => $taxed,
-
-			'itemdescription4' => $_LANG[ 'onappusersstatmonitis' ],
-			'itemamount4'      => $data->monitis,
-			'itemtaxed4'       => $taxed,
-
-			'itemdescription5' => $_LANG[ 'onappusersstattemplates' ],
-			'itemamount5'      => $data->templates,
-			'itemtaxed5'       => $taxed,
-
-			'itemdescription6' => $_LANG[ 'onappusersstatstoragediskssize' ],
-			'itemamount6'      => $data->storage,
-			'itemtaxed6'       => $taxed,
-
-			'itemdescription7' => $_LANG[ 'onappusersstatcdnedgegroup' ],
-			'itemamount7'      => $data->edgecdn,
-			'itemtaxed7'       => $taxed,
 		);
+
+		if( $data->vm ) {
+			$tmp = array(
+				'itemdescription2' => $_LANG[ 'onappusersstatvirtualmachines' ],
+				'itemamount2'      => $data->vm,
+				'itemtaxed2'       => $taxed,
+			);
+			$return = array_merge( $return, $tmp );
+		}
+
+		if( $data->backup ) {
+			$tmp = array(
+				'itemdescription3' => $_LANG[ 'onappusersstatbackups' ],
+				'itemamount3'      => $data->backup,
+				'itemtaxed3'       => $taxed,
+			);
+			$return = array_merge( $return, $tmp );
+		}
+
+		if( $data->monitis ) {
+			$tmp = array(
+				'itemdescription4' => $_LANG[ 'onappusersstatmonitis' ],
+				'itemamount4'      => $data->monitis,
+				'itemtaxed4'       => $taxed,
+			);
+			$return = array_merge( $return, $tmp );
+		}
+
+		if( $data->templates ) {
+			$tmp = array(
+				'itemdescription5' => $_LANG[ 'onappusersstattemplates' ],
+				'itemamount5'      => $data->templates,
+				'itemtaxed5'       => $taxed,
+			);
+			$return = array_merge( $return, $tmp );
+		}
+
+		if( $data->storage ) {
+			$tmp = array(
+				'itemdescription6' => $_LANG[ 'onappusersstatstoragediskssize' ],
+				'itemamount6'      => $data->storage,
+				'itemtaxed6'       => $taxed,
+			);
+			$return = array_merge( $return, $tmp );
+		}
+
+		if( $data->edgecdn ) {
+			$tmp = array(
+				'itemdescription7' => $_LANG[ 'onappusersstatcdnedgegroup' ],
+				'itemamount7'      => $data->edgecdn,
+				'itemtaxed7'       => $taxed,
+			);
+			$return = array_merge( $return, $tmp );
+		}
+
+		return $return;
 	}
 
 	private function getAmmount( array $user ) {
@@ -179,14 +211,14 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 		$this->fromDate = $fromDate;
 
 		$qry = 'SELECT
-					SUM( `backup_cost` ) AS backup,
-					SUM( `edge_group_cost` ) AS edgecdn,
-					SUM( `monit_cost` ) AS monitis,
-					SUM( `storage_disk_size_cost` ) AS storage,
-					SUM( `template_cost` ) AS templates,
-					SUM( `vm_cost` ) AS vm,
-					SUM( `user_resources_cost` ) AS resources,
-					SUM( `total_cost` ) AS total,
+					SUM( `backup_cost` ) * :Rate AS backup,
+					SUM( `edge_group_cost` ) * :Rate AS edgecdn,
+					SUM( `monit_cost` ) * :Rate AS monitis,
+					SUM( `storage_disk_size_cost` ) * :Rate AS storage,
+					SUM( `template_cost` ) * :Rate AS templates,
+					SUM( `vm_cost` ) * :Rate AS vm,
+					SUM( `user_resources_cost` ) * :Rate AS resources,
+					SUM( `total_cost` ) * :Rate AS total,
 					MAX( `date` ) AS date
 				FROM
 					`onapp_itemized_resources`
@@ -201,6 +233,7 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 		$qry = str_replace( ':serverID', $user[ 'server_id' ], $qry );
 		$qry = str_replace( ':dateFrom', $fromDateUTC, $qry );
 		$qry = str_replace( ':dateTill', $tillDateUTC, $qry );
+		$qry = str_replace( ':Rate', $user[ 'rate' ], $qry );
 		$data = mysql_fetch_assoc( full_query( $qry ) );
 		return (object)$data;
 	}

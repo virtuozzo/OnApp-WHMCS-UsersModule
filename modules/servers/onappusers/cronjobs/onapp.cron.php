@@ -10,7 +10,7 @@ abstract class OnApp_UserModule_Cron {
 
 	public function __construct() {
 		$this->checkCLIMode();
-		$this->root = dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) . DIRECTORY_SEPARATOR;
+		$this->root = dirname( dirname( dirname( dirname( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) ) ) ) ) . DIRECTORY_SEPARATOR;
 
 		$this->getRequiredFiles();
 		$this->checkSQL();
@@ -30,18 +30,22 @@ abstract class OnApp_UserModule_Cron {
 			tblclients.taxexempt,
 			tblclients.state,
 			tblclients.country,
+			tblclients.currency,
+			tblcurrencies.rate,
 			tblhosting.id AS service_id,
 			tblproducts.name AS packagename
 		FROM
 			tblonappusers
-			LEFT JOIN tblhosting ON
-				tblhosting.userid = tblonappusers.client_id
-				AND tblhosting.server = tblonappusers.server_id
-			LEFT JOIN tblproducts ON
-				tblhosting.packageid = tblproducts.id
-				AND tblproducts.servertype = "onappusers"
-			LEFT JOIN tblclients ON
-				tblclients.id = tblonappusers.client_id
+		LEFT JOIN tblhosting ON
+			tblhosting.userid = tblonappusers.client_id
+			AND tblhosting.server = tblonappusers.server_id
+		LEFT JOIN tblproducts ON
+			tblhosting.packageid = tblproducts.id
+			AND tblproducts.servertype = "onappusers"
+		LEFT JOIN tblclients ON
+			tblclients.id = tblonappusers.client_id
+		LEFT JOIN tblcurrencies ON
+			tblcurrencies.id = tblclients.currency
 		WHERE
 			tblhosting.domainstatus IN ( "Active", "Suspended" )
 			AND tblproducts.name IS NOT NULL';
@@ -67,8 +71,14 @@ abstract class OnApp_UserModule_Cron {
 
 	protected function getRequiredFiles() {
 		global $whmcsmysql, $cc_encryption_hash, $templates_compiledir, $CONFIG, $_LANG, $whmcs;
-		require_once $this->root . 'dbconnect.php';
-		include_once $this->root . 'includes/functions.php';
+
+		if( file_exists( $this->root . 'init.php' ) ) {
+			require_once $this->root . 'init.php';
+		}
+		else {
+			require_once $this->root . 'dbconnect.php';
+			include_once $this->root . 'includes/functions.php';
+		}
 
 		error_reporting( E_ALL ^ E_NOTICE );
 		ini_set( 'display_errors', 'On' );
