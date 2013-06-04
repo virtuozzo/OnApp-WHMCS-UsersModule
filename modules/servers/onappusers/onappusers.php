@@ -319,7 +319,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		$onapp_user->suspend();
 
 		if( ! is_null( $onapp_user->error ) ) {
-			$error_msg = $_LANG[ 'onappuserserrusercreate' ] . ':<br/>';
+			$error_msg = $_LANG[ 'onappuserserrusersuspend' ] . ':<br/>';
 			$error_msg .= $onapp_user->getErrorsAsString( '<br/>' );
 			return $error_msg;
 		}
@@ -357,13 +357,11 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		$module     = new OnApp_UserModule( $params );
 		$onapp_user = $module->getOnAppObject( 'OnApp_User' );
-
 		$onapp_user->_id = $onapp_user_id;
-
 		$onapp_user->activate_user();
 
 		if( ! is_null( $onapp_user->error ) ) {
-			$error_msg = $_LANG[ 'onappuserserrusercreate' ] . ':<br/>';
+			$error_msg = $_LANG[ 'onappuserserruserunsuspend' ] . ':<br/>';
 			$error_msg .= $onapp_user->getErrorsAsString( '<br/>' );
 			return $error_msg;
 		}
