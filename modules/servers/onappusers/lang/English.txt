@@ -17,6 +17,7 @@ $_LANG[ 'onappusersusergroupstitle' ] = 'User Groups';
 $_LANG[ 'onappusersshowstatistic' ] = 'Show advanced statistics in client area';
 $_LANG[ 'onappuserspassthrutaxes' ] = 'Passthru taxes in OnApp payments';
 $_LANG[ 'onappusersshowcontrolpanel' ] = 'Show control pannel button in client area';
+$_LANG[ 'onappuserssetduedatetocurrent' ] = 'Set invoice due date to invoice date instead of WHMCS setting';
 $_LANG[ 'onappusersnobillingplans' ] = 'There are no configured billing plans/groups on this server';
 $_LANG[ 'onappusersnousergroups' ] = 'There are no configured user groups on this server';
 $_LANG[ 'onappusersnoroles' ] = 'There are no configured roles on this server';
