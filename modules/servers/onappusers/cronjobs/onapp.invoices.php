@@ -2,7 +2,7 @@
 
 require dirname( __FILE__ ) . '/onapp.cron.php';
 class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
-	private $fromDate, $timeZoneOffset, $dueDate;
+	private $fromDate, $timeZoneOffset, $date;
 
 	protected  function run() {
 		$this->getAdditionalFiles();
@@ -19,12 +19,18 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 		$res   = mysql_query( $qry );
 		$admin = mysql_result( $res, 0 );
 		//calculate invoice due date
-		$this->dueDate = date( 'Ymd' );
+		$this->date = date( 'Ymd' );
 
 		while( $client = mysql_fetch_assoc( $this->clients ) ) {
 			$clientAmount = $this->getAmmount( $client );
 
 			if( ! is_null( $clientAmount->total ) ) {
+				$client[ 'dueDate' ] = htmlspecialchars_decode( $client[ 'dueDate' ] );
+				$client[ 'dueDate' ] = json_decode( $client[ 'dueDate' ] );
+				$client[ 'dueDate' ] = $client[ 'dueDate' ]
+						->DueDateCurrent
+						->$client[ 'server_id' ];
+
 				$data = $this->generateInvoiceData( $clientAmount, $client );
 				if( $data == false ) {
 					continue;
@@ -60,7 +66,8 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 								":invoiceDate"
 							)
 							ON DUPLICATE KEY UPDATE
-								`date` = ":invoiceDate"';
+								`date` = ":invoiceDate",
+								`invoice_id` = :invoiceID';
 					$qry = str_replace( ':WHMCSUserID', $client[ 'client_id' ], $qry );
 					$qry = str_replace( ':OnAppUserID', $client[ 'onapp_user_id' ], $qry );
 					$qry = str_replace( ':serverID', $client[ 'server_id' ], $qry );
@@ -86,6 +93,13 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 			return false;
 		}
 
+		if( $client['dueDate'] == 1 ) {
+			$dueDate = $this->date;
+		}
+		else {
+			$dueDate = date( 'Ymd', ( time() + $GLOBALS[ 'CONFIG' ][ 'CreateInvoiceDaysBefore' ] * 86400 ) );
+		}
+
 		//check if the item should be taxed
 		$taxed = empty( $client[ 'taxexempt' ] ) && (int)$client[ 'tax' ];
 		if( $taxed ) {
@@ -109,8 +123,8 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 
 		$return = array(
 			'userid'           => $client[ 'client_id' ],
-			'date'             => $this->dueDate,
-			'duedate'          => $this->dueDate,
+			'date'             => $this->date,
+			'duedate'          => $dueDate,
 			'paymentmethod'    => $client[ 'paymentmethod' ],
 			'taxrate'          => $taxrate,
 			'sendinvoice'      => true,

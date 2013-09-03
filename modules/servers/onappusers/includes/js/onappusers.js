@@ -78,6 +78,12 @@ function buildFields( ServersData ) {
 		html += '<td class="fieldarea" id="controlpanel' + server_id + '"></td></tr>';
 		table.find( 'tr:last' ).after( html );
 
+		// show duedate row
+		html = '<tr>';
+		html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserssetduedatetocurrent + '</td>';
+		html += '<td class="fieldarea" id="duedate' + server_id + '"></td></tr>';
+		table.find( 'tr:last' ).after( html );
+
 		// process biling plans
 		if( typeof server.BillingPlans == 'object' ) {
 			select = $( '<select name="bills_packageconfigoption' + ++cnt + '"></select>' );
@@ -214,6 +220,16 @@ function buildFields( ServersData ) {
 			}
 		}
 		$( '#controlpanel' + server_id ).html( input );
+
+		// process due date
+		input = $( '<input name="duedate_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
+		// checkbox state
+		if( ServersData.DueDateCurrent ) {
+			if( ServersData.DueDateCurrent[ server_id ] ) {
+				$( input ).attr( 'checked', true );
+			}
+		}
+		$( '#duedate' + server_id ).html( input );
 	}
 
 	// input for storing selected values
@@ -258,6 +274,10 @@ function buildFields( ServersData ) {
 	$( "input[name^='controlpanel_packageconfigoption']" ).bind( 'change', function() {
 		storeShowControlPanel();
 	} );
+	storeDueDateCurrent();
+	$( "input[name^='duedate_packageconfigoption']" ).bind( 'change', function() {
+		storeDueDateCurrent();
+	} );
 
 	// align dropdown lists
 	alignSelects();
@@ -271,8 +291,19 @@ var OnAppUsersData = {
 	SelectedLocales: {},
 	ShowStat: {},
     PassTaxes: {},
-	ShowControlPanel: {}
+	ShowControlPanel: {},
+	DueDateCurrent: {}
 };
+
+function storeDueDateCurrent() {
+	$( "input[name^='duedate_packageconfigoption']" ).each( function( i, val ) {
+		var index = $( val ).attr( 'rel' );
+		OnAppUsersData.DueDateCurrent[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
+	} );
+
+	$( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
+
 
 function storeShowControlPanel() {
 	$( "input[name^='controlpanel_packageconfigoption']" ).each( function( i, val ) {
