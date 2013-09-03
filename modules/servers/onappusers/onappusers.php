@@ -452,6 +452,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 	function load_lang() {
 		global $_LANG, $CONFIG;
 
+		$currentDir = getcwd();
 		chdir( dirname( __FILE__ ) . '/lang/' );
 		$availableLangs = glob( '*.txt' );
 
@@ -464,6 +465,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
 		$templang = file_get_contents( dirname( __FILE__ ) . '/lang/' . $language );
 		eval ( $templang );
+		chdir( $currentDir );
 	}
 
 	function getJSLang() {
