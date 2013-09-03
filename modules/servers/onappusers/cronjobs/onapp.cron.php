@@ -10,8 +10,7 @@ abstract class OnApp_UserModule_Cron {
 
 	public function __construct() {
 		$this->checkCLIMode();
-		$this->root = dirname( dirname( dirname( dirname( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) ) ) ) ) . DIRECTORY_SEPARATOR;
-
+		$this->root = realpath( dirname( dirname( dirname( dirname( dirname( $_SERVER[ 'argv' ][ 0 ] ) ) ) ) ) ) . DIRECTORY_SEPARATOR;
 		$this->getRequiredFiles();
 		$this->checkSQL();
 		$this->getServers();
@@ -33,7 +32,8 @@ abstract class OnApp_UserModule_Cron {
 			tblclients.currency,
 			tblcurrencies.rate,
 			tblhosting.id AS service_id,
-			tblproducts.name AS packagename
+			tblproducts.name AS packagename,
+			tblproducts.configoption1 AS dueDate
 		FROM
 			tblonappusers
 		LEFT JOIN tblhosting ON
@@ -97,7 +97,7 @@ abstract class OnApp_UserModule_Cron {
 	}
 
 	private function checkCLIMode() {
-		if( php_sapi_name() != 'cli' ) {
+		if( PHP_SAPI != 'cli' ) {
 			if( ! empty( $_SERVER[ 'REMOTE_ADDR' ] ) ) {
 				exit( 'Not allowed!' );
 			}
