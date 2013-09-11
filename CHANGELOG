@@ -1,3 +1,6 @@
+3.0.8
+- fix error with modules inclusion in WHMCS 5.2.7
+
 3.0.6
 - add currency conversion
 - skip invoice entry if it's zero ammount
