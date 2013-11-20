@@ -185,10 +185,10 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 					`onapp_itemized_last_check`
 				VALUES
 					(
-					:serverID,
-					:WHMCSUserID,
-					:OnAppUserID,
-					""
+						:serverID,
+						:WHMCSUserID,
+						:OnAppUserID,
+						""
 					)
 				ON DUPLICATE KEY UPDATE
 					`Date` = ":Date"';
