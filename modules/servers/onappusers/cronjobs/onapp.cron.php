@@ -20,18 +20,18 @@ abstract class OnApp_UserModule_Cron {
 
 	protected function getClients() {
 		$clients_query = 'SELECT
-			tblonappusers.server_id,
-			tblonappusers.client_id,
-			tblonappusers.onapp_user_id,
-			tblhosting.paymentmethod,
-			tblhosting.domain,
-			tblproducts.tax,
 			tblclients.taxexempt,
 			tblclients.state,
 			tblclients.country,
 			tblclients.currency,
 			tblcurrencies.rate,
+			tblhosting.paymentmethod,
+			tblhosting.domain,
 			tblhosting.id AS service_id,
+			tblonappusers.server_id,
+			tblonappusers.client_id,
+			tblonappusers.onapp_user_id,
+			tblproducts.tax,
 			tblproducts.name AS packagename,
 			tblproducts.configoption1 AS dueDate
 		FROM
