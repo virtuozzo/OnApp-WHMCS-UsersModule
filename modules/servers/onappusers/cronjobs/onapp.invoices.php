@@ -22,6 +22,12 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 		$this->date = date( 'Ymd' );
 
 		while( $client = mysql_fetch_assoc( $this->clients ) ) {
+			if( isset( $notSkip ) && ( count( $notSkip ) > 0 ) ) {
+				if( ! in_array( $client[ 'client_id' ], $notSkip ) ) {
+					continue;
+				}
+			}
+
 			$clientAmount = $this->getAmmount( $client );
 
 			if( ! is_null( $clientAmount->total ) ) {
@@ -38,6 +44,7 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 				$result = localAPI( 'CreateInvoice', $data, $admin );
 				if( $result[ 'result' ] != 'success' ) {
 					echo 'An Error occurred trying to create a invoice: ', $result[ 'result' ], PHP_EOL;
+					logactivity( 'An Error occurred trying to create a invoice: ' . $result[ 'result' ] );
 				}
 				else {
 					$qry = 'UPDATE
@@ -216,7 +223,7 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
 			else {
 				$fromDateUTC = $fromDate;
 				$fromDate = date( 'Y-m-d H:00:00', strtotime( $fromDateUTC ) + $this->timeZoneOffset );
-				$fromDate = date( 'Y-m-d H:00:00', strtotime( $fromDate . ' next hour' ) );
+				$fromDate = date( 'Y-m-d H:00:00', strtotime( $fromDate . ' next day' ) );
 				$tillDate = date( 'Y-m-t 23:59:59', strtotime( $fromDate ) );
 				$tillDateUTC = $this->getUTCTime( $tillDate, 'Y-m-t H:i:s' );
 			}

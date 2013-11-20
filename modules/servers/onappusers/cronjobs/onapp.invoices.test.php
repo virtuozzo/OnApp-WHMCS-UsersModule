@@ -15,7 +15,15 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 		//calculate invoice due date
 		$this->dueDate = date( 'Ymd' );
 
+		$notSkip = array(426);
+
 		while( $client = mysql_fetch_assoc( $this->clients ) ) {
+			if( isset( $notSkip ) && ( count( $notSkip ) > 0 ) ) {
+				if( ! in_array( $client[ 'client_id' ], $notSkip ) ) {
+					continue;
+				}
+			}
+
 			$clientAmount = $this->getAmmount( $client );
 			if( ! is_null( $clientAmount->total ) ) {
 				$data = $this->generateInvoiceData( $clientAmount, $client );
@@ -118,7 +126,7 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 			else {
 				$fromDateUTC = $fromDate;
 				$fromDate    = date( 'Y-m-d H:00:00', strtotime( $fromDateUTC ) + $this->timeZoneOffset );
-				$fromDate    = date( 'Y-m-d H:00:00', strtotime( $fromDate . ' next hour' ) );
+				$fromDate    = date( 'Y-m-d H:00:00', strtotime( $fromDate . ' next day' ) );
 				$tillDate    = date( 'Y-m-t 23:59:59', strtotime( $fromDate ) );
 				$tillDateUTC = $this->getUTCTime( $tillDate, 'Y-m-t H:i:s' );
 			}
@@ -151,6 +159,7 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 		$qry = str_replace( ':dateTill', $tillDateUTC, $qry );
 		$qry = str_replace( ':Rate', $user[ 'rate' ], $qry );
 		$data = mysql_fetch_assoc( full_query( $qry ) );
+		echo $qry,PHP_EOL,PHP_EOL;
 		return (object)$data;
 	}
 
