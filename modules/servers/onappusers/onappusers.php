@@ -150,6 +150,19 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		// Array of clients details - firstname, lastname, email, country, etc...
 		$clientsdetails = $params[ 'clientsdetails' ];
 
+		// Save hosting password
+		if( substr( $params[ 'password' ], - 1 ) !== '#' ) {
+			$randomString = substr( str_shuffle( '~!@$%^&*(){}|0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' ), 0, 15 );
+			$password = $randomString . '#';
+
+			full_query( "UPDATE
+                tblhosting
+            SET
+                password = '" . encrypt( $password ) . "'
+            WHERE
+                id = '$serviceid'" );
+		}
+
 		// Save hosting username
 		if( ! $username ) {
 			$username = $clientsdetails[ 'email' ];
@@ -162,7 +175,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		}
 
 		if( ! $password ) {
-			return $_LANG[ 'onappuserserrusercreate' ] . "<br/>\n" . $_LANG[ 'onappuserserrpwdnotset' ];
+			return $_LANG[ 'onappuserserrusercreate' ] . '<br/>' . PHP_EOL . $_LANG[ 'onappuserserrpwdnotset' ];
 		}
 
 		$module = new OnApp_UserModule( $params );
