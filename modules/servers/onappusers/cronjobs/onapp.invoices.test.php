@@ -15,8 +15,6 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron {
 		//calculate invoice due date
 		$this->dueDate = date( 'Ymd' );
 
-		$notSkip = array(426);
-
 		while( $client = mysql_fetch_assoc( $this->clients ) ) {
 			if( isset( $notSkip ) && ( count( $notSkip ) > 0 ) ) {
 				if( ! in_array( $client[ 'client_id' ], $notSkip ) ) {
