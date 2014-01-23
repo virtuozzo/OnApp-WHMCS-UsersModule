@@ -60,19 +60,19 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 		// process data
 		$sql = array();
 		foreach( $data as $stat ) {
-			$tmp = array();
-			$tmp[ 'server_id' ] = $client[ 'server_id' ];
-			$tmp[ 'whmcs_user_id' ] = $client[ 'client_id' ];
-			$tmp[ 'date' ] = $stat[ 'vm_stats' ][ 'created_at' ];
-			$tmp[ 'id' ] = $stat[ 'vm_stats' ][ 'id' ];
-			$tmp[ 'usage_cost' ] = $stat[ 'vm_stats' ][ 'usage_cost' ];
-			$tmp[ 'total_cost' ] = $stat[ 'vm_stats' ][ 'total_cost' ];
-			$tmp[ 'onapp_user_id' ] = $stat[ 'vm_stats' ][ 'user_id' ];
-			$tmp[ 'currency' ] = $stat[ 'vm_stats' ][ 'currency_code' ];
-			$tmp[ 'vm_id' ] = $stat[ 'vm_stats' ][ 'virtual_machine_id' ];
-			$tmp[ 'vm_resources_cost' ] = $stat[ 'vm_stats' ][ 'vm_resources_cost' ];
+			$tmp                        = array();
+			$tmp[ 'server_id' ]         = $client[ 'server_id' ];
+			$tmp[ 'whmcs_user_id' ]     = $client[ 'client_id' ];
+			$tmp[ 'date' ]              = $stat[ 'vm_hourly_stat' ][ 'created_at' ];
+			$tmp[ 'id' ]                = $stat[ 'vm_hourly_stat' ][ 'id' ];
+			$tmp[ 'usage_cost' ]        = $stat[ 'vm_hourly_stat' ][ 'usage_cost' ];
+			$tmp[ 'total_cost' ]        = $stat[ 'vm_hourly_stat' ][ 'total_cost' ];
+			$tmp[ 'onapp_user_id' ]     = $stat[ 'vm_hourly_stat' ][ 'user_id' ];
+			$tmp[ 'currency' ]          = $stat[ 'vm_hourly_stat' ][ 'currency_code' ];
+			$tmp[ 'vm_id' ]             = $stat[ 'vm_hourly_stat' ][ 'virtual_machine_id' ];
+			$tmp[ 'vm_resources_cost' ] = $stat[ 'vm_hourly_stat' ][ 'vm_resources_cost' ];
 
-			foreach( $stat[ 'vm_stats' ][ 'billing_stats' ] as $name => $V ) {
+			foreach( $stat[ 'vm_hourly_stat' ][ 'billing_stats' ] as $name => $V ) {
 				if( ( $name == 'virtual_machines' ) ) {
 					if( is_null( $tmp[ 'vm_id' ] ) ) {
 						$tmp[ 'vm_id' ] = $V[ 0 ][ 'id' ];
@@ -90,10 +90,10 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 				}
 			}
 
-			$cols = implode( ', ', array_keys( $tmp ) );
-			$values = implode( '", "', array_values( $tmp ) );
+			$cols    = implode( ', ', array_keys( $tmp ) );
+			$values  = implode( '", "', array_values( $tmp ) );
 			$sql_tmp = 'INSERT INTO `onapp_itemized_stat` ( ' . $cols . ' ) VALUES ( "' . $values . '" )';
-			$sql[ ] = $sql_tmp;
+			$sql[ ]  = $sql_tmp;
 		}
 		return $sql;
 	}
