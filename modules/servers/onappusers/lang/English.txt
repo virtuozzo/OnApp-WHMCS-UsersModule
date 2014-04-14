@@ -61,7 +61,7 @@ $_LANG[ 'onappusersstatvirtualmachines Cost' ] = 'Virtual Machines Cost';
 $_LANG[ 'onappusersstattotalcost' ] = 'Total Cost';
 $_LANG[ 'onappusersstatproduct' ] = 'Product';
 $_LANG[ 'onappusersstatpperiod' ] = 'Period';
-$_LANG[ 'onappusersstatdateformat' ] = 'Y-m-d H:i:s';
+$_LANG[ 'onappusersstatdateformat' ] = 'Y-m-d H:i';
 $_LANG[ 'onappusersstatproduct' ] = 'Product: ';
 $_LANG[ 'onappusersstatperiod' ] = 'Period: ';
 
@@ -97,7 +97,8 @@ $_LANG[ 'onappusersstatcurrency' ][ 'EUR' ] = '€';
 $_LANG[ 'onappusersstatcurrency' ][ 'GBP' ] = '£';
 
 $_LANG[ 'onappuserslogintocpserver' ] = 'Server:';
-$_LANG[ 'onappuserslogintocpbutton' ] = 'Manage My Cloud';
+$_LANG[ 'onappuserslogintocpbuttonheader' ] = 'Manage My Cloud';
+$_LANG[ 'onappuserslogintocpbutton' ] = 'Open Control Panel';
 
 
 $_LANG[ 'onapptimetocrackseconds' ] = 'seconds';
