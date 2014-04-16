@@ -64,6 +64,7 @@ $_LANG[ 'onappusersstatpperiod' ] = 'Period';
 $_LANG[ 'onappusersstatdateformat' ] = 'Y-m-d H:i';
 $_LANG[ 'onappusersstatproduct' ] = 'Product: ';
 $_LANG[ 'onappusersstatperiod' ] = 'Period: ';
+$_LANG[ 'onappusersstatotherresources' ] = 'Other resources';
 
 
 

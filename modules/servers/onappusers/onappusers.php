@@ -16,6 +16,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
             $configarray = array(
                 $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes' => array()
             );
+
             return $configarray;
         }
 
@@ -111,15 +112,15 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
             $results = mysql_fetch_assoc( $results );
             $results[ 'options' ] = htmlspecialchars_decode( $results[ 'options' ] );
             $serversData[ 'Group' ] = $results[ 'group' ];
-            if( !empty( $results[ 'options' ] ) ) {
+            if( ! empty( $results[ 'options' ] ) ) {
                 $results[ 'options' ] = json_decode( $results[ 'options' ], true );
                 $serversData += $results[ 'options' ];
             }
 
             $js .= '<script type="text/javascript">'
-                    . 'var ServersData = ' . json_encode( $serversData ) . ';'
-                    . 'var ONAPP_LANG = ' . getJSLang() . ';'
-                    . '</script>';
+                . 'var ServersData = ' . json_encode( $serversData ) . ';'
+                . 'var ONAPP_LANG = ' . getJSLang() . ';'
+                . '</script>';
 
             if( isset( $_GET[ 'servergroup' ] ) ) {
                 ob_end_clean();
@@ -127,7 +128,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
             }
 
             $configarray = array(
-                sprintf( '' )  => array(
+                sprintf( '' ) => array(
                     'Description' => $js
                 ),
             );
@@ -155,23 +156,27 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
             $randomString = substr( str_shuffle( '~!@$%^&*(){}|0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' ), 0, 15 );
             $password = $randomString . '#';
 
-            full_query( "UPDATE
-                tblhosting
-            SET
-                password = '" . encrypt( $password ) . "'
-            WHERE
-                id = '$serviceid'" );
+            full_query(
+                "UPDATE
+                        tblhosting
+                    SET
+                        password = '" . encrypt( $password ) . "'
+                    WHERE
+                        id = '$serviceid'"
+            );
         }
 
         // Save hosting username
         if( ! $username ) {
             $username = $clientsdetails[ 'email' ];
-            full_query( "UPDATE
-                tblhosting
-            SET
-                username = '$username'
-            WHERE
-                id = '$serviceid'" );
+            full_query(
+                "UPDATE
+                        tblhosting
+                    SET
+                        username = '$username'
+                    WHERE
+                        id = '$serviceid'"
+            );
         }
 
         if( ! $password ) {
@@ -212,12 +217,14 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         if( ! is_null( $onapp_user->getErrorsAsArray() ) ) {
             $error_msg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
             $error_msg .= $onapp_user->getErrorsAsString( ', ' );
+
             return $error_msg;
         }
 
         if( ! is_null( $onapp_user->_obj->getErrorsAsArray() ) ) {
             $error_msg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
             $error_msg .= $onapp_user->_obj->getErrorsAsString( ', ' );
+
             return $error_msg;
         }
 
@@ -253,13 +260,13 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         $server_id = $params[ 'serverid' ];
 
         $query = "SELECT
-            onapp_user_id
-        FROM
-            tblonappusers
-        WHERE
-            server_id = $server_id
-            AND client_id = $client_id
-            AND service_id = $serviceid";
+                        onapp_user_id
+                    FROM
+                        tblonappusers
+                    WHERE
+                        server_id = $server_id
+                        AND client_id = $client_id
+                        AND service_id = $serviceid";
 
         $result = full_query( $query );
         if( $result ) {
@@ -274,6 +281,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         $vms = $module->getOnAppObject( 'OnApp_VirtualMachine' );
         if( $vms->getList( $onapp_user_id ) ) {
             $error_msg = $_LANG[ 'onappuserserruserterminate' ];
+
             return $error_msg;
         }
 
@@ -283,6 +291,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         if( ! empty( $onapp_user->error ) ) {
             $error_msg = $_LANG[ 'onappuserserruserdelete' ] . ': ';
             $error_msg .= $onapp_user->getErrorsAsString( ', ' );
+
             return $error_msg;
         }
         else {
@@ -310,13 +319,13 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         $server_id = $params[ 'serverid' ];
 
         $query = "SELECT
-            onapp_user_id
-        FROM
-            tblonappusers
-        WHERE
-            server_id = $server_id
-            AND client_id = $client_id
-            AND service_id = $serviceid";
+                        onapp_user_id
+                    FROM
+                        tblonappusers
+                    WHERE
+                        server_id = $server_id
+                        AND client_id = $client_id
+                        AND service_id = $serviceid";
 
         $result = full_query( $query );
         if( $result ) {
@@ -335,6 +344,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         if( ! is_null( $onapp_user->error ) ) {
             $error_msg = $_LANG[ 'onappuserserrusersuspend' ] . ':<br/>';
             $error_msg .= $onapp_user->getErrorsAsString( '<br/>' );
+
             return $error_msg;
         }
 
@@ -353,13 +363,13 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         $server_id = $params[ 'serverid' ];
 
         $query = "SELECT
-            onapp_user_id
-        FROM
-            tblonappusers
-        WHERE
-            server_id = '$server_id'
-            AND client_id = '$client_id'
-            AND service_id = '$serviceid'";
+                        onapp_user_id
+                    FROM
+                        tblonappusers
+                    WHERE
+                        server_id = '$server_id'
+                        AND client_id = '$client_id'
+                        AND service_id = '$serviceid'";
 
         $result = full_query( $query );
         if( $result ) {
@@ -369,7 +379,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
             return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
         }
 
-        $module     = new OnApp_UserModule( $params );
+        $module = new OnApp_UserModule( $params );
         $onapp_user = $module->getOnAppObject( 'OnApp_User' );
         $onapp_user->_id = $onapp_user_id;
         $onapp_user->activate_user();
@@ -377,6 +387,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         if( ! is_null( $onapp_user->error ) ) {
             $error_msg = $_LANG[ 'onappuserserruserunsuspend' ] . ':<br/>';
             $error_msg .= $onapp_user->getErrorsAsString( '<br/>' );
+
             return $error_msg;
         }
 
@@ -392,12 +403,12 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         global $_LANG;
 
         $query = 'CREATE TABLE IF NOT EXISTS `tblonappusers` (
-            `server_id` int( 11 ) NOT NULL,
-            `client_id` int( 11 ) NOT NULL,
-            `service_id` int( 11 ) NOT NULL,
-            `onapp_user_id` int( 11 ) NOT NULL,
-            `password` text NOT NULL,
-            `email` text NOT NULL,
+            `server_id` INT( 11 ) NOT NULL,
+            `client_id` INT( 11 ) NOT NULL,
+            `service_id` INT( 11 ) NOT NULL,
+            `onapp_user_id` INT( 11 ) NOT NULL,
+            `password` TEXT NOT NULL,
+            `email` TEXT NOT NULL,
             PRIMARY KEY( `server_id`, `client_id`, `service_id` ),
             KEY `client_id` ( `client_id` )
         ) ENGINE = InnoDB;';
@@ -408,7 +419,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         $col_exist_res = full_query( 'DESCRIBE tblonappusers service_id' );
         if( ! mysql_num_rows( $col_exist_res ) ) {
             $alter_query = 'ALTER TABLE tblonappusers
-            ADD service_id int( 11 ) NOT NULL';
+            ADD service_id INT( 11 ) NOT NULL';
             full_query( $alter_query );
 
             if( mysql_num_rows( full_query( "SHOW KEYS FROM tblonappusers WHERE Key_name = 'PRIMARY'" ) ) ) {
@@ -483,6 +494,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
     function getJSLang() {
         global $_LANG;
+
         return json_encode( $_LANG );
     }
 
@@ -495,6 +507,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
             ),
             $html
         );
+
         return $html;
     }
 
@@ -516,17 +529,17 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 
         parseLang( $html );
         $html .= '<script type="text/javascript">'
-                . 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
-                . 'var PID = ' . $params[ 'accountid' ] . ';'
-                . 'var LANG = ' . getJSLang() . ';</script>';
+            . 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
+            . 'var PID = ' . $params[ 'accountid' ] . ';'
+            . 'var LANG = ' . getJSLang() . ';</script>';
 
         return $html;
     }
 
     function injectServerRow( $params ) {
         $iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
-        $iv      = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
-        $key     = substr( md5( uniqid( rand( 1, 999999 ), true ) ), 0, 27 );
+        $iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
+        $key = substr( md5( uniqid( rand( 1, 999999 ), true ) ), 0, 27 );
 
         $server = ! empty( $params[ 'serverip' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
         if( strpos( $server, 'http' ) === false ) {
@@ -541,7 +554,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         );
         $data = json_encode( $data ) . '%%%';
 
-        $crypttext         = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_ECB, $iv );
+        $crypttext = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_ECB, $iv );
         $_SESSION[ 'utk' ] = array(
             $key . substr( md5( uniqid( rand( 1, 999999 ), true ) ), rand( 0, 26 ), 5 ),
             base64_encode( base64_encode( $crypttext ) )
@@ -553,6 +566,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
             . 'var SERVER = "' . $server . '";'
             . 'var injTarget = "' . $params[ 'username' ] . ' / ' . $params[ 'password' ] . '";'
             . '</script>';
+
         return $html;
     }
 
@@ -579,7 +593,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
                 LIMIT 1';
         $user = mysql_fetch_assoc( full_query( $sql ) );
 
-        $page  = (int)$_GET[ 'page' ];
+        $page = (int)$_GET[ 'page' ];
         $start = ( $page - 1 ) * $limit;
 
         $sql = 'SELECT
@@ -646,11 +660,11 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         $resources = mysql_fetch_assoc( full_query( $sql ) );
 
         $data = array(
-            'total'        => $total,
-            'page'         => $page,
-            'resources'    => $resources,
-            'stat'         => $stat,
-            'limit'        => $limit,
+            'total'     => $total,
+            'page'      => $page,
+            'resources' => $resources,
+            'stat'      => $stat,
+            'limit'     => $limit,
         );
         $data = json_encode( $data );
         exit( $data );
@@ -662,24 +676,27 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
         private $server;
 
         public function __construct( $params ) {
-            $this->server       = new stdClass;
-            $this->server->ip   = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
+            $this->server = new stdClass;
+            $this->server->ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
             $this->server->user = $params[ 'serverusername' ];
             $this->server->pass = $params[ 'serverpassword' ];
         }
 
         public function getUserGroups() {
             $data = $this->getOnAppObject( 'OnApp_UserGroup' )->getList();
+
             return $this->buildArray( $data );
         }
 
         public function getRoles() {
             $data = $this->getOnAppObject( 'OnApp_Role' )->getList();
+
             return $this->buildArray( $data );
         }
 
         public function getBillingPlans() {
             $data = $this->getOnAppObject( 'OnApp_BillingPlan' )->getList();
+
             return $this->buildArray( $data );
         }
 
@@ -707,6 +724,7 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
             foreach( $data as $item ) {
                 $tmp[ $item->_id ] = $item->_label;
             }
+
             return $tmp;
         }
     }

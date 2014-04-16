@@ -1,38 +1,51 @@
 <?php
 
-require dirname( __FILE__ ) . '/onapp.cron.php';
+require __DIR__ . '/common.php';
+
 class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
+    const TYPE = 'statcollector';
+
     protected function run() {
         $this->getAdditionalFiles();
         $this->getStat();
     }
 
     private function getStat() {
-        $endDate = gmdate( 'Y-m-d H:i:00' );
-
         while( $client = mysql_fetch_assoc( $this->clients ) ) {
-            //get last stat retrieving date
-            $qry = 'SELECT
-                        `Date`
-                    FROM
-                        `onapp_itemized_last_check`
-                    WHERE
-                        `WHMCSUserID` = :WHMCSUserID';
-            $qry = str_replace( ':WHMCSUserID', $client[ 'client_id' ], $qry );
-
-            if( isset( $_SERVER[ 'argv' ][ 1 ] ) && $this->validateDate( $_SERVER[ 'argv' ][ 1 ] ) ) {
-                $startDate = $_SERVER[ 'argv' ][ 1 ];
+            if( isset( $this->cliOptions->since ) ) {
+                $startDate = $this->getUTCTime( $this->cliOptions->since );
             }
             else {
+                //get last stat retrieving date
+                $qry = 'SELECT
+                            MAX( `date` )
+                        FROM
+                            `onapp_itemized_resources`
+                        WHERE
+                            `whmcs_user_id` = :WHMCSUserID
+                            AND `onapp_user_id` = :OnAppUserID
+                            AND `server_id` = :serverID';
+                $qry = str_replace( ':WHMCSUserID', $client[ 'client_id' ], $qry );
+                $qry = str_replace( ':OnAppUserID', $client[ 'onapp_user_id' ], $qry );
+                $qry = str_replace( ':serverID', $client[ 'server_id' ], $qry );
+
+                if( $this->logEnabled ) {
+                    $this->log[ ] = $qry;
+                }
+
                 $startDate = mysql_query( $qry );
-                if( ( $startDate === false ) || ( mysql_num_rows( $startDate ) == 0 ) ) {
-                    $startDate = gmdate( 'Y-m-01 00:00:00' );
+                $startDate = mysql_result( $startDate, 0 );
+
+                if( $startDate === null ) {
+                    $startDate = $this->getUTCTime( date( 'Y-m-01 00:00' ) );
                 }
-                else {
-                    $startDate = mysql_result( $startDate, 0 );
-                    $startDate = date( 'Y-m-d H:00:00', strtotime( $startDate ) - ( 2 * 3600 ) );
-                    $startDate = substr_replace( $startDate, '00', - 2 );
-                }
+            }
+
+            if( isset( $this->cliOptions->till ) ) {
+                $endDate = $this->getUTCTime( $this->cliOptions->till );
+            }
+            else {
+                $endDate = gmdate( 'Y-m-d H:i' );
             }
 
             $date = array(
@@ -40,19 +53,25 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
                 'period[enddate]'   => $endDate,
             );
 
-            $sql = $this->getVMStat( $client, $date );
-            $sql = array_merge( $sql, $this->getResourcesStat( $client, $date ) );
-
-            // process SQL
-            foreach( $sql as $record ) {
-                $record .= ' ON DUPLICATE KEY UPDATE id = id';
-                full_query( $record );
+            if( $this->logEnabled ) {
+                $this->log[ 'since' ] = $startDate;
+                $this->log[ 'till' ] = $endDate;
             }
+            if( $this->printEnabled ) {
+                echo PHP_EOL, ' since: ', $startDate, PHP_EOL;
+                echo ' till : ', $endDate, PHP_EOL;
+            }
+
+            $sql = $this->getVMStat( $client, $date );
+            $this->processSQL( $sql );
+
+            $sql = $this->getResourcesStat( $client, $date );
+            $this->processSQL( $sql );
         }
 
-        echo 'Itemized cron job finished successfully', PHP_EOL;
-        echo 'Get data from ', $startDate, ' to ', $endDate;
-        echo ' (UTC)', PHP_EOL;
+        echo PHP_EOL, ' Itemized statistics cronjob finished successfully', PHP_EOL;
+        echo ' Get data since ', $startDate, ' till ', $endDate;
+        echo ' UTC', PHP_EOL;
     }
 
     private function getVMStat( $client, $date ) {
@@ -60,19 +79,32 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
         // process data
         $sql = array();
         foreach( $data as $stat ) {
+            if( isset( $stat[ 'vm_hourly_stat' ] ) ) {
+                $token = 'vm_hourly_stat';
+            }
+            elseif( isset( $stat[ 'vm_stats' ] ) ) {
+                $token = 'vm_stats';
+            }
+            else {
+                if( $this->logEnabled ) {
+                    $this->log[ 'error' ] = 'Unknown token in server response';
+                }
+                exit( 'Unknown token in server response' . PHP_EOL );
+            }
+
             $tmp = array();
             $tmp[ 'server_id' ] = $client[ 'server_id' ];
             $tmp[ 'whmcs_user_id' ] = $client[ 'client_id' ];
-            $tmp[ 'date' ] = $stat[ 'vm_hourly_stat' ][ 'created_at' ];
-            $tmp[ 'id' ] = $stat[ 'vm_hourly_stat' ][ 'id' ];
-            $tmp[ 'usage_cost' ] = $stat[ 'vm_hourly_stat' ][ 'usage_cost' ];
-            $tmp[ 'total_cost' ] = $stat[ 'vm_hourly_stat' ][ 'total_cost' ];
-            $tmp[ 'onapp_user_id' ] = $stat[ 'vm_hourly_stat' ][ 'user_id' ];
-            $tmp[ 'currency' ] = $stat[ 'vm_hourly_stat' ][ 'currency_code' ];
-            $tmp[ 'vm_id' ] = $stat[ 'vm_hourly_stat' ][ 'virtual_machine_id' ];
-            $tmp[ 'vm_resources_cost' ] = $stat[ 'vm_hourly_stat' ][ 'vm_resources_cost' ];
+            $tmp[ 'id' ] = $stat[ $token ][ 'id' ];
+            $tmp[ 'onapp_user_id' ] = $stat[ $token ][ 'user_id' ];
+            $tmp[ 'date' ] = $stat[ $token ][ 'created_at' ];
+            $tmp[ 'usage_cost' ] = $stat[ $token ][ 'usage_cost' ];
+            $tmp[ 'total_cost' ] = $stat[ $token ][ 'total_cost' ];
+            $tmp[ 'currency' ] = $stat[ $token ][ 'currency_code' ];
+            $tmp[ 'vm_resources_cost' ] = $stat[ $token ][ 'vm_resources_cost' ];
+            $tmp[ 'vm_id' ] = $stat[ $token ][ 'virtual_machine_id' ];
 
-            foreach( $stat[ 'vm_hourly_stat' ][ 'billing_stats' ] as $name => $V ) {
+            foreach( $stat[ $token ][ 'billing_stats' ] as $name => $V ) {
                 if( ( $name == 'virtual_machines' ) ) {
                     if( is_null( $tmp[ 'vm_id' ] ) ) {
                         $tmp[ 'vm_id' ] = $V[ 0 ][ 'id' ];
@@ -95,52 +127,53 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
             $sql_tmp = 'INSERT INTO `onapp_itemized_stat` ( ' . $cols . ' ) VALUES ( "' . $values . '" )';
             $sql[ ] = $sql_tmp;
         }
+
         return $sql;
     }
 
     private function getResourcesStat( $client, $date ) {
         $sql = array();
         $tmp = array(
-            'server_id' => $client[ 'server_id' ],
+            'server_id'     => $client[ 'server_id' ],
             'whmcs_user_id' => $client[ 'client_id' ],
             'onapp_user_id' => $client[ 'onapp_user_id' ],
         );
+
         $start = strtotime( $date[ 'period[startdate]' ] );
-        $finish = strtotime( $date[ 'period[enddate]' ] );
+        $finish = strtotime( $date[ 'period[enddate]' ] ) - 3600;
 
         while( $start < $finish ) {
             $date = array(
-                'period[startdate]' => date( 'Y-m-d H:10:s', $start ),
-                'period[enddate]'   => date( 'Y-m-d H:10:s', $start += 3600 ),
+                'period[startdate]' => date( 'Y-m-d H:10', $start ),
+                'period[enddate]'   => date( 'Y-m-d H:10', $start += 3600 ),
             );
 
             $data = $this->getResourcesData( $client, $date )->user_stat;
 
-            if( $data->total_cost == 0 ) {
-                continue;
-            }
+            $statDate = $data->stat_time;
+
             unset( $data->vm_stats, $data->stat_time, $data->currency_code, $data->user_id );
             $data = (array)$data;
             $data = array_merge( $tmp, $data );
-            $data[ 'date' ] = $date[ 'period[enddate]' ];
+            $data[ 'date' ] = $statDate;
 
             $cols = implode( '`, `', array_keys( $data ) );
             $values = implode( '", "', array_values( $data ) );
             $sql_tmp = 'INSERT INTO `onapp_itemized_resources` ( `' . $cols . '` ) VALUES ( "' . $values . '" )';
-            $sql[] = $sql_tmp;
+
+            $sql[ ] = $sql_tmp;
         }
+
         return $sql;
     }
 
     private function getResourcesData( $client, $date ) {
-        $dateAsArray = $date;
         $date = http_build_query( $date );
 
         $url = $this->servers[ $client[ 'server_id' ] ][ 'ipaddress' ] . '/users/' . $client[ 'onapp_user_id' ] . '/user_statistics.json?' . $date;
         $data = $this->sendRequest( $url, $this->servers[ $client[ 'server_id' ] ][ 'username' ], $this->servers[ $client[ 'server_id' ] ][ 'password' ] );
 
         if( $data ) {
-            $this->saveLastCheckDate( $client, $dateAsArray );
             return json_decode( $data );
         }
         else {
@@ -163,6 +196,13 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
     }
 
     private function sendRequest( $url, $user, $password ) {
+        if( $this->printEnabled ) {
+            echo $url, PHP_EOL;
+        }
+        if( $this->logEnabled ) {
+            $this->log[ ] = $url;
+        }
+
         $curl = new CURL();
         $curl->addOption( CURLOPT_USERPWD, $user . ':' . $password );
         $curl->addOption( CURLOPT_HTTPHEADER, array( 'Accept: application/json', 'Content-type: application/json' ) );
@@ -170,9 +210,16 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
         $data = $curl->get( $url );
 
         if( $curl->getRequestInfo( 'http_code' ) != 200 ) {
-            echo 'ERROR: ', PHP_EOL;
-            echo "\trequest URL:\t\t", $url, PHP_EOL;
-            echo "\trequest response:\t", $curl->getRequestInfo( 'response_body' ), PHP_EOL;
+            $e = 'ERROR: ' . PHP_EOL;
+            $e .= "\trequest URL:\t\t" . $url . PHP_EOL;
+            $e .= "\trequest response:\t" . $curl->getRequestInfo( 'response_body' ) . PHP_EOL;
+            if( $this->printEnabled ) {
+                echo $e;
+            }
+            if( $this->logEnabled ) {
+                $this->log[ ] = $e;
+            }
+
             return false;
         }
         else {
@@ -180,27 +227,16 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
         }
     }
 
-    private function saveLastCheckDate( $client, $date ) {
-        $qry = 'INSERT INTO
-                    `onapp_itemized_last_check`
-                VALUES
-                    (
-                        :serverID,
-                        :WHMCSUserID,
-                        :OnAppUserID,
-                        ""
-                    )
-                ON DUPLICATE KEY UPDATE
-                    `Date` = ":Date"';
-        $qry = str_replace( ':serverID', $client[ 'server_id' ], $qry );
-        $qry = str_replace( ':WHMCSUserID', $client[ 'client_id' ], $qry );
-        $qry = str_replace( ':OnAppUserID', $client[ 'onapp_user_id' ], $qry );
-        $qry = str_replace( ':Date', $date[ 'period[enddate]' ], $qry );
-        full_query( $qry );
+    private function processSQL( array $sql ) {
+        foreach( $sql as $record ) {
+            $record .= ' ON DUPLICATE KEY UPDATE id = id';
+            full_query( $record );
+        }
     }
 
     private function getAdditionalFiles() {
-        require_once dirname( dirname( __FILE__ ) ) . '/includes/php/CURL.php';
+        require_once dirname( __DIR__ ) . '/includes/php/CURL.php';
     }
 }
+
 new OnApp_UserModule_Cron_Statistic;

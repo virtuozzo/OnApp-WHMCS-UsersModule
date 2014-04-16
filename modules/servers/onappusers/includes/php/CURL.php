@@ -3,33 +3,32 @@
 class CURL {
     private $ch;
     private $data;
-    private $customOptions = array( );
-
+    private $customOptions  = array();
     private $defaultOptions = array(
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_USERAGENT => 'CURL',
-        CURLOPT_HEADER => false,
-        CURLOPT_NOBODY => false,
+        CURLOPT_USERAGENT      => 'CURL',
+        CURLOPT_HEADER         => false,
+        CURLOPT_NOBODY         => false,
     );
 
-    public function __construct( ) {
-        $this->ch = curl_init( );
+    public function __construct() {
+        $this->ch = curl_init();
     }
 
     public function useCookies() {
         $cookiesFile = tempnam( '/tmp', 'OnApp_CURL_cookies' );
         $this->defaultOptions[ CURLOPT_COOKIEFILE ] = $cookiesFile;
-        $this->defaultOptions[ CURLOPT_COOKIEJAR ]  = $cookiesFile;
+        $this->defaultOptions[ CURLOPT_COOKIEJAR ] = $cookiesFile;
     }
 
     public function addOption( $name, $value ) {
         $this->customOptions[ $name ] = $value;
     }
 
-    public function setLog( ) {
-        $log = fopen( dirname( __FILE__ ) . '/CURL.log', 'a' );
+    public function setLog() {
+        $log = fopen( __DIR__ . '/CURL.log', 'a' );
         if( $log ) {
             fwrite( $log, str_repeat( '=', 80 ) . PHP_EOL );
             $this->addOption( CURLOPT_STDERR, $log );
@@ -66,21 +65,23 @@ class CURL {
         if( $param ) {
             return $this->getDataItem( 'data', $param );
         }
+
         return $this->data[ 'data' ];
     }
 
     private function send( $method, $url ) {
         if( $url === null ) {
-            if( !isset( $this->customOptions[ CURLOPT_URL ] ) || empty( $this->customOptions[ CURLOPT_URL ] ) ) {
+            if( ! isset( $this->customOptions[ CURLOPT_URL ] ) || empty( $this->customOptions[ CURLOPT_URL ] ) ) {
                 exit( 'empty url' );
             }
         }
         $this->addOption( CURLOPT_CUSTOMREQUEST, $method );
         $this->addOption( CURLOPT_URL, $url );
-        return $this->exec( );
+
+        return $this->exec();
     }
 
-    private function setOptions( ) {
+    private function setOptions() {
         if( isset( $this->customOptions[ CURLOPT_HEADER ] ) && $this->customOptions[ CURLOPT_HEADER ] ) {
             $this->addOption( CURLINFO_HEADER_OUT, true );
         }
@@ -89,8 +90,8 @@ class CURL {
         curl_setopt_array( $this->ch, $options );
     }
 
-    private function exec( ) {
-        $this->setOptions( );
+    private function exec() {
+        $this->setOptions();
         $response = curl_exec( $this->ch );
 
         $this->data[ 'info' ] = curl_getinfo( $this->ch );

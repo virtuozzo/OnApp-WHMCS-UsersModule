@@ -1,4 +1,4 @@
--- Create syntax for TABLE 'onapp_itemized_disks'
+-- Create syntax for table 'onapp_itemized_disks'
 CREATE TABLE IF NOT EXISTS `onapp_itemized_disks` (
 	`stat_id`               INT(11)      NOT NULL,
 	`id`                    INT(11)      NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `onapp_itemized_disks` (
 )
 	DEFAULT CHARSET =utf8;
 
--- Create syntax for TABLE 'onapp_itemized_network_interfaces'
+-- Create syntax for table 'onapp_itemized_network_interfaces'
 CREATE TABLE IF NOT EXISTS `onapp_itemized_network_interfaces` (
 	`stat_id`            INT(11)      NOT NULL,
 	`id`                 INT(11)      NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `onapp_itemized_network_interfaces` (
 )
 	DEFAULT CHARSET =utf8;
 
--- Create syntax for TABLE 'onapp_itemized_stat'
+-- Create syntax for table 'onapp_itemized_stat'
 CREATE TABLE IF NOT EXISTS `onapp_itemized_stat` (
 	`id`                INT(11) UNSIGNED NOT NULL,
 	`whmcs_user_id`     INT(11) UNSIGNED NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `onapp_itemized_stat` (
 )
 	DEFAULT CHARSET =utf8;
 
--- Create syntax for TABLE 'onapp_itemized_virtual_machines'
+-- Create syntax for table 'onapp_itemized_virtual_machines'
 CREATE TABLE IF NOT EXISTS `onapp_itemized_virtual_machines` (
 	`stat_id`         INT(11)      NOT NULL,
 	`id`              INT(11)      NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `onapp_itemized_virtual_machines` (
 )
 	DEFAULT CHARSET =utf8;
 
--- Create syntax for TABLE 'onapp_itemized_resources'
+-- Create syntax for table 'onapp_itemized_resources'
 CREATE TABLE IF NOT EXISTS `onapp_itemized_resources` (
 	`id`                      INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`whmcs_user_id`           INT(11) UNSIGNED NOT NULL,
@@ -94,20 +94,7 @@ CREATE TABLE IF NOT EXISTS `onapp_itemized_resources` (
 )
 	DEFAULT CHARSET =utf8;
 
--- Create syntax for TABLE 'onapp_itemized_invoices'
-CREATE TABLE IF NOT EXISTS `onapp_itemized_invoices` (
-	`id`            INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-	`whmcs_user_id` INT(11) UNSIGNED NOT NULL,
-	`onapp_user_id` INT(11) UNSIGNED NOT NULL,
-	`server_id`     INT(11) UNSIGNED NOT NULL,
-	`invoice_id`    INT(11) UNSIGNED NOT NULL,
-	`date`          DATETIME         NOT NULL,
-	PRIMARY KEY (`id`),
-	UNIQUE KEY `invoive_check_integrity` (`whmcs_user_id`, `onapp_user_id`, `server_id`)
-)
-	DEFAULT CHARSET =utf8;
-
--- Create syntax for TABLE 'onapp_itemized_last_check'
+-- Create syntax for table 'onapp_itemized_last_check'
 CREATE TABLE IF NOT EXISTS `onapp_itemized_last_check` (
 	`serverID`    INT(10) UNSIGNED NOT NULL,
 	`WHMCSUserID` INT(10) UNSIGNED NOT NULL,
@@ -123,5 +110,75 @@ ALTER TABLE `onapp_itemized_disks` ADD `disk_min_iops` FLOAT(10, 2) NOT NULL;
 
 ALTER TABLE `onapp_itemized_disks` ADD `disk_min_iops_cost` FLOAT(10, 2) NOT NULL;
 
+ALTER TABLE `onapp_itemized_disks` MODIFY `disk_min_iops_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_disks` MODIFY `disk_size_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_disks` MODIFY `data_read_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_disks` MODIFY `data_written_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_disks` MODIFY `reads_completed_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_disks` MODIFY `writes_completed_cost` FLOAT(20, 12) NOT NULL;
+
+-- Table `onapp_itemized_network_interfaces`
+ALTER TABLE `onapp_itemized_network_interfaces` MODIFY `ip_addresses_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_network_interfaces` MODIFY `rate_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_network_interfaces` MODIFY `data_received_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_network_interfaces` MODIFY `data_sent_cost` FLOAT(20, 12) NOT NULL;
+
+-- Table `onapp_itemized_stat`
+ALTER TABLE `onapp_itemized_stat` MODIFY `usage_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_stat` MODIFY `total_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_stat` MODIFY `vm_resources_cost` FLOAT(20, 12) NOT NULL;
+
+-- Table `onapp_itemized_virtual_machines`
+ALTER TABLE `onapp_itemized_virtual_machines` MODIFY `cpu_shares_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_virtual_machines` MODIFY `cpus_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_virtual_machines` MODIFY `memory_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_virtual_machines` MODIFY `template_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_virtual_machines` MODIFY `cpu_usage_cost` FLOAT(20, 12) NOT NULL;
+
 -- Table `onapp_itemized_resources`
 ALTER TABLE `onapp_itemized_resources` ADD `customer_network_cost` FLOAT(10, 2) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `backup_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `edge_group_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `monit_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `storage_disk_size_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `template_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `vm_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `user_resources_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `total_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `backup_count_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `backup_disk_size_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `template_count_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `template_disk_size_cost` FLOAT(20, 12) NOT NULL;
+
+ALTER TABLE `onapp_itemized_resources` MODIFY `customer_network_cost` FLOAT(20, 12) NOT NULL;
+
+-- Table `onapp_itemized_invoices`
+DROP DATABASE IF EXISTS `onapp_itemized_invoices`;
+
+DROP DATABASE IF EXISTS `onapp_itemized_last_check`;

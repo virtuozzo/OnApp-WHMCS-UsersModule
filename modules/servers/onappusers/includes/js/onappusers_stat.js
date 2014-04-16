@@ -13,7 +13,7 @@ $( document ).ready( function() {
         return false;
     } );
 
-    $( '#stat-pages select' ).live( 'change', function () {
+    $( '#stat-pages select' ).live( 'change', function() {
         page = $( this ).val();
         $( 'input#get-stat' ).click();
     } );
@@ -76,7 +76,7 @@ $( document ).ready( function() {
         } );
     } );
 
-    $( '.sel_imul' ).live( 'click', function () {
+    $( '.sel_imul' ).live( 'click', function() {
         $( '.sel_imul' ).removeClass( 'act' );
         $( this ).addClass( 'act' );
 
@@ -90,7 +90,7 @@ $( document ).ready( function() {
     } );
 
 
-    $( '.sel_option' ).live( 'click', function () {
+    $( '.sel_option' ).live( 'click', function() {
         var tektext = $( this ).html();
         $( this ).parent( '.sel_options' ).parent( '.sel_imul' ).children( '.sel_selected' ).children( '.selected-text' ).html( tektext );
 
@@ -100,7 +100,7 @@ $( document ).ready( function() {
         var tekval = $( this ).attr( 'value' );
         tekval = typeof(tekval) != 'undefined' ? tekval : tektext;
         var select = $( this ).parent( '.sel_options' ).parent( '.sel_imul' ).parent( '.sel_wrap' ).children( 'select' );
-        select.children( 'option' ).removeAttr( 'selected' ).each( function () {
+        select.children( 'option' ).removeAttr( 'selected' ).each( function() {
             if( $( this ).val() == tekval ) {
                 $( this ).attr( 'selected', 'select' );
             }
@@ -115,26 +115,26 @@ $( document ).ready( function() {
 
     // timepicker blur
     var selenter = false;
-    $( '.sel_imul' ).live( 'mouseenter', function () {
+    $( '.sel_imul' ).live( 'mouseenter', function() {
         selenter = true;
     } );
-    $( '.sel_imul' ).live( 'mouseleave', function () {
+    $( '.sel_imul' ).live( 'mouseleave', function() {
         selenter = false;
         $( document ).click();
     } );
-    $( document ).click( function () {
+    $( document ).click( function() {
         if( !selenter ) {
             $( '.sel_options' ).hide();
             $( '.sel_imul' ).removeClass( 'act' );
         }
     } );
 
-    $( "#end" ).datepicker( { dateFormat:'yy-mm-dd' } );
-    $( "#start" ).datepicker( { dateFormat:'yy-mm-dd' } );
+    $( "#end" ).datepicker( { dateFormat: 'yy-mm-dd' } );
+    $( "#start" ).datepicker( { dateFormat: 'yy-mm-dd' } );
 
     reselect( '#start-time', 'sec overf' );
     reselect( '#end-time', 'sec overf' );
-    var INT = setInterval( function () {
+    var INT = setInterval( function() {
         if( $( 'div.sel_option' ).length = 48 ) {
             $( 'div.sel_option[value="' + hr + '"]' ).click();
             clearInterval( INT );
@@ -265,7 +265,7 @@ function processData( data ) {
     // process used resources stat
     var j = 0;
     for( i in resources ) {
-        $( 'div#stat-resources tr' ).eq( j ++ ).children().eq( 1 ).html( currency + number_format( resources[ i ], 5, '.', ' ' ) );
+        $( 'div#stat-resources tr' ).eq( j++ ).children().eq( 1 ).html( currency + number_format( resources[ i ], 5, '.', ' ' ) );
     }
     $( 'div#stat-resources tr td:first' ).css( 'width', 200 );
 
@@ -327,7 +327,7 @@ function processPGN( data ) {
     }
 
     reselect( '#stat-pages select', 'sec overf' );
-    var INT = setInterval( function () {
+    var INT = setInterval( function() {
         if( $( '#stat-pages div.sel_option' ).length ) {
             $( '#stat-pages div.sel_option[value="' + $( '#stat-pages select' ).val() + '"]' ).click();
             clearInterval( INT );
@@ -350,7 +350,7 @@ function number_format( number, decimals, dec_point, thousands_sep ) {
             sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
             dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
             s = '',
-            toFixedFix = function ( n, prec ) {
+            toFixedFix = function( n, prec ) {
                 var k = Math.pow( 10, prec );
                 return '' + Math.round( n * k ) / k;
             };
@@ -372,7 +372,7 @@ function reselect( select, addclass ) {
     $( select ).wrap( '<div class="sel_wrap ' + addclass + '"/>' );
 
     var sel_options = '';
-    $( select ).children( 'option' ).each( function () {
+    $( select ).children( 'option' ).each( function() {
         sel_options = sel_options + '<div class="sel_option" value="' + $( this ).val() + '">' + $( this ).html() + '</div>';
 
     } );

@@ -1,6 +1,6 @@
 <?php
 
-if( !isset( $_POST[ 'authenticity_token' ] ) ) {
+if( ! isset( $_POST[ 'authenticity_token' ] ) ) {
     exit( 'Don\'t allowed!' );
 }
 
@@ -9,11 +9,11 @@ require $root . 'dbconnect.php';
 require $root . 'includes/functions.php';
 require $root . 'includes/clientareafunctions.php';
 
-$iv_size   = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
-$iv        = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
-$key       = substr( $_SESSION[ 'utk' ][ 0 ], 0, 27 );
+$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
+$iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
+$key = substr( $_SESSION[ 'utk' ][ 0 ], 0, 27 );
 $crypttext = mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $key, base64_decode( base64_decode( $_SESSION[ 'utk' ][ 1 ] ) ), MCRYPT_MODE_ECB, $iv );
-$data      = explode( '%%%', $crypttext );
+$data = explode( '%%%', $crypttext );
 
 if( count( $data ) != 2 ) {
     exit( 'Corrupted data!' );
@@ -29,7 +29,7 @@ else {
 </noscript>
 <base href="<?php echo $data->server ?>">
 <div id="cpform" style="display: none;">
-<?php
+    <?php
     require 'CURL.php';
     $curl = new CURL;
     $curl->addOption( CURLOPT_RETURNTRANSFER, true );
@@ -52,5 +52,5 @@ JS;
         $js = '<script type="text/javascript">document.getElementById( "cpform" ).style.display = "block";</script>';
     }
     echo $cp . $js;
-?>
+    ?>
 </div>
