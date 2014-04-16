@@ -1,5 +1,5 @@
 ## Prerequirements
-**PHP 5.3+
+**PHP 5.3+  
 WHMCS 5+**
 
 #####_PHP extensions:_
