@@ -3,8 +3,8 @@
 WHMCS 5+**
 
 #####PHP extensions:
-[Mcrypt](http://php.net/manual/en/mcrypt.installation.php)
-[Multibyte String](http://www.php.net/manual/en/mbstring.installation.php)
+[Mcrypt](http://php.net/manual/en/mcrypt.installation.php)  
+[Multibyte String](http://www.php.net/manual/en/mbstring.installation.php)  
 [SimpleXML](http://php.net/manual/en/simplexml.installation.php) (if you wish to operate with XML-data)
 
 #####Additional libraries:
