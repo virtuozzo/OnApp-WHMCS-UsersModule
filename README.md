@@ -11,7 +11,8 @@ WHMCS 5+**
 [OnApp PHP Wrapper](https://github.com/OnApp/OnApp-PHP-Wrapper-External)
 
 #####_PHP settings:_
-Timezone should be defined in PHP settings. If the timezone is not already set add the following line to your *php.ini*:
+Timezone should be defined in PHP settings.  
+If the timezone is not already set add the following line to your *php.ini*:
 
 ```
 date.timezone = {desired timezone}
@@ -42,7 +43,7 @@ Second one is invoice generator.*
 
 
 ## Advanced usage
-#####_Statistics collector_  
+#####_Statistics collector_
 By default it starts grab data since last collection date (or the beginning of the month if it run for the first time) till the current time.  
 You can force collector to grab more data by passing desired  dates in format 'YYYY-MM-DD HH:MM' as a parameter:
 
@@ -53,7 +54,7 @@ You can force collector to grab more data by passing desired  dates in format 'Y
 
 
 #####_Invoice generator_
-By default it generates customers invoices relying on collected statistics for the previous month.
+By default it generates customers invoices relying on collected statistics for the previous month.  
 As usual it should be run once a month when you want generate invoices.
 
 You can force generator to generate invoices for the certain period by passing desired starting and ending dates in format 'YYYY-MM-DD HH:MM' as a parameters:
@@ -66,7 +67,7 @@ You can force generator to generate invoices for the certain period by passing d
 
 
 ## Testing invoice generator
-We strongly recommend to test invoice generator before using in production to be sure that it works properly.
+We strongly recommend to test invoice generator before using in production to be sure that it works properly.  
 For testing you should setup statistics collector (or run it from console) and run tester:
 
 ```bash
