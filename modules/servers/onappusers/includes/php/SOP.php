@@ -1,11 +1,11 @@
 <?php
 
 /**
- * This is the main option parser class
+ * Main option parser class
  */
-class SOP {
-    private $helpBanner             = null;
-    private $definedOptions         = array();
+class SOP extends SOPGeneral {
+    private $helpBanner;
+    private $definedOptions;
     private $availableOptions       = array();
     private $longOptsDefinition     = array();
     private $shortOptsDefinition    = '';
@@ -36,6 +36,8 @@ class SOP {
         );
         $this->setOption( $help );
         unset( $help );
+
+        $this->definedOptions = new stdClass();
     }
 
     /**
@@ -106,12 +108,12 @@ class SOP {
             # now, set the value for the option
             $opt->setValue( $value );
 
-            $this->definedOptions[ $opt->long ] = $opt;
+            $this->definedOptions->{$opt->long} = $opt;
         }
 
         # Now that we've successfully parsed the options, simply
         # show the help banner if --help or -h has been specified.
-        if( isset( $this->definedOptions[ 'help' ] ) ) {
+        if( isset( $this->definedOptions->help ) ) {
             $this->showHelp();
         }
 
@@ -125,9 +127,9 @@ class SOP {
     }
 
     public function getDefinedOptions() {
-        $return = array();
+        $return = new stdClass();
         foreach( $this->definedOptions as $option ) {
-            $return[ $option->long ] = $option->value;
+            $return->{$option->long} = $option->value;
         }
 
         return $return;
@@ -172,7 +174,7 @@ class SOP {
 
             echo ' ', $line, PHP_EOL;
         }
-        exit;
+        $this->halt();
     }
 }
 
@@ -186,6 +188,7 @@ class SOPOption extends SOPGeneral {
     private $value;
     private $default;
     private $required;
+    private $validation;
     private $description;
 
     /**
@@ -206,6 +209,7 @@ class SOPOption extends SOPGeneral {
         $this->default = ( isset( $data[ 'default' ] ) ) ? $data[ 'default' ] : null;
         $this->short = isset( $data[ 'short' ] ) ? $data[ 'short' ][ 0 ] : null;
         $this->type = isset( $data[ 'type' ] ) ? strtolower( $data[ 'type' ] ) : null;
+        $this->validation = isset( $data[ 'validation' ] ) ? $data[ 'validation' ] : null;
         $this->required = isset( $data[ 'required' ] ) ? (bool)$data[ 'required' ] : false;
     }
 
@@ -214,25 +218,30 @@ class SOPOption extends SOPGeneral {
      */
     public function validate() {
         # require that required variables have a value
-        if( $this->required && $this->value == null ) {
+        if( $this->required && $this->value === null ) {
             $this->halt( 'Error: required value for "' . $this->long . '" was not specified.' );
         }
 
-        # if a type constraint was specified, verify that the constraint
-        # itself is valid.
-        if( $this->type != null && ! in_array( $this->type, array( SOP::NUMBER, SOP::INTEGER ) ) ) {
-            $this->halt( 'SOP library error: invalid type constraint set for "' . $this->long . '". Must be integer, number or string.' );
+        if( isset( $this->value ) && isset( $this->validation ) ) {
+            $this->customValidation();
         }
+        else {
+            # if a type constraint was specified, verify that the constraint
+            # itself is valid.
+            if( $this->type != null && ! in_array( $this->type, array( SOP::NUMBER, SOP::INTEGER ) ) ) {
+                $this->halt( 'SOP library error: invalid type constraint set for "' . $this->long . '". Must be integer, number or string.' );
+            }
 
-        if( $this->required ) {
-            switch( $this->type ) {
-                case SOP::INTEGER:
-                    is_int( $this->value ) or $this->halt( 'Error: option "' . $this->long . '" must be an integer.' );
-                    break;
+            if( $this->required ) {
+                switch( $this->type ) {
+                    case SOP::INTEGER:
+                        is_int( $this->value ) or $this->halt( 'Error: option "' . $this->long . '" must be an integer.' );
+                        break;
 
-                case SOP::NUMBER:
-                    is_numeric( $this->value ) or $this->halt( 'Error: option "' . $this->long . '" must be a number.' );
-                    break;
+                    case SOP::NUMBER:
+                        is_numeric( $this->value ) or $this->halt( 'Error: option "' . $this->long . '" must be a number.' );
+                        break;
+                }
             }
         }
     }
@@ -261,10 +270,18 @@ class SOPOption extends SOPGeneral {
             return null;
         }
     }
+
+    private function customValidation() {
+        $result = preg_match( '/' . $this->validation . '/', $this->value, $matches );
+
+        if( $result != 1 ) {
+            $this->halt( 'Error: option "' . $this->long . '" does not match allowed format.' );
+        }
+    }
 }
 
 abstract class SOPGeneral {
-    protected function halt( $msg ) {
+    protected function halt( $msg = '' ) {
         exit( $msg . PHP_EOL );
     }
 }
