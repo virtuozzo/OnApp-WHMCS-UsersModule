@@ -1,7 +1,7 @@
 <?php
 
 if( !isset( $_POST[ 'authenticity_token' ] ) ) {
-	exit( 'Don\'t allowed!' );
+    exit( 'Don\'t allowed!' );
 }
 
 $root = dirname( dirname( dirname( dirname( dirname( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) ) ) ) ) ) . DIRECTORY_SEPARATOR;
@@ -16,41 +16,41 @@ $crypttext = mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $key, base64_decode( base64_de
 $data      = explode( '%%%', $crypttext );
 
 if( count( $data ) != 2 ) {
-	exit( 'Corrupted data!' );
+    exit( 'Corrupted data!' );
 }
 else {
-	$data = json_decode( $data[ 0 ] );
+    $data = json_decode( $data[ 0 ] );
 }
 
 ?>
 
 <noscript>
-	<meta http-equiv="refresh" content="0; url=<?php echo $data->server ?>">
+    <meta http-equiv="refresh" content="0; url=<?php echo $data->server ?>">
 </noscript>
 <base href="<?php echo $data->server ?>">
 <div id="cpform" style="display: none;">
 <?php
-	require 'CURL.php';
-	$curl = new CURL;
-	$curl->addOption( CURLOPT_RETURNTRANSFER, true );
-	$curl->addOption( CURLOPT_FOLLOWLOCATION, true );
-	$cp = $curl->get( $data->server );
+    require 'CURL.php';
+    $curl = new CURL;
+    $curl->addOption( CURLOPT_RETURNTRANSFER, true );
+    $curl->addOption( CURLOPT_FOLLOWLOCATION, true );
+    $cp = $curl->get( $data->server );
 
-	if( $curl->getRequestInfo( 'http_code' ) == 200 ) {
-		$js = <<<JS
-			$( '#user_login' ).val( '{$data->login}' );
-			$( '#user_password' ).val( '{$data->password}' );
-			var form = $( 'form' );
-			form.attr( 'action', '{$data->server}/users/sign_in' );
-			form.attr( 'autocomplete', 'off' );
-			form.submit();
-			$( '#getcp' ).remove();
+    if( $curl->getRequestInfo( 'http_code' ) == 200 ) {
+        $js = <<<JS
+            $( '#user_login' ).val( '{$data->login}' );
+            $( '#user_password' ).val( '{$data->password}' );
+            var form = $( 'form' );
+            form.attr( 'action', '{$data->server}/users/sign_in' );
+            form.attr( 'autocomplete', 'off' );
+            form.submit();
+            $( '#getcp' ).remove();
 JS;
-		$js = '<script type="text/javascript" id="getcp">' . $js . '</script>';
-	}
-	else {
-		$js = '<script type="text/javascript">document.getElementById( "cpform" ).style.display = "block";</script>';
-	}
-	echo $cp . $js;
+        $js = '<script type="text/javascript" id="getcp">' . $js . '</script>';
+    }
+    else {
+        $js = '<script type="text/javascript">document.getElementById( "cpform" ).style.display = "block";</script>';
+    }
+    echo $cp . $js;
 ?>
 </div>
