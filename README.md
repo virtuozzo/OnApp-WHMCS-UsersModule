@@ -4,8 +4,6 @@ WHMCS 5+**
 
 #####_PHP extensions:_
 [Mcrypt](http://php.net/manual/en/mcrypt.installation.php)  
-[Multibyte String](http://www.php.net/manual/en/mbstring.installation.php)  
-[SimpleXML](http://php.net/manual/en/simplexml.installation.php) (if you wish to operate with XML-data)
 
 #####_Additional libraries:_
 [OnApp PHP Wrapper](https://github.com/OnApp/OnApp-PHP-Wrapper-External)
@@ -24,7 +22,8 @@ All available timezones are listed on http://php.net/manual/en/timezones.php
 
 ## Installation
 - remove/rename any previously used module's files
-- copy all files to the root of your WHMCS directory.
+- copy all files to the root of your WHMCS directory
+- copy OnApp PHP Wrapper into {WHMCS}/includes/wrapper
 
 
 ## Setting up cronjobs
@@ -75,3 +74,6 @@ For testing you should setup statistics collector (or run it from console) and r
 ```
 
 _Tester functionally is the same as generator itself, but it writes processed data to the file for review instead of generating real invoices._
+
+## Updates
+You are welcome to sign up to the [RSS feed](https://github.com/OnApp/OnApp-WHMCS-UsersModule/releases.atom) or follow [@OnAppPHPTeam](https://twitter.com/intent/user?screen_name=OnAppPHPTeam) on Twitter to stay informed on new releases.
