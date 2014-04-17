@@ -41,7 +41,6 @@ abstract class OnApp_UserModule_Cron {
     }
 
     protected function getAmmount( array $user ) {
-        $user[ 'rate' ] = 1;
         $qry = 'SELECT
                     SUM( `total_cost` ) * :rate AS total,
                     SUM( `backup_cost` ) * :rate AS backup,
