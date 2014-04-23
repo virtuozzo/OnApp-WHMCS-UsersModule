@@ -30,7 +30,7 @@ All available timezones are listed on http://php.net/manual/en/timezones.php
 Add the following commands to your cronjobs:
 
 ```bash
-15 * * * *    /usr/bin/php -q {WHMCS}/modules/servers/onappusers/cronjobs/stat.php
+05 * * * *    /usr/bin/php -q {WHMCS}/modules/servers/onappusers/cronjobs/stat.php
 30 0 1 * *    /usr/bin/php -q {WHMCS}/modules/servers/onappusers/cronjobs/generate-invoices.php
 ```
 
@@ -76,4 +76,4 @@ For testing you should setup statistics collector (or run it from console) and r
 _Tester functionally is the same as generator itself, but it writes processed data to the file for review instead of generating real invoices._
 
 ## Updates
-You are welcome to sign up to the [RSS feed](https://github.com/OnApp/OnApp-WHMCS-UsersModule/releases.atom) or follow [@OnAppPHPTeam](https://twitter.com/intent/user?screen_name=OnAppPHPTeam) on Twitter to stay informed on new releases.
+You are welcome to [follow us](https://twitter.com/intent/user?screen_name=OnAppPHPTeam) on Twitter to stay informed on new releases.
