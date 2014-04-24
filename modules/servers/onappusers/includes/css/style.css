@@ -34,7 +34,7 @@
 }
 
 #statcontainer {
-	margin-bottom: 30px;
+	margin: 5px 0;
 }
 
 #stat_data div td {
@@ -107,12 +107,12 @@ input, select, textarea {
 	text-align: left;
 }
 
-#gotocpserver {
-    float: left;
-    line-height: 24px;
+#gotocp {
+	text-align: left;
 }
-#gotocpform {
-    float: left;
+
+#gotocpform input {
+	margin: 5px 0 20px;
 }
 
 .font-bold {
@@ -270,8 +270,4 @@ input, select, textarea {
 .selected-text {
 	text-align: left;
 	padding-left: 6px;
-}
-
-.aleft {
-	text-align: left;
 }
