@@ -1,22 +1,22 @@
 ## Prerequirements
-**PHP 5.3+
+**PHP 5.3+  
 WHMCS 5+**
 
 #####_PHP extensions:_
-[Mcrypt](http://php.net/manual/en/mcrypt.installation.php)
+[Mcrypt](http://php.net/manual/en/mcrypt.installation.php)  
 
 #####_Additional libraries:_
 [OnApp PHP Wrapper](https://github.com/OnApp/OnApp-PHP-Wrapper-External)
 
 #####_PHP settings:_
-Timezone should be defined in PHP settings.
+Timezone should be defined in PHP settings.  
 If the timezone is not already set add the following line to your *php.ini*:
 
 ```
 date.timezone = {desired timezone}
 ```
 
-Line should looks like **_date.timezone = Europe/Stockholm_**
+Line should looks like **_date.timezone = Europe/Stockholm_**  
 All available timezones are listed on http://php.net/manual/en/timezones.php
 
 
@@ -34,8 +34,8 @@ Add the following commands to your cronjobs:
 30 0 1 * *    /usr/bin/php -q {WHMCS}/modules/servers/onappusers/cronjobs/generate-invoices.php
 ```
 
-*{WHMCS} is the full path to your WHMCS directory.
-First command is usage statistics collector.
+*{WHMCS} is the full path to your WHMCS directory.  
+First command is usage statistics collector.  
 Second one is invoice generator.*
 
 **_DO NOT SETUP INVOICE GENERATOR BEFORE TESTING (SEE BELOW)!_**
@@ -43,7 +43,7 @@ Second one is invoice generator.*
 
 ## Advanced usage
 #####_Statistics collector_
-By default it starts grab data since last collection date (or the beginning of the month if it run for the first time) till the current time.
+By default it starts grab data since last collection date (or the beginning of the month if it run for the first time) till the current time.  
 You can force collector to grab more data by passing desired  dates in format 'YYYY-MM-DD HH:MM' as a parameter:
 
 ```bash
@@ -53,7 +53,7 @@ You can force collector to grab more data by passing desired  dates in format 'Y
 
 
 #####_Invoice generator_
-By default it generates customers invoices relying on collected statistics for the previous month.
+By default it generates customers invoices relying on collected statistics for the previous month.  
 As usual it should be run once a month when you want generate invoices.
 
 You can force generator to generate invoices for the certain period by passing desired starting and ending dates in format 'YYYY-MM-DD HH:MM' as a parameters:
@@ -66,7 +66,7 @@ You can force generator to generate invoices for the certain period by passing d
 
 
 ## Testing invoice generator
-We strongly recommend to test invoice generator before using in production to be sure that it works properly.
+We strongly recommend to test invoice generator before using in production to be sure that it works properly.  
 For testing you should setup statistics collector (or run it from console) and run tester:
 
 ```bash
