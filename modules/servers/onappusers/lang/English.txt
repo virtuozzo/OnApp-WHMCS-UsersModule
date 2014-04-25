@@ -24,8 +24,11 @@ $_LANG[ 'onappusersnoroles' ] = 'There are no configured roles on this server';
 $_LANG[ 'onappusersjsloadingdata' ] = '<b>Loading data...</b>';
 $_LANG[ 'onapperrcantfoundadress' ] = 'OnApp server address (IP or hostname) has not been set for this server';
 $_LANG[ 'onappuserserruserterminate' ] = 'Can\'t terminate account because user has virtual machines';
+$_LANG['onappwrappernotfound'] = 'OnApp PHP wrapper not found. Please <a href="https://github.com/OnApp/OnApp-PHP-Wrapper-External/releases" target="_blank">download</a> it and put into ';
 $_LANG[ 'onappuserscreateaccount' ] = 'OnApp account has been created';
-$_LANG['onappwrappernotfound'] = 'Wrapper not found. Please download it from http://onapp.com/downloads and put it into ';
+$_LANG[ 'onappuserssuspendaccount' ] = 'OnApp account has been suspended';
+$_LANG[ 'onappusersunsuspendaccount' ] = 'OnApp account has been unsuspended';
+$_LANG[ 'onappusersterminateaccount' ] = 'OnApp account has been terminated';
 
 $_LANG[ 'onappusersstatoutstandingdetails' ] = 'Outstanding Details';
 $_LANG[ 'onappusersstatrecordsfound' ] = 'Records Found,';
