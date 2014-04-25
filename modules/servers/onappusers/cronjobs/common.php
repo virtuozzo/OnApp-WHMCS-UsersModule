@@ -230,7 +230,9 @@ abstract class OnApp_UserModule_Cron {
     }
 
     private function checkSQL() {
-        if( file_exists( $file = __DIR__ . '/cron.sql' ) ) {
+        if( file_exists( $file = dirname( __DIR__ ) . '/module.sql' ) ) {
+            logactivity( 'OnApp User Module: process SQL file, called from cronjob.' );
+
             $sql = file_get_contents( $file );
             $sql = explode( PHP_EOL . PHP_EOL, $sql );
 
