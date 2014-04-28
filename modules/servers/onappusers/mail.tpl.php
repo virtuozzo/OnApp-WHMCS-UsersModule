@@ -17,9 +17,7 @@ if( ! mysql_num_rows( select_query( 'tblemailtemplates', 'id', $where ) ) ) {
                     password: {$service_password}</p>
                     <p></p> To login, visit http://{$service_server_ip}';
     $fields[ 'plaintext' ] = 0;
-    if( ! insert_query( 'tblemailtemplates', $fields ) ) {
-        return sprintf( $_LANG[ 'onappuserserrtmpladd' ], $_LANG[ 'onappuserscreateaccount' ] );
-    }
+    insert_query( 'tblemailtemplates', $fields );
 }
 
 // suspend account template
@@ -34,9 +32,7 @@ if( ! mysql_num_rows( select_query( 'tblemailtemplates', 'id', $where ) ) ) {
     $fields[ 'message' ] = '<p>Dear {$client_name}</p>
                     <p>Your OnApp account has been suspended.</p>';
     $fields[ 'plaintext' ] = 0;
-    if( ! insert_query( 'tblemailtemplates', $fields ) ) {
-        return sprintf( $_LANG[ 'onappuserserrtmpladd' ], $_LANG[ 'onappuserssuspendaccount' ] );
-    }
+    insert_query( 'tblemailtemplates', $fields );
 }
 
 // unsuspend account template
@@ -51,9 +47,7 @@ if( ! mysql_num_rows( select_query( 'tblemailtemplates', 'id', $where ) ) ) {
     $fields[ 'message' ] = '<p>Dear {$client_name}</p>
                     <p>Your OnApp account has been unsuspended.</p>';
     $fields[ 'plaintext' ] = 0;
-    if( ! insert_query( 'tblemailtemplates', $fields ) ) {
-        return sprintf( $_LANG[ 'onappuserserrtmpladd' ], $_LANG[ 'onappusersunsuspendaccount' ] );
-    }
+    insert_query( 'tblemailtemplates', $fields );
 }
 
 // terminate account template
@@ -68,9 +62,22 @@ if( ! mysql_num_rows( select_query( 'tblemailtemplates', 'id', $where ) ) ) {
     $fields[ 'message' ] = '<p>Dear {$client_name}</p>
                     <p>Your OnApp account has been terminated.</p>';
     $fields[ 'plaintext' ] = 0;
-    if( ! insert_query( 'tblemailtemplates', $fields ) ) {
-        return sprintf( $_LANG[ 'onappuserserrtmpladd' ], $_LANG[ 'onappusersterminateaccount' ] );
-    }
+    insert_query( 'tblemailtemplates', $fields );
+}
+
+// upgrade account template
+$where = array();
+$where[ 'type' ] = 'product';
+$where[ 'name' ] = $_LANG[ 'onappusersupgradeaccount' ];
+if( ! mysql_num_rows( select_query( 'tblemailtemplates', 'id', $where ) ) ) {
+    $fields = array();
+    $fields[ 'type' ] = 'product';
+    $fields[ 'name' ] = $where[ 'name' ];
+    $fields[ 'subject' ] = 'OnApp account has been upgraded';
+    $fields[ 'message' ] = '<p>Dear {$client_name}</p>
+                    <p>Your OnApp account has been upgraded.</p>';
+    $fields[ 'plaintext' ] = 0;
+    insert_query( 'tblemailtemplates', $fields );
 }
 
 unset( $where, $fields );
