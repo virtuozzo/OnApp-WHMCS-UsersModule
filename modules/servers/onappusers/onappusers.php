@@ -247,8 +247,6 @@ function onappusers_CreateAccount( $params ) {
         'client_id'     => $clientsdetails[ 'userid' ],
         'service_id'    => $serviceid,
         'onapp_user_id' => $onapp_user->_obj->_id,
-        'password'      => $password,
-        'email'         => $clientsdetails[ 'email' ]
     ) );
 
     sendmessage( $_LANG[ 'onappuserscreateaccount' ], $serviceid );
@@ -409,9 +407,48 @@ function onappusers_UnsuspendAccount( $params ) {
     return 'success';
 }
 
-/**
- * Load $_LANG from language file
- */
+function onappusers_ChangePackage( $params ) {
+    global $_LANG;
+
+    if( $params[ 'action' ] !== 'upgrade' ) {
+        return;
+    }
+
+    $config = json_decode( $params[ 'configoption1' ] );
+    $serviceid = $params[ 'serviceid' ];
+    $client_id = $params[ 'clientsdetails' ][ 'userid' ];
+    $server_id = $params[ 'serverid' ];
+
+    $query = "SELECT
+                    onapp_user_id
+                FROM
+                    tblonappusers
+                WHERE
+                    server_id = '$server_id'
+                    AND client_id = '$client_id'
+                    AND service_id = '$serviceid'";
+
+    $result = full_query( $query );
+    $OnAppUserID = mysql_result( $result, 0 );
+
+    $module = new OnApp_UserModule( $params );
+    $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
+    $OnAppUser->_id = $OnAppUserID;
+    $OnAppUser->_billing_plan_id = $config->SelectedPlans->$params[ 'serverid' ];
+    $OnAppUser->save();
+
+    if( ! is_null( $OnAppUser->error ) ) {
+        $errorMsg = $_LANG[ 'onappuserserruserupgrade' ] . ':<br/>';
+        $errorMsg .= $OnAppUser->getErrorsAsString( '<br/>' );
+
+        return $errorMsg;
+    }
+
+    sendmessage( $_LANG[ 'onappusersupgradeaccount' ], $serviceid );
+
+    return 'success';
+}
+
 function loadLang() {
     global $_LANG, $CONFIG;
 
