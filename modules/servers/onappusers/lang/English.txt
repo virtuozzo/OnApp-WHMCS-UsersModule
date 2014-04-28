@@ -1,11 +1,13 @@
 $_LANG[ 'onappuserserrtablecreate' ] = 'Error creating table %s';
-$_LANG[ 'onappuserserrtmpladd' ] = 'Error adding \'%s\' template';
+$_LANG[ 'onappuserserrtmpladd' ] = 'OnApp User Module: error adding "%s" email template';
 $_LANG[ 'onappuserserrpwdnotset' ] = 'Password not set';
 $_LANG[ 'onappuserserrusercreate' ] = 'Can\'t create OnApp User';
 $_LANG[ 'onappuserserrassociateuser' ] = 'Can\'t find OnApp User for client #%s on server #%s';
 $_LANG[ 'onappuserserrusersuspend' ] = 'Can\'t suspend OnApp User';
 $_LANG[ 'onappuserserruserunsuspend' ] = 'Can\'t unsuspend OnApp User';
 $_LANG[ 'onappuserserruserdelete' ] = 'Can\'t delete OnApp User';
+$_LANG[ 'onappuserserruserterminate' ] = 'Can\'t terminate OnApp User';
+$_LANG[ 'onappuserserruserupgrade' ] = 'Can\'t upgrade OnApp User';
 
 $_LANG[ 'onappuserserrorholder' ] = '<b style="color:red;">%s</b>';
 $_LANG[ 'onappuserserrornoserveringroup' ] = 'There are no servers in selected server group';
@@ -23,12 +25,12 @@ $_LANG[ 'onappusersnousergroups' ] = 'There are no configured user groups on thi
 $_LANG[ 'onappusersnoroles' ] = 'There are no configured roles on this server';
 $_LANG[ 'onappusersjsloadingdata' ] = '<b>Loading data...</b>';
 $_LANG[ 'onapperrcantfoundadress' ] = 'OnApp server address (IP or hostname) has not been set for this server';
-$_LANG[ 'onappuserserruserterminate' ] = 'Can\'t terminate account because user has virtual machines';
 $_LANG['onappwrappernotfound'] = 'OnApp PHP wrapper not found. Please <a href="https://github.com/OnApp/OnApp-PHP-Wrapper-External/releases" target="_blank">download</a> it and put into ';
 $_LANG[ 'onappuserscreateaccount' ] = 'OnApp account has been created';
 $_LANG[ 'onappuserssuspendaccount' ] = 'OnApp account has been suspended';
 $_LANG[ 'onappusersunsuspendaccount' ] = 'OnApp account has been unsuspended';
 $_LANG[ 'onappusersterminateaccount' ] = 'OnApp account has been terminated';
+$_LANG[ 'onappusersupgradeaccount' ] = 'OnApp account has been upgraded';
 
 $_LANG[ 'onappusersstatoutstandingdetails' ] = 'Outstanding Details';
 $_LANG[ 'onappusersstatrecordsfound' ] = 'Records Found,';
