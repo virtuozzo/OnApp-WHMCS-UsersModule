@@ -434,7 +434,10 @@ function onappusers_ChangePackage( $params ) {
     $module = new OnApp_UserModule( $params );
     $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
     $OnAppUser->_id = $OnAppUserID;
+    $OnAppUser->_time_zone = $config->SelectedTZs->$params[ 'serverid' ];
+    $OnAppUser->_locale = $config->SelectedLocales->$params[ 'serverid' ];
     $OnAppUser->_billing_plan_id = $config->SelectedPlans->$params[ 'serverid' ];
+    $OnAppUser->_user_group_id = $config->SelectedUserGroups->$params[ 'serverid' ];
     $OnAppUser->save();
 
     if( ! is_null( $OnAppUser->error ) ) {
