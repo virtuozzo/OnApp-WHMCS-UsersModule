@@ -66,16 +66,16 @@ function buildFields( ServersData ) {
         html += '<td class="fieldarea" id="showstat' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
-        // pass taxes row
-        html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserspassthrutaxes + '</td>';
-        html += '<td class="fieldarea" id="passtaxes' + server_id + '"></td></tr>';
-        table.find( 'tr:last' ).after( html );
-
         // show control panel row
         html = '<tr>';
         html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersshowcontrolpanel + '</td>';
         html += '<td class="fieldarea" id="controlpanel' + server_id + '"></td></tr>';
+        table.find( 'tr:last' ).after( html );
+
+        // pass taxes row
+        html = '<tr>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserspassthrutaxes + '</td>';
+        html += '<td class="fieldarea" id="passtaxes' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
         // show duedate row
