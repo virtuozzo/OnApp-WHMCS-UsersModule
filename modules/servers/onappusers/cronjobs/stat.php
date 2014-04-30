@@ -150,7 +150,12 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 
             $data = $this->getResourcesData( $client, $date )->user_stat;
 
-            $statDate = $data->stat_time;
+            if( $data->stat_time === null ) {
+                $statDate = $date[ 'period[enddate]' ];
+            }
+            else {
+                $statDate = $data->stat_time;
+            }
 
             unset( $data->vm_stats, $data->stat_time, $data->currency_code, $data->user_id );
             $data = (array)$data;
