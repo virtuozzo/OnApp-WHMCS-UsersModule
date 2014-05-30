@@ -2,9 +2,11 @@
 
 <div id="gotocp">
     <h3 class="aleft1">{$LANG.onappuserslogintocpbuttonheader}</h3>
-	<form action="modules/servers/onappusers/includes/php/getCP.php" method="post" target="_blank" id="gotocpform">
+	<form action="modules/servers/onappusers/includes/php/getCP.php" method="post" id="gotocpform">
 		<input type="hidden" id="authenticity_token" name="authenticity_token" value="{###}">
-		<input type="submit" value="  {$LANG.onappuserslogintocpbutton}  " class="btn"/>
+        <button type="button" class="btn">
+            {$LANG.onappuserslogintocpbutton}
+        </button>
 	</form>
 </div>
 

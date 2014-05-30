@@ -1,187 +1,111 @@
-<link rel="stylesheet" href="modules/servers/onappusers/includes/css/style.css"/>
-<link rel="stylesheet" href="includes/jscript/css/ui.all.css" />
-
 <h3 id="user-stat">{$LANG.onappusersstatoutstandingdetails}</h3>
-<div id="statcontainer">
-<table width="100%" cellspacing="0" cellpadding="0" class="userstat">
-	<tr class="stat-labels">
-		<td style="text-align: center;">
-			{$LANG.onappusersstatstartdate}:
-			<input type="text" value="" name="period[startdate]" id="start" />
-			Time:
-			<select id="start-time">
-				<option value="00">0</option>
-				<option value="01">1</option>
-				<option value="02">2</option>
-				<option value="03">3</option>
-				<option value="04">4</option>
-				<option value="05">5</option>
-				<option value="06">6</option>
-				<option value="07">7</option>
-				<option value="08">8</option>
-				<option value="09">9</option>
-				<option value="10">10</option>
-				<option value="11">11</option>
-				<option value="12">12</option>
-				<option value="13">13</option>
-				<option value="14">14</option>
-				<option value="15">15</option>
-				<option value="16">16</option>
-				<option value="17">17</option>
-				<option value="18">18</option>
-				<option value="19">19</option>
-				<option value="20">20</option>
-				<option value="21">21</option>
-				<option value="22">22</option>
-				<option value="23">23</option>
-			</select>
-			&nbsp;&nbsp;&nbsp;
-			{$LANG.onappusersstatenddate}:
-			<input type="text" value="" name="period[enddate]" id="end" />
-			Time:
-			<select id="end-time">
-				<option value="00">0</option>
-				<option value="01">1</option>
-				<option value="02">2</option>
-				<option value="03">3</option>
-				<option value="04">4</option>
-				<option value="05">5</option>
-				<option value="06">6</option>
-				<option value="07">7</option>
-				<option value="08">8</option>
-				<option value="09">9</option>
-				<option value="10">10</option>
-				<option value="11">11</option>
-				<option value="12">12</option>
-				<option value="13">13</option>
-				<option value="14">14</option>
-				<option value="15">15</option>
-				<option value="16">16</option>
-				<option value="17">17</option>
-				<option value="18">18</option>
-				<option value="19">19</option>
-				<option value="20">20</option>
-				<option value="21">21</option>
-				<option value="22">22</option>
-				<option value="23">23</option>
-			</select>
-			&nbsp;&nbsp;&nbsp;
-			<input type="button" value="{$LANG.onappusersstatapply}" id="get-stat">&nbsp;&nbsp;&nbsp;&nbsp;
-			<span id="loading" style="visibility: hidden;">
-				<img src="modules/servers/onappusers/includes/images/loader.gif" alt="">
-			</span>
-			<div id="use-tz">
-				<input type="checkbox" checked="checked" /> {$LANG.onappusersstatuselocaltime}
-			</div>
-		</td>
-	</tr>
-	<tr class="stat-labels">
-		<td style="display: none;" id="stat-nav">
-			<div style="width: auto; text-align: center;">
-				<a href="#" rel="resources" class="stat-nav-bold">{$LANG.onappusersstatusedresources}</a> |
-				<a href="#" rel="vms">{$LANG.onappusersstatvirtualmachines}</a> |
-				<a href="#" rel="disks">{$LANG.onappusersstatdisks}</a> |
-				<a href="#" rel="nets">{$LANG.onappusersstatnetworks}</a>
-			</div>
-		</td>
-	</tr>
-	<tr class="stat-labels">
-		<td style="display: none;" id="stat-pages">
-			<!-- PAGINATION -->
-			<div class="float_right taright">
-				{$LANG.onappusersstatjumptopage} <span><select rel="pages"></select></span>
-			</div>
-			<div class="float_right tacenter val"></div>
-			<div class="float_right taleft val"></div>
-		</td>
-	</tr>
-	<!-- DATA -->
-	<tr>
-		<td id="stat_data">
-			<div id="stat-resources">
-				<table>
-					<tr class="stat-labels font-bold">
-						<td>{$LANG.onappusersstatusedresourcescost}</td>
-						<td></td>
-					</tr>
-					<tr class="stat-labels">
-						<td>{$LANG.onappusersstatbackups}</td>
-						<td></td>
-					</tr>
-					<tr class="stat-labels">
-						<td>{$LANG.onappusersstatmonitis}</td>
-						<td></td>
-					</tr>
-					<tr class="stat-labels">
-						<td>{$LANG.onappusersstatstoragediskssize}</td>
-						<td></td>
-					</tr>
-					<tr class="stat-labels">
-						<td>{$LANG.onappusersstattemplates}</td>
-						<td></td>
-					</tr>
-					<tr class="stat-labels">
-						<td>{$LANG.onappusersstatcdnedgegroup}</td>
-						<td></td>
-					</tr>
-					<tr class="stat-labels font-bold">
-						<td>{$LANG.onappusersstatvirtualmachines}</td>
-						<td></td>
-					</tr>
-					<tr class="stat-labels font-bold">
-						<td>{$LANG.onappusersstattotalcost}</td>
-						<td></td>
-					</tr>
-				</table>
-			</div>
-			<div id="stat-vms">
-				<table>
-					<tr class="stat-labels caps">
-						<td>{$LANG.onappusersstatdate}</td>
-						<td>{$LANG.onappusersstatvirtualmachine}</td>
-						<td>{$LANG.onappusersstatcpus}</td>
-						<td>{$LANG.onappusersstatcpu_shares}</td>
-						<td>{$LANG.onappusersstatcpu_usage}</td>
-						<td>{$LANG.onappusersstatmemory}</td>
-						<td>{$LANG.onappusersstattemplates}</td>
-						<td>{$LANG.onappusersstatcost}</td>
-					</tr>
-				</table>
-			</div>
-			<div id="stat-disks">
-				<table>
-					<tr class="stat-labels">
-						<td>{$LANG.onappusersstatdate}</td>
-						<td>{$LANG.onappusersstatvirtualmachine}</td>
-						<td>{$LANG.onappusersstatdisk_size}</td>
-						<td>{$LANG.onappusersstatdisk_DR}</td>
-						<td>{$LANG.onappusersstatdisk_DW}</td>
-						<td>{$LANG.onappusersstatdisk_RC}</td>
-						<td>{$LANG.onappusersstatdisk_WC}</td>
-						<td>{$LANG.onappusersstatcost}</td>
-					</tr>
-				</table>
-			</div>
-			<div id="stat-nets">
-				<table>
-					<tr class="stat-labels">
-						<td>{$LANG.onappusersstatdate}</td>
-						<td>{$LANG.onappusersstatvirtualmachine}</td>
-						<td>{$LANG.onappusersstatnet_interface}</td>
-						<td>{$LANG.onappusersstatnet_rate}</td>
-						<td>{$LANG.onappusersstatnet_DR}</td>
-						<td>{$LANG.onappusersstatnet_DS}</td>
-						<td>{$LANG.onappusersstatcost}</td>
-					</tr>
-				</table>
-			</div>
-		</td>
-	</tr>
+<table class="table table-striped" id="stat_data">
+    <thead>
+        <tr>
+            <th colspan="2">
+                <div id="datetimepicker1" class="input-append date inline-block">
+                    <input data-format="yyyy-MM-dd hh:mm" type="text" class="input-medium" placeholder="{$LANG.onappusersstatstartdate}...">
+                    <span class="add-on">
+                      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                </div>
+                <div id="datetimepicker2" class="input-append date inline-block">
+                    <input data-format="yyyy-MM-dd hh:mm" type="text" class="input-medium" placeholder="{$LANG.onappusersstatenddate}..">
+                    <span class="add-on">
+                      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                </div>
+                <button type="button" id="loading-example-btn" data-loading-text="{$LANG.onappusersstatapply_loading}" class="btn">
+                    {$LANG.onappusersstatapply}
+                </button>
+            </th>
+        </tr>
+        <tr id="error">
+            <th colspan="2">
+                {$LANG.onappusers_ajax_error}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="span4">{$LANG.onappusers_invoice_vm_cost}</td>
+            <td id="vm_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_backup_cost}</td>
+            <td id="backup_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_monit_cost}</td>
+            <td id="monit_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_storage_disk_size_cost}</td>
+            <td id="storage_disk_size_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_template_cost}</td>
+            <td id="template_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_backup_count_cost}</td>
+            <td id="backup_count_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_backup_disk_size_cost}</td>
+            <td id="backup_disk_size_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_template_count_cost}</td>
+            <td id="template_count_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_template_disk_size_cost}</td>
+            <td id="template_disk_size_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_customer_network_cost}</td>
+            <td id="customer_network_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_edge_group_cost}</td>
+            <td id="edge_group_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_total_cost}</td>
+            <td id="total_cost"></td>
+        </tr>
+    </tbody>
 </table>
-</div>
 
+<link rel="stylesheet" href="modules/servers/onappusers/includes/css/style.css"/>
 
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.0.3/bootstrap.min.js"></script>
 
+<link rel="stylesheet" href="modules/servers/onappusers/includes/css/bootstrap-datetimepicker.min.css"/>
+<script type="text/javascript" src="modules/servers/onappusers/includes/js/bootstrap-datetimepicker.min.js"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.3.2/accounting.min.js"></script>
 <script type="text/javascript" src="modules/servers/onappusers/includes/js/onappusers_stat.js"></script>
-<script type="text/javascript" src="modules/servers/onappusers/includes/js/jquery.json-2.2.min.js"></script>
-<script type="text/javascript" src="includes/jscript/jqueryui.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
