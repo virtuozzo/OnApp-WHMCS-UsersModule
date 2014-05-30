@@ -55,6 +55,22 @@ $_LANG[ 'onappusersstattotalamount' ] = 'Total amount for selected period: ';
 $_LANG[ 'onappusersstatnodata' ] = 'There are no data for chosen period';
 
 
+$_LANG[ 'onappusers_invoice_vm_cost' ] = 'Virtual Servers Cost';
+$_LANG[ 'onappusers_invoice_backup_cost' ] = 'Backups Cost';
+$_LANG[ 'onappusers_invoice_monit_cost' ] = 'Autoscaling monitor Fee';
+$_LANG[ 'onappusers_invoice_storage_disk_size_cost' ] = 'Storage Disks Size Cost';
+$_LANG[ 'onappusers_invoice_template_cost' ] = 'Templates Cost';
+$_LANG[ 'onappusers_invoice_backup_count_cost' ] = 'Backup Zones Backups Cost';
+$_LANG[ 'onappusers_invoice_backup_disk_size_cost' ] = 'Backup Disk Size Cost';
+$_LANG[ 'onappusers_invoice_template_count_cost' ] = 'Backup Zones Templates Cost';
+$_LANG[ 'onappusers_invoice_template_disk_size_cost' ] = 'Backup Zones Template Disk Cost';
+$_LANG[ 'onappusers_invoice_customer_network_cost' ] = 'Customer Network Cost';
+$_LANG[ 'onappusers_invoice_edge_group_cost' ] = 'CDN Edge Group Cost';
+$_LANG[ 'onappusers_invoice_total_cost' ] = 'Total Cost';
+
+$_LANG[ 'onappusers_ajax_error' ] = 'There is no data for given period or something went wrong.';
+$_LANG[ 'onappusersstatapply_loading' ] = 'Loading...';
+
 
 $_LANG[ 'onappusersstatbackups' ] = 'Backups';
 $_LANG[ 'onappusersstatmonitis' ] = 'Monitis';
