@@ -166,9 +166,9 @@ function onappusers_CreateAccount( $params ) {
 
         full_query(
             "UPDATE
-                tblhosting
-            SET
-                password = '" . encrypt( $password ) . "'
+                    tblhosting
+                SET
+                    password = '" . encrypt( $password ) . "'
                 WHERE
                     id = '$serviceid'"
         );
