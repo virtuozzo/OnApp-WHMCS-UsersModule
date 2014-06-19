@@ -20,7 +20,7 @@
 }
 
 #stat_data tbody {
-	display: none;
+	opacity: 0.1;
 }
 
 #stat_data td:first-child {
