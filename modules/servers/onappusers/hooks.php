@@ -7,32 +7,32 @@ if( ! defined( 'WHMCS' ) ) {
 function hook_onappusers_InvoicePaid( $vars ) {
     $invoice_id = $vars[ 'invoiceid' ];
     $qry = 'SELECT
-            tblonappusers.`client_id`,
-            tblonappusers.`server_id`,
-            tblonappusers.`onapp_user_id`,
-            tblhosting.`id` AS service_id,
-            tblinvoices.`subtotal` AS subtotal,
-            tblinvoices.`total` AS total,
-            tblproducts.`configoption1` AS settings,
-            tblhosting.`domainstatus` AS status
-        FROM
-            tblinvoices
-        LEFT JOIN tblonappusers ON
-            tblinvoices.`userid` = tblonappusers.`client_id`
-        LEFT JOIN tblhosting ON
-            tblhosting.`userid` = tblonappusers.`client_id`
-            AND tblhosting.`server` = tblonappusers.`server_id`
-        RIGHT JOIN tblinvoiceitems ON
-            tblinvoiceitems.`invoiceid` = tblinvoices.`id`
-            AND tblinvoiceitems.`relid` = tblhosting.`id`
-        LEFT JOIN tblproducts ON
-            tblproducts.`id` = tblhosting.`packageid`
-        WHERE
-            tblinvoices.`id` = :invoiceID
-            AND tblinvoices.`status` = "Paid"
-            AND tblproducts.`servertype` = "onappusers"
-            AND tblinvoiceitems.`type` = "onappusers"
-        GROUP BY tblinvoices.`id`';
+                tblonappusers.`client_id`,
+                tblonappusers.`server_id`,
+                tblonappusers.`onapp_user_id`,
+                tblhosting.`id` AS service_id,
+                tblinvoices.`subtotal` AS subtotal,
+                tblinvoices.`total` AS total,
+                tblproducts.`configoption1` AS settings,
+                tblhosting.`domainstatus` AS status
+            FROM
+                tblinvoices
+            LEFT JOIN tblonappusers ON
+                tblinvoices.`userid` = tblonappusers.`client_id`
+            LEFT JOIN tblhosting ON
+                tblhosting.`userid` = tblonappusers.`client_id`
+                AND tblhosting.`server` = tblonappusers.`server_id`
+            RIGHT JOIN tblinvoiceitems ON
+                tblinvoiceitems.`invoiceid` = tblinvoices.`id`
+                AND tblinvoiceitems.`relid` = tblhosting.`id`
+            LEFT JOIN tblproducts ON
+                tblproducts.`id` = tblhosting.`packageid`
+            WHERE
+                tblinvoices.`id` = :invoiceID
+                AND tblinvoices.`status` = "Paid"
+                AND tblproducts.`servertype` = "onappusers"
+                AND tblinvoiceitems.`type` = "onappusers"
+            GROUP BY tblinvoices.`id`';
     $qry = str_replace( ':invoiceID', $invoice_id, $qry );
     $result = full_query( $qry );
 
@@ -43,14 +43,14 @@ function hook_onappusers_InvoicePaid( $vars ) {
     $data = mysql_fetch_assoc( $result );
 
     $qry = 'SELECT
-            `ipaddress` AS serverip,
-            `username` AS serverusername,
-            `password` AS serverpassword
-        FROM
-            tblservers
-        WHERE
-            `type` = "onappusers"
-            AND `id` = :serverID';
+                `ipaddress` AS serverip,
+                `username` AS serverusername,
+                `password` AS serverpassword
+            FROM
+                tblservers
+            WHERE
+                `type` = "onappusers"
+                AND `id` = :serverID';
     $qry = str_replace( ':serverID', $data[ 'server_id' ], $qry );
     $result = full_query( $qry );
     $server = mysql_fetch_assoc( $result );
@@ -88,15 +88,15 @@ function hook_onappusers_InvoicePaid( $vars ) {
     if( $data[ 'status' ] == 'Suspended' ) {
         // check for other unpaid invoices for this service
         $qry = 'SELECT
-                tblinvoices.`id`
-            FROM
-                tblinvoices
-            RIGHT JOIN tblinvoiceitems ON
-                tblinvoiceitems.`invoiceid` = tblinvoices.`id`
-                AND tblinvoiceitems.`relid` = :serviceID
-            WHERE
-                tblinvoices.`status` = "Unpaid"
-            GROUP BY tblinvoices.`id`';
+                    tblinvoices.`id`
+                FROM
+                    tblinvoices
+                RIGHT JOIN tblinvoiceitems ON
+                    tblinvoiceitems.`invoiceid` = tblinvoices.`id`
+                    AND tblinvoiceitems.`relid` = :serviceID
+                WHERE
+                    tblinvoices.`status` = "Unpaid"
+                GROUP BY tblinvoices.`id`';
         $qry = str_replace( ':serviceID', $data[ 'service_id' ], $qry );
         $result = full_query( $qry );
 
@@ -117,21 +117,21 @@ function hook_onappusers_AutoSuspend() {
     }
 
     $qry = 'SELECT
-            tblhosting.`id`
-        FROM
-            tblinvoices
-        LEFT JOIN tblinvoiceitems ON
-            tblinvoiceitems.`invoiceid` = tblinvoices.`id`
-        LEFT JOIN tblhosting ON
-            tblhosting.`id` = tblinvoiceitems.`relid`
-        WHERE
-            tblinvoices.`status` = "Unpaid"
-            AND tblinvoiceitems.`type` = "onappusers"
-            AND tblhosting.`domainstatus` = "Active"
-            AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
-            AND tblhosting.`overideautosuspend` != "on"
-        GROUP BY
-            tblhosting.`id`';
+                tblhosting.`id`
+            FROM
+                tblinvoices
+            LEFT JOIN tblinvoiceitems ON
+                tblinvoiceitems.`invoiceid` = tblinvoices.`id`
+            LEFT JOIN tblhosting ON
+                tblhosting.`id` = tblinvoiceitems.`relid`
+            WHERE
+                tblinvoices.`status` = "Unpaid"
+                AND tblinvoiceitems.`type` = "onappusers"
+                AND tblhosting.`domainstatus` = "Active"
+                AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
+                AND tblhosting.`overideautosuspend` != "on"
+            GROUP BY
+                tblhosting.`id`';
     $qry = str_replace( ':days', $CONFIG[ 'AutoSuspensionDays' ], $qry );
     $result = full_query( $qry );
 
@@ -152,21 +152,21 @@ function hook_onappusers_AutoTerminate() {
     }
 
     $qry = 'SELECT
-            tblhosting.`id`
-        FROM
-            tblinvoices
-        LEFT JOIN tblinvoiceitems ON
-            tblinvoiceitems.`invoiceid` = tblinvoices.`id`
-        LEFT JOIN tblhosting ON
-            tblhosting.`id` = tblinvoiceitems.`relid`
-        WHERE
-            tblinvoices.`status` = "Unpaid"
-            AND tblinvoiceitems.`type` = "onappusers"
-            AND tblhosting.`domainstatus` = "Suspended"
-            AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
-            AND tblhosting.`overideautosuspend` != "on"
-        GROUP BY
-            tblhosting.`id`';
+                tblhosting.`id`
+            FROM
+                tblinvoices
+            LEFT JOIN tblinvoiceitems ON
+                tblinvoiceitems.`invoiceid` = tblinvoices.`id`
+            LEFT JOIN tblhosting ON
+                tblhosting.`id` = tblinvoiceitems.`relid`
+            WHERE
+                tblinvoices.`status` = "Unpaid"
+                AND tblinvoiceitems.`type` = "onappusers"
+                AND tblhosting.`domainstatus` = "Suspended"
+                AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
+                AND tblhosting.`overideautosuspend` != "on"
+            GROUP BY
+                tblhosting.`id`';
     $qry = str_replace( ':days', $CONFIG[ 'AutoTerminationDays' ], $qry );
     $result = full_query( $qry );
 
