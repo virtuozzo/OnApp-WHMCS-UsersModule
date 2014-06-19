@@ -19,10 +19,6 @@
 	padding-top: 12px;
 }
 
-#stat_data tbody {
-	display: none;
-}
-
 #stat_data td:first-child {
 	font-weight: bold;
 }

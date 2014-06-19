@@ -22,7 +22,7 @@ $( document ).ready( function() {
     // ajax
     $( '#stat_data button' ).on( 'click', function() {
         $( 'tr#error' ).hide();
-        $( '#stat_data tbody' ).hide();
+        $( '#stat_data tbody' ).fadeTo( 'fast', 0.1 );
         var btn = $( this );
         btn.button( 'loading' );
 
@@ -41,6 +41,7 @@ $( document ).ready( function() {
                 }
             },
             error: function() {
+                $( '#stat_data tbody' ).hide();
                 $( 'tr#error' ).show();
             },
             success: function( data ) {
@@ -48,7 +49,7 @@ $( document ).ready( function() {
                 processData( data );
             }
         } ).always( function() {
-            btn.button( 'reset' )
+            btn.button( 'reset' );
         } );
     } );
     $( '#stat_data button' ).click();
@@ -60,9 +61,10 @@ function processData( data ) {
             val = accounting.formatMoney( data[ i ], {symbol: data.currency_code, format: "%v %s"} );
             $( '#' + i ).text( val );
         }
-        $( '#stat_data tbody' ).show();
+        $( '#stat_data tbody' ).fadeTo( 'fast', 1 );
     }
     else {
+        $( '#stat_data tbody' ).hide();
         $( 'tr#error' ).show();
     }
 }
