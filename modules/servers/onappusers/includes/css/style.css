@@ -16,6 +16,7 @@
 
 #stat_data th {
 	text-align: center;
+	padding-top: 12px;
 }
 
 #stat_data tbody {
