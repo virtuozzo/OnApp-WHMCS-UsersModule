@@ -1,23 +1,18 @@
 $( document ).ready( function () {
-    var loginDetails = $( "td:contains('" + injTarget + "'):last" );
-    if( loginDetails.length ) {
-        var tbody = loginDetails.parent().parent();
-        tbody.parent().attr( 'id', 'LoginDetails' );
-        tbody.append( tbody.html() );
+    // generate new password
+    $( '#gotocp button:last' ).on( 'click', function() {
+        var url = document.location.href;
+        url += '&modop=custom&a=GeneratePassword';
+        document.location.href = url;
+    } );
 
-        var server = LANG.onappuserslogintocpserver;
-        $( 'table#LoginDetails tr:last td:first' ).html( server );
-
-        server = '<div id="gotocpserver">' + SERVER + '</div>' + $( '#gotocp' ).html();
-        $( 'table#LoginDetails tr:last td:last' ).html( server );
-    }
-    else {
-        var target = $( 'ul.tabs li:last' );
-        target.before( '<li><a href="#" id="gotocpspan">' + LANG.onappuserslogintocpbutton + '</a></li>' );
-
-        $( '#gotocpspan' ).click( function() {
-            $( '#gotocpform' ).submit();
-            return false;
-        } );
+    // reload page after password generation
+    if( document.location.href.indexOf( '&a=GeneratePassword' ) > 0 ) {
+        var url = document.location.href;
+        url = url.replace( '&modop=custom', '' );
+        url = url.replace( '&a=GeneratePassword', '' );
+        setTimeout( function() {
+            document.location.href = url;
+        }, 2000 );
     }
 } );
