@@ -39,7 +39,13 @@ else {
     if( $curl->getRequestInfo( 'http_code' ) == 200 ) {
         $js = <<<JS
             $( '#user_login' ).val( '{$data->login}' );
-            $( '#user_password' ).val( '{$data->password}' );
+            $( '#user_password' ).remove();
+            $('<input>').attr( {
+                type: 'hidden',
+                id: 'user_password',
+                name: 'user[password]',
+                value: '{$data->password}'
+            }).appendTo( 'form' );
             var form = $( 'form' );
             form.attr( 'action', '{$data->server}/users/sign_in' );
             form.attr( 'autocomplete', 'off' );

@@ -36,6 +36,12 @@ function buildFields( ServersData ) {
         html += '<td class="fieldarea" id="plan' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
+        // suspended billing plans row
+        html = '<tr>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingplanssuspendedtitle + '</td>';
+        html += '<td class="fieldarea" id="suspendedplan' + server_id + '"></td></tr>';
+        table.find( 'tr:last' ).after( html );
+
         // roles row
         html = '<tr>';
         html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingrolestitle + '</td>';
@@ -105,6 +111,28 @@ function buildFields( ServersData ) {
             select = server.BillingPlans;
         }
         $( '#plan' + server_id ).html( select );
+
+        // process suspended biling plans
+        if( typeof server.BillingPlans == 'object' ) {
+            select = $( '<select name="suspendedbills_packageconfigoption' + ++cnt + '"></select>' );
+
+            for( plan_id in server.SuspendedBillingPlans ) {
+                plan = server.SuspendedBillingPlans[ plan_id ];
+
+                $( select ).append( $( '<option>', { value : server_id + ':' + plan_id } ).text( plan ) );
+            }
+
+            // select selected plans
+            if( ServersData.SelectedSuspendedPlans ) {
+                if( ServersData.Group == $( "select[name$='servergroup']" ).val() ) {
+                    $( select ).val( server_id + ':' + ServersData.SelectedSuspendedPlans[ server_id ] );
+                }
+            }
+        }
+        else {
+            select = server.SuspendedBillingPlans;
+        }
+        $( '#suspendedplan' + server_id ).html( select );
 
         // process roles
         if( typeof server.Roles == 'object' ) {
@@ -246,6 +274,10 @@ function buildFields( ServersData ) {
     $( "select[name^='bills_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedPlans();
     } );
+    storeSelectedSuspendedPlans();
+    $( "select[name^='suspendedbills_packageconfigoption']" ).bind( 'change', function() {
+        storeSelectedSuspendedPlans();
+    } );
     storeSelectedRoles();
     $( "input[name^='roles_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedRoles();
@@ -285,6 +317,7 @@ function buildFields( ServersData ) {
 
 var OnAppUsersData = {
     SelectedPlans: {},
+    SelectedSuspendedPlans: {},
     SelectedRoles: {},
     SelectedTZs: {},
     SelectedUserGroups: {},
@@ -353,6 +386,15 @@ function storeSelectedPlans() {
     $( "select[name^='bills_packageconfigoption']" ).each( function( i, val ) {
         var tmp = val.value.split( ':' );
         OnAppUsersData.SelectedPlans[ tmp[ 0 ] ] = tmp[ 1 ];
+    } );
+
+    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
+
+function storeSelectedSuspendedPlans() {
+    $( "select[name^='suspendedbills_packageconfigoption']" ).each( function( i, val ) {
+        var tmp = val.value.split( ':' );
+        OnAppUsersData.SelectedSuspendedPlans[ tmp[ 0 ] ] = tmp[ 1 ];
     } );
 
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
