@@ -22,7 +22,7 @@ if( file_exists( $file = __DIR__ . '/module.sql' ) ) {
     unlink( $file );
 
     // Add e-mail templates
-    require_once __DIR__ . '/mail.tpl.php';
+    require_once __DIR__ . '/module.mail.php';
 }
 
 function onappusers_ConfigOptions() {
@@ -79,11 +79,11 @@ function onappusers_ConfigOptions() {
             $data = array();
             $module = new OnApp_UserModule( $onappConfig );
 
-            // handle billing plans/groups per server
-            $data[ 'BillingPlans' ] = $module->getBillingPlans();
+            // handle billing plans per server
+            $data[ 'BillingPlans' ] = $data[ 'SuspendedBillingPlans' ] = $module->getBillingPlans();
             if( empty( $data[ 'BillingPlans' ] ) ) {
                 $msg = sprintf( $_LANG[ 'onappusersnobillingplans' ] );
-                $data[ 'BillingPlans' ] = sprintf( $_LANG[ 'onappuserserrorholder' ], $msg );
+                $data[ 'BillingPlans' ] = $data[ 'SuspendedBillingPlans' ] = sprintf( $_LANG[ 'onappuserserrorholder' ], $msg );
             }
 
             //handle user roles per server
@@ -102,7 +102,6 @@ function onappusers_ConfigOptions() {
 
             //handle locales per server
             $data[ 'Locales' ] = $module->getLocales();
-
             $data[ 'Name' ] = $onappConfig[ 'name' ];
             $serversData[ $onappConfig[ 'id' ] ] = $data;
             unset( $data );
@@ -152,103 +151,82 @@ function onappusers_CreateAccount( $params ) {
         return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
     }
 
-    // Unique ID of the product/service in the WHMCS Database
-    $serviceid = $params[ 'serviceid' ];
-    $username = $params[ 'username' ];
-    $password = $params[ 'password' ];
-    // Array of clients details - firstname, lastname, email, country, etc...
-    $clientsdetails = $params[ 'clientsdetails' ];
-
-    // Save hosting password
-    if( substr( $params[ 'password' ], - 1 ) !== '#' ) {
-        $randomString = substr( str_shuffle( '~!@$%^&*(){}|0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' ), 0, 15 );
-        $password = $randomString . '#';
-
-        full_query(
-            "UPDATE
-                    tblhosting
-                SET
-                    password = '" . encrypt( $password ) . "'
-                WHERE
-                    id = '$serviceid'"
-        );
-    }
-
-    // Save hosting username
-    if( !$username ) {
-        $username = $clientsdetails[ 'email' ];
-        full_query(
-            "UPDATE
-                    tblhosting
-                SET
-                    username = '$username'
-                WHERE
-                    id = '$serviceid'"
-        );
-    }
+    $clientsDetails = $params[ 'clientsdetails' ];
+    $serviceID = $params[ 'serviceid' ];
+    $userName = $params[ 'username' ] ? $params[ 'username' ] : $clientsDetails[ 'email' ];
+    $password = OnApp_UserModule::generatePassword();
 
     if( !$password ) {
-        return $_LANG[ 'onappuserserrusercreate' ] . '<br/>' . PHP_EOL . $_LANG[ 'onappuserserrpwdnotset' ];
+        return $_LANG[ 'onappuserserrusercreate' ] . ': ' . $_LANG[ 'onappuserserrpwdnotset' ];
     }
 
     $module = new OnApp_UserModule( $params );
-    $onapp_user = $module->getOnAppObject( 'OnApp_User' );
-    $onapp_user->_email = $clientsdetails[ 'email' ];
-    $onapp_user->_password = $onapp_user->_password_confirmation = $password;
-    $onapp_user->_password = $password;
-    $onapp_user->_login = $username;
-    $onapp_user->_first_name = $clientsdetails[ 'firstname' ];
-    $onapp_user->_last_name = $clientsdetails[ 'lastname' ];
+    $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
+    $OnAppUser->_email = $clientsDetails[ 'email' ];
+    $OnAppUser->_password = $OnAppUser->_password_confirmation = $password;
+    $OnAppUser->_login = $userName;
+    $OnAppUser->_first_name = $clientsDetails[ 'firstname' ];
+    $OnAppUser->_last_name = $clientsDetails[ 'lastname' ];
 
     $params[ 'configoption1' ] = html_entity_decode( $params[ 'configoption1' ] );
     $params[ 'configoption1' ] = json_decode( $params[ 'configoption1' ], true );
     // Assign billing group/plan to user
-    $group_id = $params[ 'configoption1' ][ 'SelectedPlans' ][ $params[ 'serverid' ] ];
-
-    $onapp_user->_billing_plan_id = $group_id;
+    $billingPlanID = $params[ 'configoption1' ][ 'SelectedPlans' ][ $params[ 'serverid' ] ];
+    $OnAppUser->_billing_plan_id = $billingPlanID;
 
     $tmp = array();
-    $onapp_user->_role_ids = array_merge( $tmp, $params[ 'configoption1' ][ 'SelectedRoles' ][ $params[ 'serverid' ] ] );
+    $OnAppUser->_role_ids = array_merge( $tmp, $params[ 'configoption1' ][ 'SelectedRoles' ][ $params[ 'serverid' ] ] );
 
     // Assign TZ to user
-    $onapp_user->_time_zone = $params[ 'configoption1' ][ 'SelectedTZs' ][ $params[ 'serverid' ] ];
+    $OnAppUser->_time_zone = $params[ 'configoption1' ][ 'SelectedTZs' ][ $params[ 'serverid' ] ];
 
     // Assign user group to user
-    $onapp_user->_user_group_id = $params[ 'configoption1' ][ 'SelectedUserGroups' ][ $params[ 'serverid' ] ];
+    $OnAppUser->_user_group_id = $params[ 'configoption1' ][ 'SelectedUserGroups' ][ $params[ 'serverid' ] ];
 
     // Assign locale to user
     if( isset( $params[ 'configoption1' ][ 'SelectedLocales' ][ $params[ 'serverid' ] ] ) ) {
-        $onapp_user->_locale = $params[ 'configoption1' ][ 'SelectedLocales' ][ $params[ 'serverid' ] ];
+        $OnAppUser->_locale = $params[ 'configoption1' ][ 'SelectedLocales' ][ $params[ 'serverid' ] ];
     }
 
-    $onapp_user->save();
-    if( !is_null( $onapp_user->getErrorsAsArray() ) ) {
-        $error_msg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
-        $error_msg .= $onapp_user->getErrorsAsString( ', ' );
+    $OnAppUser->save();
+    if( !is_null( $OnAppUser->getErrorsAsArray() ) ) {
+        $errorMsg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
+        $errorMsg .= $OnAppUser->getErrorsAsString( ', ' );
 
-        return $error_msg;
+        return $errorMsg;
     }
 
-    if( !is_null( $onapp_user->_obj->getErrorsAsArray() ) ) {
-        $error_msg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
-        $error_msg .= $onapp_user->_obj->getErrorsAsString( ', ' );
+    if( !is_null( $OnAppUser->_obj->getErrorsAsArray() ) ) {
+        $errorMsg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
+        $errorMsg .= $OnAppUser->_obj->getErrorsAsString( ', ' );
 
-        return $error_msg;
+        return $errorMsg;
     }
 
-    if( is_null( $onapp_user->_obj->_id ) ) {
+    if( is_null( $OnAppUser->_obj->_id ) ) {
         return $_LANG[ 'onappuserserrusercreate' ];
     }
 
-    // Save user data in whmcs db
+    // Save user link in whmcs db
     insert_query( 'tblonappusers', array(
         'server_id'     => $params[ 'serverid' ],
-        'client_id'     => $clientsdetails[ 'userid' ],
-        'service_id'    => $serviceid,
-        'onapp_user_id' => $onapp_user->_obj->_id,
+        'client_id'     => $clientsDetails[ 'userid' ],
+        'service_id'    => $serviceID,
+        'onapp_user_id' => $OnAppUser->_obj->_id,
     ) );
 
-    sendmessage( $_LANG[ 'onappuserscreateaccount' ], $serviceid );
+    // Save OnApp login and password
+    full_query(
+        "UPDATE
+                tblhosting
+            SET
+                password = '" . encrypt( $password ) . "',
+                username = '$userName'
+            WHERE
+                id = '$serviceID'"
+    );
+
+    sendmessage( $_LANG[ 'onappuserscreateaccount' ], $serviceID );
 
     return 'success';
 }
@@ -260,57 +238,56 @@ function onappusers_TerminateAccount( $params ) {
         return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
     }
 
-    $serviceid = $params[ 'serviceid' ];
-    $client_id = $params[ 'clientsdetails' ][ 'userid' ];
-
-    $server_id = $params[ 'serverid' ];
+    $serviceID = $params[ 'serviceid' ];
+    $clientID = $params[ 'clientsdetails' ][ 'userid' ];
+    $serverID = $params[ 'serverid' ];
 
     $query = "SELECT
                     onapp_user_id
                 FROM
                     tblonappusers
                 WHERE
-                    server_id = $server_id
-                    AND client_id = $client_id
-                    AND service_id = $serviceid";
+                    server_id = $serverID
+                    AND client_id = $clientID
+                    AND service_id = $serviceID";
 
     $result = full_query( $query );
     if( $result ) {
-        $onapp_user_id = mysql_result( $result, 0 );
+        $OnAppUserID = mysql_result( $result, 0 );
     }
-    if( !$onapp_user_id ) {
-        return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
+    if( !$OnAppUserID ) {
+        return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $clientID, $serverID );
     }
 
     $module = new OnApp_UserModule( $params );
-    $onapp_user = $module->getOnAppObject( 'OnApp_User' );
+    $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
     $vms = $module->getOnAppObject( 'OnApp_VirtualMachine' );
-    if( $vms->getList( $onapp_user_id ) ) {
-        $error_msg = $_LANG[ 'onappuserserruserterminate' ];
+    if( $vms->getList( $OnAppUserID ) ) {
+        $errorMsg = $_LANG[ 'onappuserserruserterminate' ];
 
-        return $error_msg;
+        return $errorMsg;
     }
 
-    $onapp_user->_id = $onapp_user_id;
-    $onapp_user->delete( true );
+    $OnAppUser->_id = $OnAppUserID;
+    $OnAppUser->delete( true );
 
-    if( !empty( $onapp_user->error ) ) {
-        $error_msg = $_LANG[ 'onappuserserruserdelete' ] . ': ';
-        $error_msg .= $onapp_user->getErrorsAsString( ', ' );
+    if( !empty( $OnAppUser->error ) ) {
+        $errorMsg = $_LANG[ 'onappuserserruserdelete' ] . ': ';
+        $errorMsg .= $OnAppUser->getErrorsAsString( ', ' );
 
-        return $error_msg;
+        return $errorMsg;
     }
     else {
         $query = 'DELETE FROM
                         tblonappusers
                     WHERE
-                        service_id = ' . (int)$serviceid . '
-                        AND client_id = ' . (int)$client_id . '
-                        AND server_id = ' . (int)$server_id;
+                        service_id = ' . (int)$serviceID . '
+                        AND client_id = ' . (int)$clientID . '
+                        AND server_id = ' . (int)$serverID;
         full_query( $query );
     }
 
-    sendmessage( $_LANG[ 'onappusersterminateaccount' ], $serviceid );
+    sendmessage( $_LANG[ 'onappusersterminateaccount' ], $serviceID );
 
     return 'success';
 }
@@ -322,41 +299,49 @@ function onappusers_SuspendAccount( $params ) {
         return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
     }
 
-    $serviceid = $params[ 'serviceid' ];
-    $client_id = $params[ 'clientsdetails' ][ 'userid' ];
-    $server_id = $params[ 'serverid' ];
+    $serverID = $params[ 'serverid' ];
+    $clientID = $params[ 'clientsdetails' ][ 'userid' ];
+    $serviceID = $params[ 'serviceid' ];
+    $billingPlan = json_decode( $params[ 'configoption1' ] );
+    $billingPlan = $billingPlan->SelectedSuspendedPlans->$serverID;
 
     $query = "SELECT
                     onapp_user_id
                 FROM
                     tblonappusers
                 WHERE
-                    server_id = $server_id
-                    AND client_id = $client_id
-                    AND service_id = $serviceid";
+                    server_id = '$serverID'
+                    AND client_id = '$clientID'
+                    AND service_id = '$serviceID'";
 
     $result = full_query( $query );
     if( $result ) {
-        $onapp_user_id = mysql_result( $result, 0 );
+        $OnAppUserID = mysql_result( $result, 0 );
     }
-    if( !$onapp_user_id ) {
-        return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
+    if( !$OnAppUserID ) {
+        return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $clientID, $serverID );
     }
 
     $module = new OnApp_UserModule( $params );
-    $onapp_user = $module->getOnAppObject( 'OnApp_User' );
+    $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
 
-    $onapp_user->_id = $onapp_user_id;
-    $onapp_user->suspend();
+    $OnAppUser->_id = $OnAppUserID;
+    if( isset( $billingPlan ) ) {
+        $unset = array( 'time_zone', 'user_group_id', 'locale' );
+        $OnAppUser->unsetFields( $unset );
+        $OnAppUser->_billing_plan_id = $billingPlan;
+        $OnAppUser->save();
+    }
+    $OnAppUser->suspend();
 
-    if( !is_null( $onapp_user->error ) ) {
-        $error_msg = $_LANG[ 'onappuserserrusersuspend' ] . ':<br/>';
-        $error_msg .= $onapp_user->getErrorsAsString( '<br/>' );
+    if( !is_null( $OnAppUser->error ) ) {
+        $errorMsg = $_LANG[ 'onappuserserrusersuspend' ] . ':<br/>';
+        $errorMsg .= $OnAppUser->getErrorsAsString( '<br/>' );
 
-        return $error_msg;
+        return $errorMsg;
     }
 
-    sendmessage( $_LANG[ 'onappuserssuspendaccount' ], $serviceid );
+    sendmessage( $_LANG[ 'onappuserssuspendaccount' ], $serviceID );
 
     return 'success';
 }
@@ -368,40 +353,47 @@ function onappusers_UnsuspendAccount( $params ) {
         return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
     }
 
-    $serviceid = $params[ 'serviceid' ];
-    $client_id = $params[ 'clientsdetails' ][ 'userid' ];
-    $server_id = $params[ 'serverid' ];
+    $serverID = $params[ 'serverid' ];
+    $clientID = $params[ 'clientsdetails' ][ 'userid' ];
+    $serviceID = $params[ 'serviceid' ];
+    $billingPlan = json_decode( $params[ 'configoption1' ] );
+    $billingPlan = $billingPlan->SelectedPlans->$serverID;
 
     $query = "SELECT
                     onapp_user_id
                 FROM
                     tblonappusers
                 WHERE
-                    server_id = '$server_id'
-                    AND client_id = '$client_id'
-                    AND service_id = '$serviceid'";
+                    server_id = '$serverID'
+                    AND client_id = '$clientID'
+                    AND service_id = '$serviceID'";
 
     $result = full_query( $query );
     if( $result ) {
-        $onapp_user_id = mysql_result( $result, 0 );
+        $OnAppUserID = mysql_result( $result, 0 );
     }
-    if( !$onapp_user_id ) {
-        return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $client_id, $server_id );
+    if( !$OnAppUserID ) {
+        return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $clientID, $serverID );
     }
 
     $module = new OnApp_UserModule( $params );
-    $onapp_user = $module->getOnAppObject( 'OnApp_User' );
-    $onapp_user->_id = $onapp_user_id;
-    $onapp_user->activate_user();
+    $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
+    $unset = array( 'time_zone', 'user_group_id', 'locale' );
+    $OnAppUser->unsetFields( $unset );
 
-    if( !is_null( $onapp_user->error ) ) {
-        $error_msg = $_LANG[ 'onappuserserruserunsuspend' ] . ':<br/>';
-        $error_msg .= $onapp_user->getErrorsAsString( '<br/>' );
+    $OnAppUser->_id = $OnAppUserID;
+    $OnAppUser->_billing_plan_id = $billingPlan;
+    $OnAppUser->save();
+    $OnAppUser->activate_user();
 
-        return $error_msg;
+    if( !is_null( $OnAppUser->error ) ) {
+        $errorMsg = $_LANG[ 'onappuserserruserunsuspend' ] . ':<br/>';
+        $errorMsg .= $OnAppUser->getErrorsAsString( '<br/>' );
+
+        return $errorMsg;
     }
 
-    sendmessage( $_LANG[ 'onappusersunsuspendaccount' ], $serviceid );
+    sendmessage( $_LANG[ 'onappusersunsuspendaccount' ], $serviceID );
 
     return 'success';
 }
@@ -414,18 +406,18 @@ function onappusers_ChangePackage( $params ) {
     }
 
     $config = json_decode( $params[ 'configoption1' ] );
-    $serviceid = $params[ 'serviceid' ];
-    $client_id = $params[ 'clientsdetails' ][ 'userid' ];
-    $server_id = $params[ 'serverid' ];
+    $serviceID = $params[ 'serviceid' ];
+    $clientID = $params[ 'clientsdetails' ][ 'userid' ];
+    $serverID = $params[ 'serverid' ];
 
     $query = "SELECT
                     onapp_user_id
                 FROM
                     tblonappusers
                 WHERE
-                    server_id = '$server_id'
-                    AND client_id = '$client_id'
-                    AND service_id = '$serviceid'";
+                    server_id = '$serverID'
+                    AND client_id = '$clientID'
+                    AND service_id = '$serviceID'";
 
     $result = full_query( $query );
     $OnAppUserID = mysql_result( $result, 0 );
@@ -446,7 +438,65 @@ function onappusers_ChangePackage( $params ) {
         return $errorMsg;
     }
 
-    sendmessage( $_LANG[ 'onappusersupgradeaccount' ], $serviceid );
+    sendmessage( $_LANG[ 'onappusersupgradeaccount' ], $serviceID );
+
+    return 'success';
+}
+
+function onappusers_ClientAreaCustomButtonArray() {
+    global $_LANG;
+    $buttons = array(
+        $_LANG[ 'onappusersgeneratenewpassword' ] => 'GeneratePassword',
+    );
+    return $buttons;
+}
+
+function onappusers_GeneratePassword( $params ) {
+    global $_LANG;
+
+    $serviceID = $params[ 'serviceid' ];
+    $clientID = $params[ 'clientsdetails' ][ 'userid' ];
+    $serverID = $params[ 'serverid' ];
+    $password = OnApp_UserModule::generatePassword();
+
+    $query = "SELECT
+                    onapp_user_id
+                FROM
+                    tblonappusers
+                WHERE
+                    server_id = '$serverID'
+                    AND client_id = '$clientID'
+                    AND service_id = '$serviceID'";
+
+    $result = full_query( $query );
+    $OnAppUserID = mysql_result( $result, 0 );
+
+    $module = new OnApp_UserModule( $params );
+    $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
+    $OnAppUser->_id = $OnAppUserID;
+    $OnAppUser->_password = $password;
+    $OnAppUser->save();
+
+    if( !is_null( $OnAppUser->error ) ) {
+        $errorMsg = $_LANG[ 'onappuserserruserupgrade' ] . ':<br/>';
+        $errorMsg .= $OnAppUser->getErrorsAsString( '<br/>' );
+
+        return $errorMsg;
+    }
+
+    // Save OnApp login and password
+    full_query(
+        "UPDATE
+                tblhosting
+            SET
+                password = '" . encrypt( $password ) . "'
+            WHERE
+                id = '$serviceID'"
+    );
+
+    sendmessage( $_LANG[ 'onappuserschangeaccountpassword' ], $serviceID );
+
+    injectServerRow( $params );
 
     return 'success';
 }
@@ -705,5 +755,9 @@ class OnApp_UserModule {
         else {
             return $data;
         }
+    }
+
+    public static function generatePassword() {
+        return substr( str_shuffle( '~!@$%^&*(){}|0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' ), 0, 20 );
     }
 }
