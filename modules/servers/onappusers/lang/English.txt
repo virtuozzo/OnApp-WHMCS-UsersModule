@@ -11,7 +11,8 @@ $_LANG[ 'onappuserserruserupgrade' ] = 'Can\'t upgrade OnApp User';
 
 $_LANG[ 'onappuserserrorholder' ] = '<b style="color:red;">%s</b>';
 $_LANG[ 'onappuserserrornoserveringroup' ] = 'There are no servers in selected server group';
-$_LANG[ 'onappusersbindingplanstitle' ] = 'Billing Group/Plan';
+$_LANG[ 'onappusersbindingplanstitle' ] = 'Billing Plan';
+$_LANG[ 'onappusersbindingplanssuspendedtitle' ] = 'Suspended Billing Plan';
 $_LANG[ 'onappusersbindingrolestitle' ] = 'Roles';
 $_LANG[ 'onappusersbindinglocaletitle' ] = 'Default Locale';
 $_LANG[ 'onappuserstimezonetitle' ] = 'Time Zone';
@@ -20,7 +21,7 @@ $_LANG[ 'onappusersshowstatistic' ] = 'Show advanced statistics in client area';
 $_LANG[ 'onappuserspassthrutaxes' ] = 'Passthru taxes in OnApp payments';
 $_LANG[ 'onappusersshowcontrolpanel' ] = 'Show control pannel button in client area';
 $_LANG[ 'onappuserssetduedatetocurrent' ] = 'Set invoice due date to invoice date instead of WHMCS setting';
-$_LANG[ 'onappusersnobillingplans' ] = 'There are no configured billing plans/groups on this server';
+$_LANG[ 'onappusersnobillingplans' ] = 'There are no configured billing plans on this server';
 $_LANG[ 'onappusersnousergroups' ] = 'There are no configured user groups on this server';
 $_LANG[ 'onappusersnoroles' ] = 'There are no configured roles on this server';
 $_LANG[ 'onappusersjsloadingdata' ] = '<b>Loading data...</b>';
@@ -88,8 +89,6 @@ $_LANG[ 'onappusersstatperiod' ] = 'Period: ';
 $_LANG[ 'onappusersstatotherresources' ] = 'Other resources';
 
 
-
-
 $_LANG[ 'onappusersstathour' ] = 'Hour';
 $_LANG[ 'onappusersstathours' ] = 'Hours';
 $_LANG[ 'onappusersstatmemory' ] = 'Memory';
@@ -131,3 +130,8 @@ $_LANG[ 'onapptimetocrackmonths' ] = 'months';
 $_LANG[ 'onapptimetocrackyears' ] = 'years';
 $_LANG[ 'onapptimetocrack' ] = 'to crack';
 $_LANG[ 'onapppasswordstrenght' ] = 'Password should be at least 6 characters';
+
+
+# added on 2nd of July 2014
+$_LANG[ 'onappusersgeneratenewpassword' ] = 'Generate new service password';
+$_LANG[ 'onappuserschangeaccountpassword' ] = 'OnApp account password has been generated';
