@@ -85,7 +85,7 @@ function buildFields( ServersData ) {
             for( plan_id in server.BillingPlans ) {
                 plan = server.BillingPlans[ plan_id ];
 
-                $( select ).append( $( '<option>', { value : server_id + ':' + plan_id } ).text( plan ) );
+                $( select ).append( $( '<option>', {value: server_id + ':' + plan_id} ).text( plan ) );
             }
 
             // select selected plans
@@ -107,7 +107,7 @@ function buildFields( ServersData ) {
             for( plan_id in server.SuspendedBillingPlans ) {
                 plan = server.SuspendedBillingPlans[ plan_id ];
 
-                $( select ).append( $( '<option>', { value : server_id + ':' + plan_id } ).text( plan ) );
+                $( select ).append( $( '<option>', {value: server_id + ':' + plan_id} ).text( plan ) );
             }
 
             // select selected plans
@@ -163,7 +163,7 @@ function buildFields( ServersData ) {
             for( group_id in server.UserGroups ) {
                 plan = server.UserGroups[ group_id ];
 
-                $( select ).append( $( '<option>', { value : server_id + ':' + group_id } ).text( plan ) );
+                $( select ).append( $( '<option>', {value: server_id + ':' + group_id} ).text( plan ) );
             }
 
             // select selected plans
@@ -180,12 +180,12 @@ function buildFields( ServersData ) {
 
         // process locale
         if( typeof server.Locales == 'object' && Object.size( server.Locales ) ) {
-            select = $( '<select name="locale_packageconfigoption' + ++ cnt + '"></select>' );
+            select = $( '<select name="locale_packageconfigoption' + ++cnt + '"></select>' );
 
             for( code in server.Locales ) {
                 locale = server.Locales[ code ];
 
-                $( select ).append( $( '<option>', { value: server_id + ':' + code } ).text( locale ) );
+                $( select ).append( $( '<option>', {value: server_id + ':' + code} ).text( locale ) );
             }
 
             // select selected locale
@@ -196,7 +196,7 @@ function buildFields( ServersData ) {
             }
         }
         else {
-            select = $( '<input name="locale_packageconfigoption' + ++ cnt + '" rel="' + server_id + '" />' );
+            select = $( '<input name="locale_packageconfigoption' + ++cnt + '" rel="' + server_id + '" />' );
             // select selected locale
             if( ServersData.SelectedLocales && ServersData.SelectedLocales[ server_id ] ) {
                 $( select ).val( ServersData.SelectedLocales[ server_id ] );
@@ -234,7 +234,7 @@ function buildFields( ServersData ) {
     html += '</td></tr>';
 
     table.append( $( html ) );
-    //table.find( 'tr:last' ).hide();
+    table.find( 'tr:last' ).hide();
     table.find( 'tr' ).eq( 1 ).find( 'td' ).eq( 0 ).css( 'width', 150 );
 
     // handle storing selected values
@@ -313,13 +313,13 @@ function storePassTaxes() {
 
 function storeSelectedLocales() {
     if( $( "select[name^='locale_packageconfigoption']" ).length ) {
-        $( "select[name^='locale_packageconfigoption']" ).each( function ( i, val ) {
+        $( "select[name^='locale_packageconfigoption']" ).each( function( i, val ) {
             var tmp = val.value.split( ':' );
             OnAppUsersData.SelectedLocales[ tmp[ 0 ] ] = tmp[ 1 ];
         } );
     }
     else {
-        $( "input[name^='locale_packageconfigoption']" ).each( function ( i, val ) {
+        $( "input[name^='locale_packageconfigoption']" ).each( function( i, val ) {
             var index = $( val ).attr( 'rel' );
             OnAppUsersData.SelectedLocales[ index ] = val.value;
         } );
@@ -402,7 +402,7 @@ function alignSelects() {
 
 $( document ).ready( function() {
     // Refresh data if server group was changed
-    $( "select[name$='servergroup']" ).bind( 'change', function () {
+    $( "select[name$='servergroup']" ).bind( 'change', function() {
         $( 'table' ).eq( 5 ).find( 'tr:first td' ).html( ONAPP_LANG.onappusersjsloadingdata );
         $.ajax( {
             url: document.location.href,
@@ -425,11 +425,11 @@ function objectToString( o ) {
     return JSON.stringify( o );
 }
 
-Object.size = function ( obj ) {
+Object.size = function( obj ) {
     var size = 0, key;
     for( key in obj ) {
         if( obj.hasOwnProperty( key ) ) {
-            size ++;
+            size++;
         }
     }
     return size;
