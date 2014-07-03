@@ -1,6 +1,6 @@
 <?php
 
-if( !defined( 'ONAPP_WRAPPER_INIT' ) ) {
+if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
     define( 'ONAPP_WRAPPER_INIT', ROOTDIR . '/includes/wrapper/OnAppInit.php' );
 }
 
@@ -28,7 +28,7 @@ if( file_exists( $file = __DIR__ . '/module.sql' ) ) {
 function onappusers_ConfigOptions() {
     global $_LANG;
 
-    if( !file_exists( ONAPP_WRAPPER_INIT ) ) {
+    if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
         $configArray = array(
             $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes/wrapper' => array()
         );
@@ -119,15 +119,15 @@ function onappusers_ConfigOptions() {
         $results = mysql_fetch_assoc( $results );
         $results[ 'options' ] = htmlspecialchars_decode( $results[ 'options' ] );
         $serversData[ 'Group' ] = $results[ 'group' ];
-        if( !empty( $results[ 'options' ] ) ) {
+        if( ! empty( $results[ 'options' ] ) ) {
             $results[ 'options' ] = json_decode( $results[ 'options' ], true );
             $serversData += $results[ 'options' ];
         }
 
         $js .= '<script type="text/javascript">'
-            . 'var ServersData = ' . json_encode( $serversData ) . ';'
-            . 'var ONAPP_LANG = ' . getJSLang() . ';'
-            . '</script>';
+               . 'var ServersData = ' . json_encode( $serversData ) . ';'
+               . 'var ONAPP_LANG = ' . getJSLang() . ';'
+               . '</script>';
 
         if( isset( $_GET[ 'servergroup' ] ) ) {
             ob_end_clean();
@@ -147,7 +147,7 @@ function onappusers_ConfigOptions() {
 function onappusers_CreateAccount( $params ) {
     global $CONFIG, $_LANG;
 
-    if( !file_exists( ONAPP_WRAPPER_INIT ) ) {
+    if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
         return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
     }
 
@@ -156,7 +156,7 @@ function onappusers_CreateAccount( $params ) {
     $userName = $params[ 'username' ] ? $params[ 'username' ] : $clientsDetails[ 'email' ];
     $password = OnApp_UserModule::generatePassword();
 
-    if( !$password ) {
+    if( ! $password ) {
         return $_LANG[ 'onappuserserrusercreate' ] . ': ' . $_LANG[ 'onappuserserrpwdnotset' ];
     }
 
@@ -189,14 +189,14 @@ function onappusers_CreateAccount( $params ) {
     }
 
     $OnAppUser->save();
-    if( !is_null( $OnAppUser->getErrorsAsArray() ) ) {
+    if( ! is_null( $OnAppUser->getErrorsAsArray() ) ) {
         $errorMsg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
         $errorMsg .= $OnAppUser->getErrorsAsString( ', ' );
 
         return $errorMsg;
     }
 
-    if( !is_null( $OnAppUser->_obj->getErrorsAsArray() ) ) {
+    if( ! is_null( $OnAppUser->_obj->getErrorsAsArray() ) ) {
         $errorMsg = $_LANG[ 'onappuserserrusercreate' ] . ': ';
         $errorMsg .= $OnAppUser->_obj->getErrorsAsString( ', ' );
 
@@ -234,7 +234,7 @@ function onappusers_CreateAccount( $params ) {
 function onappusers_TerminateAccount( $params ) {
     global $_LANG;
 
-    if( !file_exists( ONAPP_WRAPPER_INIT ) ) {
+    if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
         return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
     }
 
@@ -255,7 +255,7 @@ function onappusers_TerminateAccount( $params ) {
     if( $result ) {
         $OnAppUserID = mysql_result( $result, 0 );
     }
-    if( !$OnAppUserID ) {
+    if( ! $OnAppUserID ) {
         return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $clientID, $serverID );
     }
 
@@ -271,7 +271,7 @@ function onappusers_TerminateAccount( $params ) {
     $OnAppUser->_id = $OnAppUserID;
     $OnAppUser->delete( true );
 
-    if( !empty( $OnAppUser->error ) ) {
+    if( ! empty( $OnAppUser->error ) ) {
         $errorMsg = $_LANG[ 'onappuserserruserdelete' ] . ': ';
         $errorMsg .= $OnAppUser->getErrorsAsString( ', ' );
 
@@ -295,7 +295,7 @@ function onappusers_TerminateAccount( $params ) {
 function onappusers_SuspendAccount( $params ) {
     global $_LANG;
 
-    if( !file_exists( ONAPP_WRAPPER_INIT ) ) {
+    if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
         return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
     }
 
@@ -318,7 +318,7 @@ function onappusers_SuspendAccount( $params ) {
     if( $result ) {
         $OnAppUserID = mysql_result( $result, 0 );
     }
-    if( !$OnAppUserID ) {
+    if( ! $OnAppUserID ) {
         return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $clientID, $serverID );
     }
 
@@ -334,7 +334,7 @@ function onappusers_SuspendAccount( $params ) {
     }
     $OnAppUser->suspend();
 
-    if( !is_null( $OnAppUser->error ) ) {
+    if( ! is_null( $OnAppUser->error ) ) {
         $errorMsg = $_LANG[ 'onappuserserrusersuspend' ] . ':<br/>';
         $errorMsg .= $OnAppUser->getErrorsAsString( '<br/>' );
 
@@ -349,7 +349,7 @@ function onappusers_SuspendAccount( $params ) {
 function onappusers_UnsuspendAccount( $params ) {
     global $_LANG;
 
-    if( !file_exists( ONAPP_WRAPPER_INIT ) ) {
+    if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
         return $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes';
     }
 
@@ -372,7 +372,7 @@ function onappusers_UnsuspendAccount( $params ) {
     if( $result ) {
         $OnAppUserID = mysql_result( $result, 0 );
     }
-    if( !$OnAppUserID ) {
+    if( ! $OnAppUserID ) {
         return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $clientID, $serverID );
     }
 
@@ -386,7 +386,7 @@ function onappusers_UnsuspendAccount( $params ) {
     $OnAppUser->save();
     $OnAppUser->activate_user();
 
-    if( !is_null( $OnAppUser->error ) ) {
+    if( ! is_null( $OnAppUser->error ) ) {
         $errorMsg = $_LANG[ 'onappuserserruserunsuspend' ] . ':<br/>';
         $errorMsg .= $OnAppUser->getErrorsAsString( '<br/>' );
 
@@ -431,7 +431,7 @@ function onappusers_ChangePackage( $params ) {
     $OnAppUser->_user_group_id = $config->SelectedUserGroups->$params[ 'serverid' ];
     $OnAppUser->save();
 
-    if( !is_null( $OnAppUser->error ) ) {
+    if( ! is_null( $OnAppUser->error ) ) {
         $errorMsg = $_LANG[ 'onappuserserruserupgrade' ] . ':<br/>';
         $errorMsg .= $OnAppUser->getErrorsAsString( '<br/>' );
 
@@ -448,6 +448,7 @@ function onappusers_ClientAreaCustomButtonArray() {
     $buttons = array(
         $_LANG[ 'onappusersgeneratenewpassword' ] => 'GeneratePassword',
     );
+
     return $buttons;
 }
 
@@ -477,7 +478,7 @@ function onappusers_GeneratePassword( $params ) {
     $OnAppUser->_password = $password;
     $OnAppUser->save();
 
-    if( !is_null( $OnAppUser->error ) ) {
+    if( ! is_null( $OnAppUser->error ) ) {
         $errorMsg = $_LANG[ 'onappuserserruserupgrade' ] . ':<br/>';
         $errorMsg .= $OnAppUser->getErrorsAsString( '<br/>' );
 
@@ -514,7 +515,7 @@ function loadLang( $lang = null ) {
     }
     $language = ucfirst( $language ) . '.txt';
 
-    if( !in_array( $language, $availableLangs ) ) {
+    if( ! in_array( $language, $availableLangs ) ) {
         $language = 'English.txt';
     }
 
@@ -554,9 +555,9 @@ function onappusers_ClientArea( $params = '' ) {
 
     parseLang( $html );
     $html .= '<script type="text/javascript">'
-        . 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
-        . 'var PID = ' . $params[ 'accountid' ] . ';'
-        . 'var LANG = ' . getJSLang() . ';</script>';
+             . 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
+             . 'var PID = ' . $params[ 'accountid' ] . ';'
+             . 'var LANG = ' . getJSLang() . ';</script>';
 
     return $html;
 }
@@ -566,7 +567,7 @@ function injectServerRow( $params ) {
     $iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
     $key = substr( md5( uniqid( rand( 1, 999999 ), true ) ), 0, 27 );
 
-    $server = !empty( $params[ 'serverip' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
+    $server = ! empty( $params[ 'serverip' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
     if( strpos( $server, 'http' ) === false ) {
         $scheme = $params[ 'serversecure' ] ? 'https://' : 'http://';
         $server = $scheme . $server;
@@ -588,9 +589,9 @@ function injectServerRow( $params ) {
     $html = file_get_contents( dirname( __FILE__ ) . '/includes/html/serverData.html' );
     $html = str_replace( '{###}', md5( uniqid( rand( 1, 999999 ), true ) ), $html );
     $html .= '<script type="text/javascript">'
-        . 'var SERVER = "' . $server . '";'
-        . 'var injTarget = "' . $params[ 'username' ] . ' / ' . $params[ 'password' ] . '";'
-        . '</script>';
+             . 'var SERVER = "' . $server . '";'
+             . 'var injTarget = "' . $params[ 'username' ] . ' / ' . $params[ 'password' ] . '";'
+             . '</script>';
 
     return $html;
 }
@@ -672,7 +673,7 @@ class OnApp_UserModule {
 
         $data = self::getResourcesData( $params, $date );
 
-        if( !$data ) {
+        if( ! $data ) {
             return false;
         }
 
