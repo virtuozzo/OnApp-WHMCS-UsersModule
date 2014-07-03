@@ -496,8 +496,6 @@ function onappusers_GeneratePassword( $params ) {
 
     sendmessage( $_LANG[ 'onappuserschangeaccountpassword' ], $serviceID );
 
-    injectServerRow( $params );
-
     return 'success';
 }
 
@@ -551,14 +549,8 @@ function onappusers_ClientArea( $params = '' ) {
 
     $sets = json_decode( htmlspecialchars_decode( $params[ 'configoption1' ] ), true );
 
-    $html = '';
-    if( $sets[ 'ShowControlPanel' ][ $params[ 'serverid' ] ] ) {
-        $html .= injectServerRow( $params );
-    }
-
-    if( $sets[ 'ShowStat' ][ $params[ 'serverid' ] ] ) {
-        $html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.html' );
-    }
+    $html = injectServerRow( $params );
+    $html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.html' );
 
     parseLang( $html );
     $html .= '<script type="text/javascript">'

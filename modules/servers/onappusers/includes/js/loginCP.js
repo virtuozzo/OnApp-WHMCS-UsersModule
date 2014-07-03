@@ -1,5 +1,6 @@
 $( document ).ready( function () {
     // generate new password
+    $( '#tab2 form' ).remove();
     $( '#gotocp button:last' ).on( 'click', function() {
         var url = document.location.href;
         url += '&modop=custom&a=GeneratePassword';

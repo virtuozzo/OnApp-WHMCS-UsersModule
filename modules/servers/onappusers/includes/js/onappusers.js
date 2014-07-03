@@ -66,18 +66,6 @@ function buildFields( ServersData ) {
         html += '<td class="fieldarea" id="locale' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
-        // stat row
-        html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersshowstatistic + '</td>';
-        html += '<td class="fieldarea" id="showstat' + server_id + '"></td></tr>';
-        table.find( 'tr:last' ).after( html );
-
-        // show control panel row
-        html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersshowcontrolpanel + '</td>';
-        html += '<td class="fieldarea" id="controlpanel' + server_id + '"></td></tr>';
-        table.find( 'tr:last' ).after( html );
-
         // pass taxes row
         html = '<tr>';
         html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserspassthrutaxes + '</td>';
@@ -219,16 +207,6 @@ function buildFields( ServersData ) {
         }
         $( '#locale' + server_id ).html( select );
 
-        // process show statistic
-        input = $( '<input name="stat_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
-        // checkbox state
-        if( ServersData.ShowStat ) {
-            if( ServersData.ShowStat[ server_id ] ) {
-                $( input ).attr( 'checked', true );
-            }
-        }
-        $( '#showstat' + server_id ).html( input );
-
         // process passthru taxes to OnApp
         input = $( '<input name="passtaxes_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
         // checkbox state
@@ -238,16 +216,6 @@ function buildFields( ServersData ) {
             }
         }
         $( '#passtaxes' + server_id ).html( input );
-
-        // process show control panel
-        input = $( '<input name="controlpanel_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
-        // checkbox state
-        if( ServersData.ShowControlPanel ) {
-            if( ServersData.ShowControlPanel[ server_id ] ) {
-                $( input ).attr( 'checked', true );
-            }
-        }
-        $( '#controlpanel' + server_id ).html( input );
 
         // process due date
         input = $( '<input name="duedate_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
@@ -266,7 +234,7 @@ function buildFields( ServersData ) {
     html += '</td></tr>';
 
     table.append( $( html ) );
-    table.find( 'tr:last' ).hide();
+    //table.find( 'tr:last' ).hide();
     table.find( 'tr' ).eq( 1 ).find( 'td' ).eq( 0 ).css( 'width', 150 );
 
     // handle storing selected values
@@ -274,38 +242,37 @@ function buildFields( ServersData ) {
     $( "select[name^='bills_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedPlans();
     } );
+
     storeSelectedSuspendedPlans();
     $( "select[name^='suspendedbills_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedSuspendedPlans();
     } );
+
     storeSelectedRoles();
     $( "input[name^='roles_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedRoles();
     } );
+
     storeSelectedTZs();
     $( "select[name^='tzs_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedTZs();
     } );
+
     storeSelectedUserGroups();
     $( "select[name^='usergroups_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedUserGroups();
     } );
+
     storeSelectedLocales();
     $( "select[name^='locale_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedLocales();
     } );
-    storeShowStat();
-    $( "input[name^='stat_packageconfigoption']" ).bind( 'change', function() {
-        storeShowStat();
-    } );
+
     storePassTaxes();
     $( "input[name^='passtaxes_packageconfigoption']" ).bind( 'change', function() {
         storePassTaxes();
     } );
-    storeShowControlPanel();
-    $( "input[name^='controlpanel_packageconfigoption']" ).bind( 'change', function() {
-        storeShowControlPanel();
-    } );
+
     storeDueDateCurrent();
     $( "input[name^='duedate_packageconfigoption']" ).bind( 'change', function() {
         storeDueDateCurrent();
@@ -322,9 +289,7 @@ var OnAppUsersData = {
     SelectedTZs: {},
     SelectedUserGroups: {},
     SelectedLocales: {},
-    ShowStat: {},
     PassTaxes: {},
-    ShowControlPanel: {},
     DueDateCurrent: {}
 };
 
@@ -337,29 +302,10 @@ function storeDueDateCurrent() {
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
 }
 
-
-function storeShowControlPanel() {
-    $( "input[name^='controlpanel_packageconfigoption']" ).each( function( i, val ) {
-        var index = $( val ).attr( 'rel' );
-        OnAppUsersData.ShowControlPanel[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
-    } );
-
-    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
-}
-
 function storePassTaxes() {
     $( "input[name^='passtaxes_packageconfigoption']" ).each( function( i, val ) {
         var index = $( val ).attr( 'rel' );
         OnAppUsersData.PassTaxes[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
-    } );
-
-    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
-}
-
-function storeShowStat() {
-    $( "input[name^='stat_packageconfigoption']" ).each( function( i, val ) {
-        var index = $( val ).attr( 'rel' );
-        OnAppUsersData.ShowStat[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
     } );
 
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
