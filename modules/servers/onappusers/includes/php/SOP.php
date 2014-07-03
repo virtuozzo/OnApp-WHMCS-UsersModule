@@ -20,10 +20,10 @@ class SOP extends SOPGeneral {
      * @param string $helpBanner Help banner
      */
     public function __construct( array $options = array(), $helpBanner = '' ) {
-        if( ! empty( $options ) ) {
+        if( !empty( $options ) ) {
             $this->setOptions( $options );
         }
-        if( ! empty( $helpBanner ) ) {
+        if( !empty( $helpBanner ) ) {
             $this->setBanner( $helpBanner );
         }
 
@@ -201,7 +201,7 @@ class SOPOption extends SOPGeneral {
         $this->long = str_replace( '_', '-', $i = key( $data ) );
         $data = $data[ $i ];
 
-        if( ! isset( $data[ 'description' ] ) || empty( $data[ 'description' ] ) ) {
+        if( !isset( $data[ 'description' ] ) || empty( $data[ 'description' ] ) ) {
             $this->halt( 'SOP library error: description for option "' . $this->long . '" is not specified.' );
         }
 
@@ -228,7 +228,7 @@ class SOPOption extends SOPGeneral {
         else {
             # if a type constraint was specified, verify that the constraint
             # itself is valid.
-            if( $this->type != null && ! in_array( $this->type, array( SOP::NUMBER, SOP::INTEGER ) ) ) {
+            if( $this->type != null && !in_array( $this->type, array( SOP::NUMBER, SOP::INTEGER ) ) ) {
                 $this->halt( 'SOP library error: invalid type constraint set for "' . $this->long . '". Must be integer, number or string.' );
             }
 
