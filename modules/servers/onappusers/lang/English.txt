@@ -130,6 +130,7 @@ $_LANG[ 'onapptimetocrack' ] = 'to crack';
 $_LANG[ 'onapppasswordstrenght' ] = 'Password should be at least 6 characters';
 
 
-# added on 2nd of July 2014
+# added on 23nd of July 2014
 $_LANG[ 'onappusersgeneratenewpassword' ] = 'Generate new service password';
 $_LANG[ 'onappuserschangeaccountpassword' ] = 'OnApp account password has been generated';
+$_LANG[ 'onappuserslogintocp' ] = 'Login to OnApp CP';
