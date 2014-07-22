@@ -548,8 +548,6 @@ function onappusers_ClientArea( $params = '' ) {
         onappusers_OutstandingDetails( $params );
     }
 
-    $sets = json_decode( htmlspecialchars_decode( $params[ 'configoption1' ] ), true );
-
     $html = injectServerRow( $params );
     $html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.html' );
 
@@ -594,6 +592,17 @@ function injectServerRow( $params ) {
              . '</script>';
 
     return $html;
+}
+
+function onappusers_AdminLink( $params ) {
+    global $_LANG;
+    $form = '<form target="_blank" action="http' . ( $params[ 'serversecure' ] == 'on' ? 's' : '' ) . '://' . ( empty( $params[ 'serverhostname' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ] ) . '/users/sign_in" method="post">
+                  <input type="hidden" name="user[login]" value="' . $params[ 'serverusername' ] . '" />
+                  <input type="hidden" name="user[password]" value="' . $params[ 'serverpassword' ] . '" />
+                  <input type="hidden" name="commit" value="Sign In" />
+                  <input type="submit" value="' . $_LANG[ 'onappuserslogintocp' ] . '" />
+               </form>';
+    return $form;
 }
 
 function onappusers_OutstandingDetails( $params = '' ) {
