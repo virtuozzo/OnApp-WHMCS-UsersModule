@@ -1,40 +1,40 @@
 .inline-block {
-	display: inline-block;
+    display: inline-block;
 }
 
 #statcontainer .well-small {
-	padding-bottom: 5px;
+    padding-bottom: 5px;
 }
 
 #user-stat {
-	text-align: left;
+    text-align: left;
 }
 
 #stat_data {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 #stat_data th {
-	text-align: center;
-	padding-top: 12px;
+    text-align: center;
+    padding-top: 12px;
 }
 
 #stat_data tbody {
-	opacity: 0.1;
+    opacity: 0.1;
 }
 
 #stat_data td:first-child {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 #stat_data tr#error {
-	display: none;
+    display: none;
 }
 
 #gotocp {
-	text-align: left;
+    text-align: left;
 }
 
 #gotocpform button {
-	margin: 5px 0 20px;
+    margin: 5px 0 20px;
 }
