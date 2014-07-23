@@ -14,10 +14,10 @@ abstract class OnApp_UserModule_Cron {
     protected $timeZoneOffset;
     protected $dueDate;
     protected $cliOptions;
-    protected $logEnabled	= false;
+    protected $logEnabled   = false;
     protected $printEnabled = false;
-    protected $servers		= array();
-    protected $log			= array();
+    protected $servers      = array();
+    protected $log          = array();
 
     abstract protected function run();
 
@@ -53,7 +53,7 @@ abstract class OnApp_UserModule_Cron {
         );
         $data = $this->getResourcesData( $user, $date );
 
-        if( ! $data ) {
+        if( !$data ) {
             return false;
         }
 
@@ -125,53 +125,53 @@ abstract class OnApp_UserModule_Cron {
     }
 
     protected function getClients() {
-        $clients_query = 'SELECT
-            tblclients.taxexempt,
-            tblclients.state,
-            tblclients.country,
-            tblclients.currency,
-            tblclients.language,
-            tblcurrencies.rate,
-            tblhosting.paymentmethod,
-            tblhosting.domain,
-            tblhosting.id AS service_id,
-            tblonappusers.server_id,
-            tblonappusers.client_id,
-            tblonappusers.onapp_user_id,
-            tblproducts.tax,
-            tblproducts.name AS packagename,
-            tblproducts.configoption1 AS dueDate
-        FROM
-            tblonappusers
-        LEFT JOIN tblhosting ON
-            tblhosting.userid = tblonappusers.client_id
-            AND tblhosting.server = tblonappusers.server_id
-        LEFT JOIN tblproducts ON
-            tblhosting.packageid = tblproducts.id
-            AND tblproducts.servertype = "onappusers"
-        LEFT JOIN tblclients ON
-            tblclients.id = tblonappusers.client_id
-        LEFT JOIN tblcurrencies ON
-            tblcurrencies.id = tblclients.currency
-        WHERE
-            tblhosting.domainstatus IN ( "Active", "Suspended" )
-            AND tblproducts.name IS NOT NULL
-            ORDER BY tblonappusers.`onapp_user_id`';
-        $this->clients = full_query( $clients_query );
+        $sql = 'SELECT
+                    tblclients.taxexempt,
+                    tblclients.state,
+                    tblclients.country,
+                    tblclients.currency,
+                    tblclients.language,
+                    tblcurrencies.rate,
+                    tblhosting.paymentmethod,
+                    tblhosting.domain,
+                    tblhosting.id AS service_id,
+                    tblonappusers.server_id,
+                    tblonappusers.client_id,
+                    tblonappusers.onapp_user_id,
+                    tblproducts.tax,
+                    tblproducts.name AS packagename,
+                    tblproducts.configoption1 AS dueDate
+                FROM
+                    tblonappusers
+                LEFT JOIN tblhosting ON
+                    tblhosting.userid = tblonappusers.client_id
+                    AND tblhosting.server = tblonappusers.server_id
+                LEFT JOIN tblproducts ON
+                    tblhosting.packageid = tblproducts.id
+                    AND tblproducts.servertype = "onappusers"
+                LEFT JOIN tblclients ON
+                    tblclients.id = tblonappusers.client_id
+                LEFT JOIN tblcurrencies ON
+                    tblcurrencies.id = tblclients.currency
+                WHERE
+                    tblhosting.domainstatus IN ( "Active", "Suspended" )
+                    AND tblproducts.name IS NOT NULL
+                    ORDER BY tblonappusers.`onapp_user_id`';
+        $this->clients = full_query( $sql );
     }
 
     protected function getServers() {
-        $servers_query = 'SELECT
-                id,
-                ipaddress,
-                username,
-                password
-            FROM
-                tblservers
-            WHERE
-                type = "onappusers"';
-        $servers_result = full_query( $servers_query );
-        while( $server = mysql_fetch_assoc( $servers_result ) ) {
+        $sql = 'SELECT
+                    id,
+                    ipaddress,
+                    username,
+                    password
+                FROM
+                    tblservers
+                WHERE
+                    type = "onappusers"';
+        $result = full_query( $sql );
+        while( $server = mysql_fetch_assoc( $result ) ) {
             $server[ 'password' ] = decrypt( $server[ 'password' ] );
             $this->servers[ $server[ 'id' ] ] = $server;
         }
@@ -220,16 +220,15 @@ abstract class OnApp_UserModule_Cron {
         $invoiceDescription = implode( PHP_EOL, $invoiceDescription );
 
         $return = array(
-            'userid'		   => $client[ 'client_id' ],
-            'date'			   => $this->dueDate,
-            'duedate'		   => $dueDate,
-            'paymentmethod'	   => $client[ 'paymentmethod' ],
-            'taxrate'		   => $taxrate,
-            'sendinvoice'	   => true,
-
+            'userid'           => $client[ 'client_id' ],
+            'date'             => $this->dueDate,
+            'duedate'          => $dueDate,
+            'paymentmethod'    => $client[ 'paymentmethod' ],
+            'taxrate'          => $taxrate,
+            'sendinvoice'      => true,
             'itemdescription1' => $invoiceDescription,
-            'itemamount1'	   => 0,
-            'itemtaxed1'	   => $taxed,
+            'itemamount1'      => 0,
+            'itemtaxed1'       => $taxed,
         );
 
         unset( $data->total_cost );
@@ -238,8 +237,8 @@ abstract class OnApp_UserModule_Cron {
             if( $value > 0 ) {
                 $tmp = array(
                     'itemdescription' . ++$i => $_LANG[ 'onappusers_invoice_' . $key ],
-                    'itemamount' . $i		 => $value,
-                    'itemtaxed' . $i		 => $taxed,
+                    'itemamount' . $i        => $value,
+                    'itemtaxed' . $i         => $taxed,
                 );
                 $return = array_merge( $return, $tmp );
             }
@@ -318,7 +317,6 @@ abstract class OnApp_UserModule_Cron {
         $this->fromDateUTC = $this->getUTCTime( $fromDate, 'Y-m-d H:30' );
         $this->tillDateUTC = $this->getUTCTime( $tillDate, 'Y-m-d H:30' );
 
-
         if( $this->logEnabled ) {
             $this->log[ 'UTC time from' ] = $this->fromDateUTC;
             $this->log[ 'UTC time till' ] = $this->tillDateUTC;
@@ -341,20 +339,20 @@ abstract class OnApp_UserModule_Cron {
             'since' => array(
                 'description' => 'date to start',
                 'validation'  => '^(20\d{2})-([0][1-9]|[1][0-2])-([\d]{2}) ([0-1][0-9]|[2][0-3]):([0-5][0-9])$',
-                'short'		  => 's',
+                'short'       => 's',
             ),
-            'till'	=> array(
+            'till'  => array(
                 'description' => 'date to finish',
                 'validation'  => '^(20\d{2})-([0][1-9]|[1][0-2])-([\d]{2}) ([0-1][0-9]|[2][0-3]):([0-5][0-9])$',
-                'short'		  => 't',
+                'short'       => 't',
             ),
-            'log'	=> array(
+            'log'   => array(
                 'description' => 'log data to file',
-                'short'		  => 'l',
+                'short'       => 'l',
             ),
             'print' => array(
                 'description' => 'print data to screen',
-                'short'		  => 'p',
+                'short'       => 'p',
             ),
         );
 

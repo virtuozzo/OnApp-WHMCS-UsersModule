@@ -36,6 +36,12 @@ function buildFields( ServersData ) {
         html += '<td class="fieldarea" id="plan' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
+        // suspended billing plans row
+        html = '<tr>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingplanssuspendedtitle + '</td>';
+        html += '<td class="fieldarea" id="suspendedplan' + server_id + '"></td></tr>';
+        table.find( 'tr:last' ).after( html );
+
         // roles row
         html = '<tr>';
         html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingrolestitle + '</td>';
@@ -60,18 +66,6 @@ function buildFields( ServersData ) {
         html += '<td class="fieldarea" id="locale' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
-        // stat row
-        html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersshowstatistic + '</td>';
-        html += '<td class="fieldarea" id="showstat' + server_id + '"></td></tr>';
-        table.find( 'tr:last' ).after( html );
-
-        // show control panel row
-        html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersshowcontrolpanel + '</td>';
-        html += '<td class="fieldarea" id="controlpanel' + server_id + '"></td></tr>';
-        table.find( 'tr:last' ).after( html );
-
         // pass taxes row
         html = '<tr>';
         html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserspassthrutaxes + '</td>';
@@ -91,7 +85,7 @@ function buildFields( ServersData ) {
             for( plan_id in server.BillingPlans ) {
                 plan = server.BillingPlans[ plan_id ];
 
-                $( select ).append( $( '<option>', { value : server_id + ':' + plan_id } ).text( plan ) );
+                $( select ).append( $( '<option>', {value: server_id + ':' + plan_id} ).text( plan ) );
             }
 
             // select selected plans
@@ -105,6 +99,28 @@ function buildFields( ServersData ) {
             select = server.BillingPlans;
         }
         $( '#plan' + server_id ).html( select );
+
+        // process suspended biling plans
+        if( typeof server.BillingPlans == 'object' ) {
+            select = $( '<select name="suspendedbills_packageconfigoption' + ++cnt + '"></select>' );
+
+            for( plan_id in server.SuspendedBillingPlans ) {
+                plan = server.SuspendedBillingPlans[ plan_id ];
+
+                $( select ).append( $( '<option>', {value: server_id + ':' + plan_id} ).text( plan ) );
+            }
+
+            // select selected plans
+            if( ServersData.SelectedSuspendedPlans ) {
+                if( ServersData.Group == $( "select[name$='servergroup']" ).val() ) {
+                    $( select ).val( server_id + ':' + ServersData.SelectedSuspendedPlans[ server_id ] );
+                }
+            }
+        }
+        else {
+            select = server.SuspendedBillingPlans;
+        }
+        $( '#suspendedplan' + server_id ).html( select );
 
         // process roles
         if( typeof server.Roles == 'object' ) {
@@ -147,7 +163,7 @@ function buildFields( ServersData ) {
             for( group_id in server.UserGroups ) {
                 plan = server.UserGroups[ group_id ];
 
-                $( select ).append( $( '<option>', { value : server_id + ':' + group_id } ).text( plan ) );
+                $( select ).append( $( '<option>', {value: server_id + ':' + group_id} ).text( plan ) );
             }
 
             // select selected plans
@@ -164,12 +180,12 @@ function buildFields( ServersData ) {
 
         // process locale
         if( typeof server.Locales == 'object' && Object.size( server.Locales ) ) {
-            select = $( '<select name="locale_packageconfigoption' + ++ cnt + '"></select>' );
+            select = $( '<select name="locale_packageconfigoption' + ++cnt + '"></select>' );
 
             for( code in server.Locales ) {
                 locale = server.Locales[ code ];
 
-                $( select ).append( $( '<option>', { value: server_id + ':' + code } ).text( locale ) );
+                $( select ).append( $( '<option>', {value: server_id + ':' + code} ).text( locale ) );
             }
 
             // select selected locale
@@ -180,7 +196,7 @@ function buildFields( ServersData ) {
             }
         }
         else {
-            select = $( '<input name="locale_packageconfigoption' + ++ cnt + '" rel="' + server_id + '" />' );
+            select = $( '<input name="locale_packageconfigoption' + ++cnt + '" rel="' + server_id + '" />' );
             // select selected locale
             if( ServersData.SelectedLocales && ServersData.SelectedLocales[ server_id ] ) {
                 $( select ).val( ServersData.SelectedLocales[ server_id ] );
@@ -191,16 +207,6 @@ function buildFields( ServersData ) {
         }
         $( '#locale' + server_id ).html( select );
 
-        // process show statistic
-        input = $( '<input name="stat_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
-        // checkbox state
-        if( ServersData.ShowStat ) {
-            if( ServersData.ShowStat[ server_id ] ) {
-                $( input ).attr( 'checked', true );
-            }
-        }
-        $( '#showstat' + server_id ).html( input );
-
         // process passthru taxes to OnApp
         input = $( '<input name="passtaxes_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
         // checkbox state
@@ -210,16 +216,6 @@ function buildFields( ServersData ) {
             }
         }
         $( '#passtaxes' + server_id ).html( input );
-
-        // process show control panel
-        input = $( '<input name="controlpanel_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
-        // checkbox state
-        if( ServersData.ShowControlPanel ) {
-            if( ServersData.ShowControlPanel[ server_id ] ) {
-                $( input ).attr( 'checked', true );
-            }
-        }
-        $( '#controlpanel' + server_id ).html( input );
 
         // process due date
         input = $( '<input name="duedate_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
@@ -246,34 +242,37 @@ function buildFields( ServersData ) {
     $( "select[name^='bills_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedPlans();
     } );
+
+    storeSelectedSuspendedPlans();
+    $( "select[name^='suspendedbills_packageconfigoption']" ).bind( 'change', function() {
+        storeSelectedSuspendedPlans();
+    } );
+
     storeSelectedRoles();
     $( "input[name^='roles_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedRoles();
     } );
+
     storeSelectedTZs();
     $( "select[name^='tzs_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedTZs();
     } );
+
     storeSelectedUserGroups();
     $( "select[name^='usergroups_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedUserGroups();
     } );
+
     storeSelectedLocales();
     $( "select[name^='locale_packageconfigoption']" ).bind( 'change', function() {
         storeSelectedLocales();
     } );
-    storeShowStat();
-    $( "input[name^='stat_packageconfigoption']" ).bind( 'change', function() {
-        storeShowStat();
-    } );
+
     storePassTaxes();
     $( "input[name^='passtaxes_packageconfigoption']" ).bind( 'change', function() {
         storePassTaxes();
     } );
-    storeShowControlPanel();
-    $( "input[name^='controlpanel_packageconfigoption']" ).bind( 'change', function() {
-        storeShowControlPanel();
-    } );
+
     storeDueDateCurrent();
     $( "input[name^='duedate_packageconfigoption']" ).bind( 'change', function() {
         storeDueDateCurrent();
@@ -285,13 +284,12 @@ function buildFields( ServersData ) {
 
 var OnAppUsersData = {
     SelectedPlans: {},
+    SelectedSuspendedPlans: {},
     SelectedRoles: {},
     SelectedTZs: {},
     SelectedUserGroups: {},
     SelectedLocales: {},
-    ShowStat: {},
     PassTaxes: {},
-    ShowControlPanel: {},
     DueDateCurrent: {}
 };
 
@@ -299,16 +297,6 @@ function storeDueDateCurrent() {
     $( "input[name^='duedate_packageconfigoption']" ).each( function( i, val ) {
         var index = $( val ).attr( 'rel' );
         OnAppUsersData.DueDateCurrent[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
-    } );
-
-    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
-}
-
-
-function storeShowControlPanel() {
-    $( "input[name^='controlpanel_packageconfigoption']" ).each( function( i, val ) {
-        var index = $( val ).attr( 'rel' );
-        OnAppUsersData.ShowControlPanel[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
     } );
 
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
@@ -323,24 +311,15 @@ function storePassTaxes() {
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
 }
 
-function storeShowStat() {
-    $( "input[name^='stat_packageconfigoption']" ).each( function( i, val ) {
-        var index = $( val ).attr( 'rel' );
-        OnAppUsersData.ShowStat[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
-    } );
-
-    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
-}
-
 function storeSelectedLocales() {
     if( $( "select[name^='locale_packageconfigoption']" ).length ) {
-        $( "select[name^='locale_packageconfigoption']" ).each( function ( i, val ) {
+        $( "select[name^='locale_packageconfigoption']" ).each( function( i, val ) {
             var tmp = val.value.split( ':' );
             OnAppUsersData.SelectedLocales[ tmp[ 0 ] ] = tmp[ 1 ];
         } );
     }
     else {
-        $( "input[name^='locale_packageconfigoption']" ).each( function ( i, val ) {
+        $( "input[name^='locale_packageconfigoption']" ).each( function( i, val ) {
             var index = $( val ).attr( 'rel' );
             OnAppUsersData.SelectedLocales[ index ] = val.value;
         } );
@@ -353,6 +332,15 @@ function storeSelectedPlans() {
     $( "select[name^='bills_packageconfigoption']" ).each( function( i, val ) {
         var tmp = val.value.split( ':' );
         OnAppUsersData.SelectedPlans[ tmp[ 0 ] ] = tmp[ 1 ];
+    } );
+
+    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
+
+function storeSelectedSuspendedPlans() {
+    $( "select[name^='suspendedbills_packageconfigoption']" ).each( function( i, val ) {
+        var tmp = val.value.split( ':' );
+        OnAppUsersData.SelectedSuspendedPlans[ tmp[ 0 ] ] = tmp[ 1 ];
     } );
 
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
@@ -414,7 +402,7 @@ function alignSelects() {
 
 $( document ).ready( function() {
     // Refresh data if server group was changed
-    $( "select[name$='servergroup']" ).bind( 'change', function () {
+    $( "select[name$='servergroup']" ).bind( 'change', function() {
         $( 'table' ).eq( 5 ).find( 'tr:first td' ).html( ONAPP_LANG.onappusersjsloadingdata );
         $.ajax( {
             url: document.location.href,
@@ -437,11 +425,11 @@ function objectToString( o ) {
     return JSON.stringify( o );
 }
 
-Object.size = function ( obj ) {
+Object.size = function( obj ) {
     var size = 0, key;
     for( key in obj ) {
         if( obj.hasOwnProperty( key ) ) {
-            size ++;
+            size++;
         }
     }
     return size;

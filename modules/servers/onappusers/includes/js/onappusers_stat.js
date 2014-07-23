@@ -11,14 +11,6 @@ $( document ).ready( function() {
     $( '#datetimepicker2 input' ).val( moment().format( 'YYYY-MM-DD HH:mm' ) );
     $( '#datetimepicker1 input' ).val( moment().subtract( 'days', 2 ).format( 'YYYY-MM-DD HH:mm' ) );
 
-    // open CP
-    $( '#gotocp button' ).on( 'click', function() {
-        var win = window.open( '', 'OnAppCP', 'width=980,height=850,resizeable,scrollbars,location=no' );
-        $( '#gotocp form' ).attr( 'target', 'OnAppCP' );
-        $( '#gotocp form' ).submit();
-        win.focus();
-    } );
-
     // ajax
     $( '#stat_data button' ).on( 'click', function() {
         $( 'tr#error' ).hide();
@@ -31,7 +23,7 @@ $( document ).ready( function() {
             data: {
                 getstat: 1,
                 modop: 'custom',
-                ac: 'OutstandingDetails',
+                a: 'OutstandingDetails',
                 start: $( '#datetimepicker1 input' ).val(),
                 end: $( '#datetimepicker2 input' ).val(),
                 tz_offset: function() {

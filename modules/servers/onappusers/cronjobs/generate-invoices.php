@@ -80,5 +80,4 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
         }
     }
 }
-
 new OnApp_UserModule_Cron_Invoices;

@@ -2,10 +2,6 @@
     display: inline-block;
 }
 
-#statcontainer .well-small {
-    padding-bottom: 5px;
-}
-
 #user-stat {
     text-align: left;
 }
@@ -36,5 +32,5 @@
 }
 
 #gotocpform button {
-    margin: 5px 0 20px;
+    margin: 5px 2px 20px;
 }
