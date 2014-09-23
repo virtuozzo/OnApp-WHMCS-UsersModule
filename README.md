@@ -9,7 +9,7 @@ You are welcome to [follow us](https://twitter.com/intent/user?screen_name=OnApp
 
 ## Changelog:
 ####v3.3.5
- - improve server IP/hostname handling
+ - improve server IP/hostname and schema handling
 
 ####v3.3.0
  - add 'login to OnApp CP' functionality on servers page
