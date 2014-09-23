@@ -460,6 +460,15 @@ function onappusers_GeneratePassword( $params ) {
     $serverID = $params[ 'serverid' ];
     $password = OnApp_UserModule::generatePassword();
 
+    if( $params[ 'serversecure' ] == 'on' ) {
+        $params[ 'serverip' ] = 'https://';
+    }
+    else {
+        $params[ 'serverip' ] = 'http://';
+    }
+    $params[ 'serverip' ] .= empty( $params[ 'serverhostname' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
+    $params[ 'serverhostname' ] = $params[ 'serverip' ];
+
     $query = "SELECT
                     onapp_user_id
                 FROM
@@ -602,6 +611,7 @@ function onappusers_AdminLink( $params ) {
                   <input type="hidden" name="commit" value="Sign In" />
                   <input type="submit" value="' . $_LANG[ 'onappuserslogintocp' ] . '" />
                </form>';
+
     return $form;
 }
 
@@ -727,7 +737,13 @@ class OnApp_UserModule {
                 LIMIT 1';
         $user = mysql_fetch_assoc( full_query( $sql ) );
 
-        $serverAddr = empty( $params[ 'serverhostname' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
+        if( $params[ 'serversecure' ] == 'on' ) {
+            $serverAddr = 'https://';
+        }
+        else {
+            $serverAddr = 'http://';
+        }
+        $serverAddr .= empty( $params[ 'serverhostname' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
 
         $date = http_build_query( $date );
 

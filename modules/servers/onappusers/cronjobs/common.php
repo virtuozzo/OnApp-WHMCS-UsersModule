@@ -81,7 +81,7 @@ abstract class OnApp_UserModule_Cron {
     protected function getResourcesData( $client, $date ) {
         $date = http_build_query( $date );
 
-        $url = $this->servers[ $client[ 'server_id' ] ][ 'ipaddress' ] . '/users/' . $client[ 'onapp_user_id' ] . '/user_statistics.json?' . $date;
+        $url = $this->servers[ $client[ 'server_id' ] ][ 'address' ] . '/users/' . $client[ 'onapp_user_id' ] . '/user_statistics.json?' . $date;
         $data = $this->sendRequest( $url, $this->servers[ $client[ 'server_id' ] ][ 'username' ], $this->servers[ $client[ 'server_id' ] ][ 'password' ] );
 
         if( $data ) {
@@ -163,9 +163,11 @@ abstract class OnApp_UserModule_Cron {
     protected function getServers() {
         $sql = 'SELECT
                     id,
-                    ipaddress,
+                    secure,
                     username,
-                    password
+                    hostname,
+                    `password`,
+                    ipaddress
                 FROM
                     tblservers
                 WHERE
@@ -173,6 +175,19 @@ abstract class OnApp_UserModule_Cron {
         $result = full_query( $sql );
         while( $server = mysql_fetch_assoc( $result ) ) {
             $server[ 'password' ] = decrypt( $server[ 'password' ] );
+            if( $server[ 'secure' ] ) {
+                $server[ 'address' ] = 'https://';
+            }
+            else {
+                $server[ 'address' ] = 'http://';
+            }
+            if( empty( $server[ 'ipaddress' ] ) ) {
+                $server[ 'address' ] .= $server[ 'hostname' ];
+            }
+            else {
+                $server[ 'address' ] .= $server[ 'ipaddress' ];
+            }
+            unset( $server[ 'ipaddress' ], $server[ 'hostname' ], $server[ 'secure' ] );
             $this->servers[ $server[ 'id' ] ] = $server;
         }
     }
