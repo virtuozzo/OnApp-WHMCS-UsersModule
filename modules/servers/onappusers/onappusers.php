@@ -44,6 +44,7 @@ function onappusers_ConfigOptions() {
                 srv.`id`,
                 srv.`name`,
                 srv.`ipaddress` AS serverip,
+                srv.`secure` AS serversecure,
                 srv.`hostname` AS serverhostname,
                 srv.`username` AS serverusername,
                 srv.`password` AS serverpassword
@@ -460,15 +461,6 @@ function onappusers_GeneratePassword( $params ) {
     $serverID = $params[ 'serverid' ];
     $password = OnApp_UserModule::generatePassword();
 
-    if( $params[ 'serversecure' ] == 'on' ) {
-        $params[ 'serverip' ] = 'https://';
-    }
-    else {
-        $params[ 'serverip' ] = 'http://';
-    }
-    $params[ 'serverip' ] .= empty( $params[ 'serverhostname' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
-    $params[ 'serverhostname' ] = $params[ 'serverip' ];
-
     $query = "SELECT
                     onapp_user_id
                 FROM
@@ -625,7 +617,13 @@ class OnApp_UserModule {
 
     public function __construct( $params ) {
         $this->server = new stdClass;
-        $this->server->ip = empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
+        if( $params[ 'serversecure' ] == 'on' ) {
+            $this->server->ip = 'https://';
+        }
+        else {
+            $this->server->ip = 'http://';
+        }
+        $this->server->ip .= empty( $params[ 'serverip' ] ) ? $params[ 'serverhostname' ] : $params[ 'serverip' ];
         $this->server->user = $params[ 'serverusername' ];
         $this->server->pass = $params[ 'serverpassword' ];
     }
