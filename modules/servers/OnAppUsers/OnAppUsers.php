@@ -25,7 +25,7 @@ if( file_exists( $file = __DIR__ . '/module.sql' ) ) {
     require_once __DIR__ . '/module.mail.php';
 }
 
-function onappusers_ConfigOptions() {
+function OnAppUsers_ConfigOptions() {
     global $_LANG;
 
     if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
@@ -145,7 +145,7 @@ function onappusers_ConfigOptions() {
     return $configArray;
 }
 
-function onappusers_CreateAccount( $params ) {
+function OnAppUsers_CreateAccount( $params ) {
     global $CONFIG, $_LANG;
 
     if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
@@ -232,7 +232,7 @@ function onappusers_CreateAccount( $params ) {
     return 'success';
 }
 
-function onappusers_TerminateAccount( $params ) {
+function OnAppUsers_TerminateAccount( $params ) {
     global $_LANG;
 
     if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
@@ -293,7 +293,7 @@ function onappusers_TerminateAccount( $params ) {
     return 'success';
 }
 
-function onappusers_SuspendAccount( $params ) {
+function OnAppUsers_SuspendAccount( $params ) {
     global $_LANG;
 
     if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
@@ -347,7 +347,7 @@ function onappusers_SuspendAccount( $params ) {
     return 'success';
 }
 
-function onappusers_UnsuspendAccount( $params ) {
+function OnAppUsers_UnsuspendAccount( $params ) {
     global $_LANG;
 
     if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
@@ -399,7 +399,7 @@ function onappusers_UnsuspendAccount( $params ) {
     return 'success';
 }
 
-function onappusers_ChangePackage( $params ) {
+function OnAppUsers_ChangePackage( $params ) {
     global $_LANG;
 
     if( $params[ 'action' ] !== 'upgrade' ) {
@@ -444,7 +444,7 @@ function onappusers_ChangePackage( $params ) {
     return 'success';
 }
 
-function onappusers_ClientAreaCustomButtonArray() {
+function OnAppUsers_ClientAreaCustomButtonArray() {
     global $_LANG;
     $buttons = array(
         $_LANG[ 'onappusersgeneratenewpassword' ] => 'GeneratePassword',
@@ -453,7 +453,7 @@ function onappusers_ClientAreaCustomButtonArray() {
     return $buttons;
 }
 
-function onappusers_GeneratePassword( $params ) {
+function OnAppUsers_GeneratePassword( $params ) {
     global $_LANG;
 
     $serviceID = $params[ 'serviceid' ];
@@ -544,7 +544,7 @@ function parseLang( &$html ) {
     return $html;
 }
 
-function onappusers_ClientArea( $params = '' ) {
+function OnAppUsers_ClientArea( $params = '' ) {
     if( isset( $_GET[ 'getstat' ] ) ) {
         onappusers_OutstandingDetails( $params );
     }
@@ -595,7 +595,7 @@ function injectServerRow( $params ) {
     return $html;
 }
 
-function onappusers_AdminLink( $params ) {
+function OnAppUsers_AdminLink( $params ) {
     global $_LANG;
     $form = '<form target="_blank" action="http' . ( $params[ 'serversecure' ] == 'on' ? 's' : '' ) . '://' . ( empty( $params[ 'serverhostname' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ] ) . '/users/sign_in" method="post">
                   <input type="hidden" name="user[login]" value="' . $params[ 'serverusername' ] . '" />
@@ -607,7 +607,7 @@ function onappusers_AdminLink( $params ) {
     return $form;
 }
 
-function onappusers_OutstandingDetails( $params = '' ) {
+function OnAppUsers_OutstandingDetails( $params = '' ) {
     $data = json_encode( OnApp_UserModule::getAmount( $params ) );
     exit( $data );
 }
