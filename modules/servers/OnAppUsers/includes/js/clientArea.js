@@ -1,4 +1,43 @@
 $( document ).ready( function() {
+    // generate new password
+    $( '#tab2 form' ).remove();
+    $( '#gotocp button:last' ).on( 'click', function() {
+        $( '#gotocp .alert' ).hide();
+        var btn = $( this );
+        btn.button( 'loading' );
+
+        $.ajax( {
+            url: document.location.href,
+            data: {
+                modop: 'custom',
+                a: 'GeneratePassword'
+            },
+            error: function( ) {
+                $( '#gotocp span' ).html( 'General Issue' );
+                $( '#gotocp .alert-error' ).show( 'fast' );
+                setTimeout( function() {
+                    $( '#gotocp .alert' ).hide( 'fast' );
+                }, 2000 );
+            },
+            success: function( data ) {
+                if( data === 'success' ) {
+                    $( '#gotocp .alert-success' ).show( 'fast' );
+                }
+                else {
+                    $( '#gotocp span' ).html( data );
+                    $( '#gotocp .alert-error' ).show( 'fast' );
+                }
+                setTimeout( function() {
+                    $( '#gotocp .alert' ).hide( 'fast' );
+                }, 5000 );
+            }
+        } ).always( function() {
+            btn.button( 'reset' );
+        } );
+    } );
+} );
+
+$( document ).ready( function() {
     // set datetime pickers
     $( '#datetimepicker1' ).datetimepicker( {
         language: 'en',

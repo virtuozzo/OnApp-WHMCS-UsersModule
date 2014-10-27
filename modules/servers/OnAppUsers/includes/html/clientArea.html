@@ -1,0 +1,131 @@
+<link rel="stylesheet" href="modules/servers/OnAppUsers/includes/css/style.css"/>
+
+<div id="gotocp">
+    <h3 class="aleft1">{$LANG.OnApp_Users_Client_LoginToCPHeader}</h3>
+    <form action="modules/servers/OnAppUsers/includes/php/getCP.php" method="post" id="gotocpform" autocomplete="off"
+          target="_blank">
+        <input type="hidden" id="authenticity_token" name="authenticity_token" value="{###}" autocomplete="off">
+        <button type="submit" class="btn">
+            {$LANG.OnApp_Users_Client_LoginToCP}
+        </button>
+        <button type="button" class="btn" data-loading-text="{$LANG.OnApp_Users_Stat_Loading}">
+            {$LANG.OnApp_Users_Client_GenerateNewPassword}
+        </button>
+    </form>
+    <div class="alert alert-success">
+        <p>Action Completed Successfully!</p>
+    </div>
+    <div class="alert alert-error">
+        <p><strong>Action Failed:</strong> <span></span></p>
+    </div>
+</div>
+
+<h3 id="user-stat">{$LANG.OnApp_Users_Stat_OutstandingDetails}</h3>
+<table class="table table-bordered table-striped" id="stat_data">
+    <thead>
+        <tr>
+            <th colspan="2">
+                <div id="datetimepicker1" class="input-append date inline-block">
+                    <input data-format="yyyy-MM-dd hh:mm" type="text" class="input-medium" placeholder="{$LANG.OnApp_Users_Stat_StartDate}...">
+                    <span class="add-on">
+                      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                </div>
+                <div id="datetimepicker2" class="input-append date inline-block">
+                    <input data-format="yyyy-MM-dd hh:mm" type="text" class="input-medium" placeholder="{$LANG.OnApp_Users_Stat_EndDate}..">
+                    <span class="add-on">
+                      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                </div>
+                <button type="button" id="loading-example-btn" data-loading-text="{$LANG.OnApp_Users_Stat_Loading}" class="btn">
+                    {$LANG.OnApp_Users_Stat_Apply}
+                </button>
+            </th>
+        </tr>
+        <tr id="error">
+            <th colspan="2">
+                {$LANG.OnApp_Users_Error_Client_AJAX}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="span4">{$LANG.OnApp_Users_Invoice_vm_cost}</td>
+            <td id="vm_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_backup_cost}</td>
+            <td id="backup_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_monit_cost}</td>
+            <td id="monit_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_storage_disk_size_cost}</td>
+            <td id="storage_disk_size_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_template_cost}</td>
+            <td id="template_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_backup_count_cost}</td>
+            <td id="backup_count_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_backup_disk_size_cost}</td>
+            <td id="backup_disk_size_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_template_count_cost}</td>
+            <td id="template_count_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_template_disk_size_cost}</td>
+            <td id="template_disk_size_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_customer_network_cost}</td>
+            <td id="customer_network_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_edge_group_cost}</td>
+            <td id="edge_group_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.OnApp_Users_Invoice_total_cost}</td>
+            <td id="total_cost"></td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="modules/servers/OnAppUsers/includes/js/bootstrap.js"></script>
+
+<link rel="stylesheet" href="modules/servers/OnAppUsers/includes/css/bootstrap-datetimepicker.min.css"/>
+<script type="text/javascript" src="modules/servers/OnAppUsers/includes/js/bootstrap-datetimepicker.min.js"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.3.2/accounting.min.js"></script>
+<script type="text/javascript" src="modules/servers/OnAppUsers/includes/js/clientArea.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

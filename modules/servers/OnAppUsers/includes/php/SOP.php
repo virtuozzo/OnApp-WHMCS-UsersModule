@@ -75,10 +75,15 @@ class SOP extends SOPGeneral {
     /**
      * This is the main option parsing method
      *
+     * @param bool $forceHelp Show help if no options given
+     *
      * @return string $text Text output for the CLI
      */
-    public function parse() {
+    public function parse( $forceHelp = false ) {
         $options = getopt( $this->shortOptsDefinition, $this->longOptsDefinition );
+        if( empty( $options ) && $forceHelp ) {
+            $this->showHelp();
+        }
 
         # assemble an array of proper options
         foreach( $options as $option => $value ) {

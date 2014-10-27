@@ -1,10 +1,45 @@
 <?php
 
+$OnAppUsersProducts = array();
+
 if( ! defined( 'WHMCS' ) ) {
     exit( 'This file cannot be accessed directly' );
 }
 
-function hook_onappusers_InvoicePaid( $vars ) {
+function OnAppUsers_ProductEdit_Hook( $vars ) {
+    if( $vars[ 'servertype' ] === 'OnAppUsers' ) {
+        // create custom field
+        $fields = array(
+            'relid'     => $vars[ 'pid' ],
+            'type'      => 'product',
+            'fieldname' => 'OnApp user ID',
+            'fieldtype' => 'text',
+            'adminonly' => 'on',
+            'required'  => 'on',
+        );
+        if( ! mysql_num_rows( select_query( 'tblcustomfields', 'id', $fields ) ) ) {
+            insert_query( 'tblcustomfields', $fields );
+        }
+
+        // configoption2 = SuspendDays
+        // configoption3 = TerminateDays
+        $opts   = json_decode( htmlspecialchars_decode( $vars[ 'configoption1' ] ) );
+        $table  = 'tblproducts';
+        $update = array(
+            'configoption2' => current( $opts->SuspendDays ),
+            'configoption3' => current( $opts->TerminateDays ),
+        );
+        $where  = array( 'id' => $vars[ 'pid' ] );
+        update_query( $table, $update, $where );
+    }
+
+    return true;
+}
+
+function OnAppUsers_InvoicePaid_Hook( $vars ) {
+    mail( 'devman@localhost', __FUNCTION__, print_r( $vars, true ) );
+    return;
+
     $invoice_id = $vars[ 'invoiceid' ];
     $qry = 'SELECT
                 tblonappusers.`client_id`,
@@ -109,8 +144,8 @@ function hook_onappusers_InvoicePaid( $vars ) {
     }
 }
 
-function hook_onappusers_AutoSuspend() {
-    global $CONFIG;
+function OnAppUsers_AutoSuspend_Hook() {
+    global $CONFIG, $cron;
 
     if( $CONFIG[ 'AutoSuspension' ] != 'on' ) {
         return;
@@ -120,32 +155,39 @@ function hook_onappusers_AutoSuspend() {
                 tblhosting.`id`
             FROM
                 tblinvoices
-            LEFT JOIN tblinvoiceitems ON
+            LEFT JOIN
+                tblinvoiceitems ON
                 tblinvoiceitems.`invoiceid` = tblinvoices.`id`
-            LEFT JOIN tblhosting ON
+            LEFT JOIN
+                tblhosting ON
                 tblhosting.`id` = tblinvoiceitems.`relid`
+            LEFT JOIN
+                tblproducts ON
+                tblproducts.`id` = tblhosting.`packageid`
             WHERE
                 tblinvoices.`status` = "Unpaid"
-                AND tblinvoiceitems.`type` = "onappusers"
+                AND tblinvoiceitems.`type` = BINARY "OnAppUsers"
                 AND tblhosting.`domainstatus` = "Active"
-                AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
-                AND tblhosting.`overideautosuspend` != "on"
+                AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL tblproducts.`configoption2` DAY )
+                AND (tblhosting.`overideautosuspend` NOT IN ( "on", 1 )
+                OR tblhosting.`overidesuspenduntil` <= NOW() )
             GROUP BY
                 tblhosting.`id`';
-    $qry = str_replace( ':days', $CONFIG[ 'AutoSuspensionDays' ], $qry );
     $result = full_query( $qry );
 
-    $path = dirname( dirname( dirname( __DIR__ ) ) ) . '/includes/';
-    if( ! function_exists( 'serversuspendaccount' ) ) {
-        require_once $path . 'modulefunctions.php';
-    }
+    $cnt = 0;
+    echo 'Starting Processing OnApp Suspensions', PHP_EOL;
     while( $data = mysql_fetch_assoc( $result ) ) {
-        serversuspendaccount( $data[ 'id' ] );
+        ServerSuspendAccount( $data[ 'id' ] );
+        echo ' - suspend service #', $data[ 'id' ], PHP_EOL;
+        ++$cnt;
     }
+    echo ' - Processed ', $cnt, ' Suspensions', PHP_EOL;
+    $cron->emailLog( $cnt . ' OnApp Services Suspended' );
 }
 
-function hook_onappusers_AutoTerminate() {
-    global $CONFIG;
+function OnAppUsers_AutoTerminate_Hook() {
+    global $CONFIG, $cron;
 
     if( $CONFIG[ 'AutoTermination' ] != 'on' ) {
         return;
@@ -159,26 +201,30 @@ function hook_onappusers_AutoTerminate() {
                 tblinvoiceitems.`invoiceid` = tblinvoices.`id`
             LEFT JOIN tblhosting ON
                 tblhosting.`id` = tblinvoiceitems.`relid`
+            LEFT JOIN
+                tblproducts ON
+                tblproducts.`id` = tblhosting.`packageid`
             WHERE
                 tblinvoices.`status` = "Unpaid"
-                AND tblinvoiceitems.`type` = "onappusers"
+                AND tblinvoiceitems.`type` = BINARY "OnAppUsers"
                 AND tblhosting.`domainstatus` = "Suspended"
-                AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
-                AND tblhosting.`overideautosuspend` != "on"
+                AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL tblproducts.`configoption3` DAY )
             GROUP BY
                 tblhosting.`id`';
-    $qry = str_replace( ':days', $CONFIG[ 'AutoTerminationDays' ], $qry );
     $result = full_query( $qry );
 
-    $path = dirname( dirname( dirname( __DIR__ ) ) ) . '/includes/';
-    if( ! function_exists( 'serverterminateaccount' ) ) {
-        require_once $path . 'modulefunctions.php';
-    }
+    $cnt = 0;
+    echo 'Starting Processing OnApp Terminations', PHP_EOL;
     while( $data = mysql_fetch_assoc( $result ) ) {
-        serverterminateaccount( $data[ 'id' ] );
+        ServerTerminateAccount( $data[ 'id' ] );
+        echo ' - terminate service #', $data[ 'id' ], PHP_EOL;
+        ++ $cnt;
     }
+    echo ' - Processed ', $cnt, ' Terminations', PHP_EOL;
+    $cron->emailLog( $cnt . ' OnApp Services Terminated' );
 }
 
-add_hook( 'InvoicePaid', 1, 'hook_onappusers_InvoicePaid' );
-add_hook( 'DailyCronJob', 1, 'hook_onappusers_AutoSuspend' );
-add_hook( 'DailyCronJob', 2, 'hook_onappusers_AutoTerminate' );
+add_hook( 'InvoicePaid', 1, 'OnAppUsers_InvoicePaid_Hook' );
+add_hook( 'ProductEdit', 1, 'OnAppUsers_ProductEdit_Hook' );
+add_hook( 'PreCronJob', 1, 'OnAppUsers_AutoSuspend_Hook' );
+add_hook( 'PreCronJob', 2, 'OnAppUsers_AutoTerminate_Hook' );

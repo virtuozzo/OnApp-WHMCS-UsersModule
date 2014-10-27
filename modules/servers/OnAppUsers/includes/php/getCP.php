@@ -1,3 +1,5 @@
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
 <?php
 
 if( ! isset( $_POST[ 'authenticity_token' ] ) ) {

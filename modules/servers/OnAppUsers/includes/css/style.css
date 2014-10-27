@@ -31,6 +31,10 @@
     text-align: left;
 }
 
+#gotocp .alert {
+    display: none;
+}
+
 #gotocpform button {
     margin: 5px 2px 20px;
 }

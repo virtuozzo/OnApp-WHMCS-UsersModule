@@ -1,7 +1,14 @@
 function buildFields( ServersData ) {
     // Clean up table & store titles
     var table = $( 'table' ).eq( 5 );
+    var suspendDays = table.find( 'input[name="packageconfigoption[2]"]' ).prop( 'outerHTML' );
+    var terminateDays = table.find( 'input[name="packageconfigoption[3]"]' ).prop( 'outerHTML' );
+    if( ! suspendDays ) {
+        suspendDays = '<input type="text" name="packageconfigoption[2]" size="2" value="7">';
+        terminateDays = '<input type="text" name="packageconfigoption[3]" size="2" value="7">';
+    }
     table.find( 'tr' ).remove();
+
 
     // if no servers in group
     if( ServersData.NoServers ) {
@@ -32,50 +39,44 @@ function buildFields( ServersData ) {
 
         // billing plans row
         html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingplanstitle + '</td>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.OnApp_Users_Admin_BillingPlan + '</td>';
         html += '<td class="fieldarea" id="plan' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
         // suspended billing plans row
         html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingplanssuspendedtitle + '</td>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.OnApp_Users_Admin_SuspendedBillingPlan + '</td>';
         html += '<td class="fieldarea" id="suspendedplan' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
         // roles row
         html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindingrolestitle + '</td>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.OnApp_Users_Admin_Roles + '</td>';
         html += '<td class="fieldarea" id="role' + server_id + '" rel="' + server_id + '"></td></tr>';
-        table.find( 'tr:last' ).after( html );
-
-        // TZs row
-        html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserstimezonetitle + '</td>';
-        html += '<td class="fieldarea" id="tz' + server_id + '" rel="' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
         // user groups row
         html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersusergroupstitle + '</td>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.OnApp_Users_Admin_UserGroups + '</td>';
         html += '<td class="fieldarea" id="usergroups' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
         // locale row
         html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappusersbindinglocaletitle + '</td>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.OnApp_Users_Admin_DefaultLocale + '</td>';
         html += '<td class="fieldarea" id="locale' + server_id + '"></td></tr>';
+        table.find( 'tr:last' ).after( html );
+
+        // TZs row
+        html = '<tr>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.OnApp_Users_Admin_TimeZone + '</td>';
+        html += '<td class="fieldarea" id="tz' + server_id + '" rel="' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
         // pass taxes row
         html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserspassthrutaxes + '</td>';
+        html += '<td class="fieldlabel">' + ONAPP_LANG.OnApp_Users_Admin_IncludeTaxes + '</td>';
         html += '<td class="fieldarea" id="passtaxes' + server_id + '"></td></tr>';
-        table.find( 'tr:last' ).after( html );
-
-        // show duedate row
-        html = '<tr>';
-        html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserssetduedatetocurrent + '</td>';
-        html += '<td class="fieldarea" id="duedate' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );
 
         // process biling plans
@@ -145,17 +146,6 @@ function buildFields( ServersData ) {
             $( '#role' + server_id ).append( server.Roles );
         }
 
-        // process TZs
-        select = $( '<select name="tzs_packageconfigoption' + ++cnt + '"></select>' );
-        select = select.html( OnAppUsersTZs );
-        $( '#tz' + server_id ).html( select );
-        // select selected TZ
-        if( ServersData.SelectedTZs ) {
-            if( ServersData.Group == $( "select[name$='servergroup']" ).val() ) {
-                $( select ).val( ServersData.SelectedTZs[ server_id ] );
-            }
-        }
-
         // process user groups
         if( typeof server.UserGroups == 'object' ) {
             select = $( '<select name="usergroups_packageconfigoption' + ++cnt + '"></select>' );
@@ -207,6 +197,17 @@ function buildFields( ServersData ) {
         }
         $( '#locale' + server_id ).html( select );
 
+        // process TZs
+        select = $( '<select name="tzs_packageconfigoption' + ++cnt + '"></select>' );
+        select = select.html( OnAppUsersTZs );
+        $( '#tz' + server_id ).html( select );
+        // select selected TZ
+        if( ServersData.SelectedTZs ) {
+            if( ServersData.Group == $( "select[name$='servergroup']" ).val() ) {
+                $( select ).val( ServersData.SelectedTZs[server_id] );
+            }
+        }
+
         // process passthru taxes to OnApp
         input = $( '<input name="passtaxes_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
         // checkbox state
@@ -216,16 +217,6 @@ function buildFields( ServersData ) {
             }
         }
         $( '#passtaxes' + server_id ).html( input );
-
-        // process due date
-        input = $( '<input name="duedate_packageconfigoption' + ++cnt + '" rel="' + server_id + '" type="checkbox" />' );
-        // checkbox state
-        if( ServersData.DueDateCurrent ) {
-            if( ServersData.DueDateCurrent[ server_id ] ) {
-                $( input ).attr( 'checked', true );
-            }
-        }
-        $( '#duedate' + server_id ).html( input );
     }
 
     // input for storing selected values
@@ -236,6 +227,10 @@ function buildFields( ServersData ) {
     table.append( $( html ) );
     table.find( 'tr:last' ).hide();
     table.find( 'tr' ).eq( 1 ).find( 'td' ).eq( 0 ).css( 'width', 150 );
+
+    html = '<tr><td colspan="2" class="fieldarea">' + ONAPP_LANG.OnApp_Users_Admin_SuspendDays + suspendDays + '</td></tr>';
+    html += '<tr><td colspan="2" class="fieldarea">' + ONAPP_LANG.OnApp_Users_Admin_TerminateDays + terminateDays + '</td></tr>';
+    table.append( html );
 
     // handle storing selected values
     storeSelectedPlans();
@@ -273,9 +268,12 @@ function buildFields( ServersData ) {
         storePassTaxes();
     } );
 
-    storeDueDateCurrent();
-    $( "input[name^='duedate_packageconfigoption']" ).bind( 'change', function() {
-        storeDueDateCurrent();
+    $( 'input[name="packageconfigoption[2]"]' ).bind( 'change', function() {
+        storeSuspendDays();
+    } );
+
+    $( 'input[name="packageconfigoption[3]"]' ).bind( 'change', function() {
+        storeTerminateDays();
     } );
 
     // align dropdown lists
@@ -289,23 +287,60 @@ var OnAppUsersData = {
     SelectedTZs: {},
     SelectedUserGroups: {},
     SelectedLocales: {},
-    PassTaxes: {},
-    DueDateCurrent: {}
+    PassTaxes: {}
 };
 
-function storeDueDateCurrent() {
-    $( "input[name^='duedate_packageconfigoption']" ).each( function( i, val ) {
-        var index = $( val ).attr( 'rel' );
-        OnAppUsersData.DueDateCurrent[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
+function storeSelectedPlans() {
+    $( "select[name^='bills_packageconfigoption']" ).each( function( i, val ) {
+        var tmp = val.value.split( ':' );
+        OnAppUsersData.SelectedPlans[tmp[0]] = tmp[1];
     } );
 
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
 }
 
-function storePassTaxes() {
-    $( "input[name^='passtaxes_packageconfigoption']" ).each( function( i, val ) {
-        var index = $( val ).attr( 'rel' );
-        OnAppUsersData.PassTaxes[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
+function storeSelectedSuspendedPlans() {
+    $( "select[name^='suspendedbills_packageconfigoption']" ).each( function( i, val ) {
+        var tmp = val.value.split( ':' );
+        OnAppUsersData.SelectedSuspendedPlans[tmp[0]] = tmp[1];
+    } );
+
+    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
+
+function storeSelectedRoles() {
+    OnAppUsersData.SelectedRoles = {};
+    $( "input[name^='roles_packageconfigoption']" ).each( function( i, val ) {
+        if( !$( val ).attr( 'checked' ) ) {
+            return;
+        }
+        var index = $( val ).parents( 'td' ).attr( 'rel' );
+
+        if( typeof OnAppUsersData.SelectedRoles[index] == 'undefined' ) {
+            OnAppUsersData.SelectedRoles[index] = [];
+        }
+
+        if( jQuery.inArray( val.value, OnAppUsersData.SelectedRoles[index] ) == -1 ) {
+            OnAppUsersData.SelectedRoles[index].push( val.value );
+        }
+    } );
+
+    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
+
+function storeSelectedTZs() {
+    $( "select[name^='tzs_packageconfigoption']" ).each( function( i, val ) {
+        var index = $( val ).parents( 'td' ).attr( 'rel' );
+        OnAppUsersData.SelectedTZs[index] = val.value;
+    } );
+
+    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+}
+
+function storeSelectedUserGroups() {
+    $( "select[name^='usergroups_packageconfigoption']" ).each( function( i, val ) {
+        var tmp = val.value.split( ':' );
+        OnAppUsersData.SelectedUserGroups[tmp[0]] = tmp[1];
     } );
 
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
@@ -328,60 +363,31 @@ function storeSelectedLocales() {
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
 }
 
-function storeSelectedPlans() {
-    $( "select[name^='bills_packageconfigoption']" ).each( function( i, val ) {
-        var tmp = val.value.split( ':' );
-        OnAppUsersData.SelectedPlans[ tmp[ 0 ] ] = tmp[ 1 ];
+function storePassTaxes() {
+    $( "input[name^='passtaxes_packageconfigoption']" ).each( function( i, val ) {
+        var index = $( val ).attr( 'rel' );
+        OnAppUsersData.PassTaxes[index] = $( val ).attr( 'checked' ) ? 1 : 0;
     } );
 
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
 }
 
-function storeSelectedSuspendedPlans() {
-    $( "select[name^='suspendedbills_packageconfigoption']" ).each( function( i, val ) {
-        var tmp = val.value.split( ':' );
-        OnAppUsersData.SelectedSuspendedPlans[ tmp[ 0 ] ] = tmp[ 1 ];
-    } );
-
-    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+function storeSuspendDays() {
+    var el = $( 'input[name="packageconfigoption[2]"]' );
+    var val = el.val();
+    if( ! val.length || ( val < 1 ) ) {
+        val = 7;
+        $( el ).val( val );
+    }
 }
 
-function storeSelectedRoles() {
-    OnAppUsersData.SelectedRoles = {};
-    $( "input[name^='roles_packageconfigoption']" ).each( function( i, val ) {
-        if( !$( val ).attr( 'checked' ) ) {
-            return;
-        }
-        var index = $( val ).parents( 'td' ).attr( 'rel' );
-
-        if( typeof OnAppUsersData.SelectedRoles[ index ] == 'undefined' ) {
-            OnAppUsersData.SelectedRoles[ index ] = [];
-        }
-
-        if( jQuery.inArray( val.value, OnAppUsersData.SelectedRoles[ index ] ) == -1 ) {
-            OnAppUsersData.SelectedRoles[ index ].push( val.value );
-        }
-    } );
-
-    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
-}
-
-function storeSelectedTZs() {
-    $( "select[name^='tzs_packageconfigoption']" ).each( function( i, val ) {
-        var index = $( val ).parents( 'td' ).attr( 'rel' );
-        OnAppUsersData.SelectedTZs[ index ] = val.value;
-    } );
-
-    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
-}
-
-function storeSelectedUserGroups() {
-    $( "select[name^='usergroups_packageconfigoption']" ).each( function( i, val ) {
-        var tmp = val.value.split( ':' );
-        OnAppUsersData.SelectedUserGroups[ tmp[ 0 ] ] = tmp[ 1 ];
-    } );
-
-    $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
+function storeTerminateDays() {
+    var el = $( 'input[name="packageconfigoption[3]"]' );
+    var val = el.val();
+    if( !val.length || ( val < 1 ) ) {
+        val = 7;
+        $( el ).val( val );
+    }
 }
 
 function alignSelects() {
@@ -403,18 +409,20 @@ function alignSelects() {
 $( document ).ready( function() {
     // Refresh data if server group was changed
     $( "select[name$='servergroup']" ).bind( 'change', function() {
-        $( 'table' ).eq( 5 ).find( 'tr:first td' ).html( ONAPP_LANG.onappusersjsloadingdata );
+        $( 'table' ).eq( 5 ).find( 'tr:first td' ).html( ONAPP_LANG.OnApp_Users_Admin_Loading_Data );
         $.ajax( {
             url: document.location.href,
             data: 'servergroup=' + this.value,
             success: function( data ) {
-                buildFields( jQuery.evalJSON( data ) );
+                buildFields( JSON.parse( data ) );
             }
         } );
     } );
 
     // fill the table with datas
-    buildFields( ServersData );
+    if( typeof ServersData !== 'undefined' ) {
+        buildFields( ServersData );
+    }
 
     $( 'li#tab2' ).bind( 'click', function() {
         alignSelects();
