@@ -37,67 +37,70 @@ function OnAppUsers_ProductEdit_Hook( $vars ) {
 }
 
 function OnAppUsers_InvoicePaid_Hook( $vars ) {
-    mail( 'devman@localhost', __FUNCTION__, print_r( $vars, true ) );
-    return;
-
-    $invoice_id = $vars[ 'invoiceid' ];
-    $qry = 'SELECT
-                tblonappusers.`client_id`,
-                tblonappusers.`server_id`,
-                tblonappusers.`onapp_user_id`,
-                tblhosting.`id` AS service_id,
+    $invoiceID = $vars[ 'invoiceid' ];
+    $qry = 'SELECT DISTINCT
                 tblinvoices.`subtotal` AS subtotal,
                 tblinvoices.`total` AS total,
+                tblcustomfieldsvalues.`value` AS OnAppUserID,
+                tblservers.`ipaddress`,
+                tblservers.`hostname`,
+                tblservers.`username`,
+                tblservers.`password`,
+                tblservers.`secure`,
+                tblhosting.`server` AS serverID,
                 tblproducts.`configoption1` AS settings,
-                tblhosting.`domainstatus` AS status
+                tblinvoiceitems.relid AS serviceID,
+                tblhosting.`domainstatus` AS `status`
             FROM
                 tblinvoices
-            LEFT JOIN tblonappusers ON
-                tblinvoices.`userid` = tblonappusers.`client_id`
-            LEFT JOIN tblhosting ON
-                tblhosting.`userid` = tblonappusers.`client_id`
-                AND tblhosting.`server` = tblonappusers.`server_id`
-            RIGHT JOIN tblinvoiceitems ON
-                tblinvoiceitems.`invoiceid` = tblinvoices.`id`
-                AND tblinvoiceitems.`relid` = tblhosting.`id`
-            LEFT JOIN tblproducts ON
+            JOIN
+                tblinvoiceitems ON
+                tblinvoices.id = tblinvoiceitems.invoiceid
+            JOIN
+                tblhosting ON
+                tblhosting.id = tblinvoiceitems.relid
+            JOIN
+                tblservers ON
+                tblservers.id = tblhosting.server
+            JOIN
+                tblcustomfields ON
+                tblcustomfields.`relid` = tblhosting.`packageid`
+                AND tblcustomfields.`fieldname` = BINARY "OnApp user ID"
+            JOIN
+                tblcustomfieldsvalues ON
+                tblcustomfieldsvalues.`fieldid` = tblcustomfields.`id`
+            JOIN
+                tblproducts ON
                 tblproducts.`id` = tblhosting.`packageid`
             WHERE
-                tblinvoices.`id` = :invoiceID
-                AND tblinvoices.`status` = "Paid"
-                AND tblproducts.`servertype` = "onappusers"
-                AND tblinvoiceitems.`type` = "onappusers"
-            GROUP BY tblinvoices.`id`';
-    $qry = str_replace( ':invoiceID', $invoice_id, $qry );
+                tblinvoices.`status` = "Paid"
+                AND tblinvoiceitems.`type` = BINARY "OnAppUsers"
+                AND tblinvoices.id = :invoiceID';
+    $qry = str_replace( ':invoiceID', $invoiceID, $qry );
     $result = full_query( $qry );
 
     if( mysql_num_rows( $result ) == 0 ) {
         return;
     }
+    $data = mysql_fetch_object( $result );
 
-    $data = mysql_fetch_assoc( $result );
+    $data->password = decrypt( $data->password );
+    $productSettings = json_decode( htmlspecialchars_decode( $data->settings ) );
 
-    $qry = 'SELECT
-                `ipaddress` AS serverip,
-                `username` AS serverusername,
-                `password` AS serverpassword
-            FROM
-                tblservers
-            WHERE
-                `type` = "onappusers"
-                AND `id` = :serverID';
-    $qry = str_replace( ':serverID', $data[ 'server_id' ], $qry );
-    $result = full_query( $qry );
-    $server = mysql_fetch_assoc( $result );
-    $server[ 'serverpassword' ] = decrypt( $server[ 'serverpassword' ] );
-
-    $productSettings = json_decode( htmlspecialchars_decode( $data[ 'settings' ] ) );
-    if( $productSettings->PassTaxes->$data[ 'server_id' ] == 0 ) {
-        $amount = $data[ 'subtotal' ];
+    if( $productSettings->PassTaxes->{$data->serverID} == 0 ) {
+        $amount = $data->subtotal;
     }
     else {
-        $amount = $data[ 'total' ];
+        $amount = $data->total;
     }
+
+    if( $data->secure == 'on' ) {
+        $serverAddr = 'https://';
+    }
+    else {
+        $serverAddr = 'http://';
+    }
+    $serverAddr .= empty( $data->hostname ) ? $data->ipaddress : $data->hostname;
 
     $path = dirname( dirname( dirname( __DIR__ ) ) ) . '/includes/';
     if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
@@ -106,21 +109,21 @@ function OnAppUsers_InvoicePaid_Hook( $vars ) {
     }
 
     $payment = new OnApp_Payment;
-    $payment->auth( $server[ 'serverip' ], $server[ 'serverusername' ], $server[ 'serverpassword' ] );
-    $payment->_user_id = $data[ 'onapp_user_id' ];
+    $payment->auth( $serverAddr, $data->username, $data->password );
+    $payment->_user_id = $data->OnAppUserID;
     $payment->_amount = $amount;
-    $payment->_invoice_number = $invoice_id;
+    $payment->_invoice_number = $invoiceID;
     $payment->save();
 
     $error = $payment->getErrorsAsString();
     if( empty( $error ) ) {
-        logactivity( 'OnApp payment was sent. Service ID #' . $data[ 'service_id' ] . ', amount: ' . $amount );
+        logactivity( 'OnApp payment was sent. Service ID #' . $data->serviceID . ', amount: ' . $amount );
     }
     else {
-        logactivity( 'ERROR with OnApp payment for service ID #' . $data[ 'service_id' ] . ': ' . $error );
+        logactivity( 'ERROR with OnApp payment for service ID #' . $data->serviceID . ': ' . $error );
     }
 
-    if( $data[ 'status' ] == 'Suspended' ) {
+    if( $data->status == 'Suspended' ) {
         // check for other unpaid invoices for this service
         $qry = 'SELECT
                     tblinvoices.`id`
@@ -132,14 +135,14 @@ function OnAppUsers_InvoicePaid_Hook( $vars ) {
                 WHERE
                     tblinvoices.`status` = "Unpaid"
                 GROUP BY tblinvoices.`id`';
-        $qry = str_replace( ':serviceID', $data[ 'service_id' ], $qry );
+        $qry = str_replace( ':serviceID', $data->serviceID, $qry );
         $result = full_query( $qry );
 
         if( mysql_num_rows( $result ) == 0 ) {
-            if( ! function_exists( 'serverunsuspendaccount' ) ) {
+            if( ! function_exists( 'ServerUnsuspendAccount' ) ) {
                 require_once $path . 'modulefunctions.php';
             }
-            serverunsuspendaccount( $data[ 'service_id' ] );
+            ServerUnsuspendAccount( $data->serviceID );
         }
     }
 }
