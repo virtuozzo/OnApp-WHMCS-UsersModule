@@ -46,7 +46,6 @@ class OnApp_UserModule_Cron {
 
         //calculate invoice due date
         $this->dueDate = date( 'Ymd' );
-        $this->dueDate = '20141020';
 
         while( $client = mysql_fetch_assoc( $this->clients ) ) {
             $clientAmount = $this->getAmount( $client );

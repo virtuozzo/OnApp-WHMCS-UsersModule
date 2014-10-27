@@ -131,7 +131,7 @@ function OnAppUsers_ConfigOptions( $params ) {
         'terminateDays' => array(
             'Type'         => 'text',
             'Size'         => '1',
-            'Default'      => '14',
+            'Default'      => '7',
         ),
     );
 
