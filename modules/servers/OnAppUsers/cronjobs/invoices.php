@@ -50,12 +50,14 @@ class OnApp_UserModule_Cron {
         while( $client = mysql_fetch_assoc( $this->clients ) ) {
             $clientAmount = $this->getAmount( $client );
             if( ! $clientAmount ) {
+                $this->writeLog( 'false returned' );
                 continue;
             }
 
             if( $clientAmount->total_cost >= 0.01 ) {
                 $data = $this->generateInvoiceData( $clientAmount, $client );
                 if( $data == false ) {
+                    $this->writeInvoices( array_merge( $client, $data ) );
                     continue;
                 }
 
@@ -86,6 +88,10 @@ class OnApp_UserModule_Cron {
                     );
                     update_query( $table, $update, $where );
                 }
+            }
+            else {
+                $this->writeLog( (array)$clientAmount );
+                $this->writeLog( ' Amount is less then 0.01, invoice will not be generated' );
             }
         }
     }
@@ -132,7 +138,7 @@ class OnApp_UserModule_Cron {
         $date = http_build_query( $date );
 
         $url  = $this->servers[ $client[ 'serverID' ] ][ 'address' ] . '/users/' . $client[ 'OnAppUserID' ] . '/user_statistics.json?' . $date;
-        $data = $this->sendRequest( $url, $this->servers[ $client[ 'server_id' ] ][ 'username' ], $this->servers[ $client[ 'server_id' ] ][ 'password' ] );
+        $data = $this->sendRequest( $url, $this->servers[ $client[ 'serverID' ] ][ 'username' ], $this->servers[ $client[ 'serverID' ] ][ 'password' ] );
 
         if( $data ) {
             return json_decode( $data );
@@ -164,7 +170,7 @@ class OnApp_UserModule_Cron {
     }
 
     private function getClients() {
-        $sql           = 'SELECT
+        $sql = 'SELECT
                     tblclients.`taxexempt`,
                     tblclients.`state`,
                     tblclients.`country`,
@@ -204,7 +210,7 @@ class OnApp_UserModule_Cron {
     }
 
     private function getServers() {
-        $sql    = 'SELECT
+        $sql = 'SELECT
                     `id`,
                     `secure`,
                     `username`,
