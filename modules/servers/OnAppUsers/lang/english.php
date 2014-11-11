@@ -16,7 +16,6 @@ $_LANG[ 'OnApp_Users_Client_LoginToCP' ]                 = 'Open Control Panel';
 $_LANG[ 'OnApp_Users_Client_LoginToCPHeader' ]           = 'Manage My Cloud';
 $_LANG[ 'OnApp_Users_Error_Admin_CantFoundHostAddress' ] = 'OnApp server address (IP or hostname) has not been set for this server';
 $_LANG[ 'OnApp_Users_Error_Admin_CreateUser' ]           = 'Cannot create OnApp User';
-$_LANG[ 'OnApp_Users_Error_Admin_DeleteUser' ]           = 'Cannot delete OnApp User';
 $_LANG[ 'OnApp_Users_Error_Admin_Holder' ]               = '<b style="color:red;">%s</b>';
 $_LANG[ 'OnApp_Users_Error_Admin_NoBillingPlans' ]       = 'There are no configured billing plans on this server';
 $_LANG[ 'OnApp_Users_Error_Admin_NoRoles' ]              = 'There are no configured roles on this server';
