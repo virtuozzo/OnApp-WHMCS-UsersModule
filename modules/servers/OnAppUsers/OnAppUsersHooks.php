@@ -156,7 +156,8 @@ function OnAppUsers_AutoSuspend_Hook() {
 	}
 
 	$qry = 'SELECT
-				tblhosting.`id`
+				tblhosting.`id`,
+				tblhosting.`userid`
 			FROM
 				tblinvoices
 			LEFT JOIN
@@ -173,7 +174,7 @@ function OnAppUsers_AutoSuspend_Hook() {
 				AND tblinvoiceitems.`type` = BINARY "OnAppUsers"
 				AND tblhosting.`domainstatus` = "Active"
 				AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL tblproducts.`configoption2` DAY )
-				AND (tblhosting.`overideautosuspend` NOT IN ( "on", 1 )
+				AND ( tblhosting.`overideautosuspend` NOT IN ( "on", 1 )
 				OR tblhosting.`overidesuspenduntil` <= NOW() )
 			GROUP BY
 				tblhosting.`id`';
@@ -183,7 +184,7 @@ function OnAppUsers_AutoSuspend_Hook() {
 	echo 'Starting Processing OnApp Suspensions', PHP_EOL;
 	while( $data = mysql_fetch_assoc( $result ) ) {
 		ServerSuspendAccount( $data[ 'id' ] );
-		echo ' - suspend service #', $data[ 'id' ], PHP_EOL;
+		echo ' - suspend service ID ', $data[ 'id' ], ', user ID ', $data[ 'userid' ], PHP_EOL;
 		++$cnt;
 	}
 	echo ' - Processed ', $cnt, ' Suspensions', PHP_EOL;
@@ -198,7 +199,8 @@ function OnAppUsers_AutoTerminate_Hook() {
 	}
 
 	$qry = 'SELECT
-				tblhosting.`id`
+				tblhosting.`id`,
+				tblhosting.`userid`
 			FROM
 				tblinvoices
 			LEFT JOIN tblinvoiceitems ON
@@ -212,7 +214,7 @@ function OnAppUsers_AutoTerminate_Hook() {
 				tblinvoices.`status` = "Unpaid"
 				AND tblinvoiceitems.`type` = BINARY "OnAppUsers"
 				AND tblhosting.`domainstatus` = "Suspended"
-				AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL tblproducts.`configoption3` DAY )
+				AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL ( tblproducts.`configoption2` + tblproducts.`configoption3` ) DAY )
 			GROUP BY
 				tblhosting.`id`';
 	$result = full_query( $qry );
@@ -221,7 +223,7 @@ function OnAppUsers_AutoTerminate_Hook() {
 	echo 'Starting Processing OnApp Terminations', PHP_EOL;
 	while( $data = mysql_fetch_assoc( $result ) ) {
 		ServerTerminateAccount( $data[ 'id' ] );
-		echo ' - terminate service #', $data[ 'id' ], PHP_EOL;
+		echo ' - terminate service ID ', $data[ 'id' ], ', user ID ', $data[ 'userid' ], PHP_EOL;
 		++ $cnt;
 	}
 	echo ' - Processed ', $cnt, ' Terminations', PHP_EOL;
