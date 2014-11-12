@@ -175,7 +175,8 @@ function OnAppUsers_AutoSuspend_Hook() {
 				AND tblhosting.`domainstatus` = "Active"
 				AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL tblproducts.`configoption2` DAY )
 				AND ( tblhosting.`overideautosuspend` NOT IN ( "on", 1 )
-				OR tblhosting.`overidesuspenduntil` <= NOW() )
+					OR ( tblhosting.`overidesuspenduntil` != "0000-00-00"
+						AND tblhosting.`overidesuspenduntil` <= NOW() ) )
 			GROUP BY
 				tblhosting.`id`';
 	$result = full_query( $qry );
