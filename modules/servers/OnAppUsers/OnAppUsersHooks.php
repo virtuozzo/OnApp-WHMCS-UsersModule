@@ -18,17 +18,6 @@ function OnAppUsers_ProductEdit_Hook( $vars ) {
 		if( ! mysql_num_rows( select_query( 'tblcustomfields', 'id', $fields ) ) ) {
 			insert_query( 'tblcustomfields', $fields );
 		}
-
-		# configoption2 = SuspendDays
-		# configoption3 = TerminateDays
-		$opts   = json_decode( htmlspecialchars_decode( $vars[ 'configoption1' ] ) );
-		$table  = 'tblproducts';
-		$update = array(
-			'configoption2' => current( $opts->SuspendDays ),
-			'configoption3' => current( $opts->TerminateDays ),
-		);
-		$where  = array( 'id' => $vars[ 'pid' ] );
-		update_query( $table, $update, $where );
 	}
 
 	return true;
