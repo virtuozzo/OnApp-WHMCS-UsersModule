@@ -2,6 +2,7 @@
 
 $_LANG[ 'OnApp_Users_Admin_BillingPlan' ]                = 'Billing plan';
 $_LANG[ 'OnApp_Users_Admin_DefaultLocale' ]              = 'Default locale';
+$_LANG[ 'OnApp_Users_Admin_DueDateGap' ]                 = 'Due date gap, days ';
 $_LANG[ 'OnApp_Users_Admin_IncludeTaxes' ]               = 'Include taxes in OnApp payments';
 $_LANG[ 'OnApp_Users_Admin_Loading_Data' ]               = '<b>Loading data...</b>';
 $_LANG[ 'OnApp_Users_Admin_LoginToCP' ]                  = 'Open Control Panel';

@@ -8,7 +8,6 @@ class OnApp_UserModule_Cron {
 	private $fromDateUTC;
 	private $tillDateUTC;
 	private $timeZoneOffset;
-	private $dueDate;
 	private $cliOptions;
 	private $logFile;
 	private $invoicesFile;
@@ -39,9 +38,6 @@ class OnApp_UserModule_Cron {
                 LIMIT 1';
 		$res   = mysql_query( $qry );
 		$admin = mysql_result( $res, 0 );
-
-		# calculate invoice due date
-		$this->dueDate = date( 'Ymd' );
 
 		while( $client = mysql_fetch_assoc( $this->clients ) ) {
 			$clientAmount = $this->getAmount( $client );
@@ -75,7 +71,7 @@ class OnApp_UserModule_Cron {
 					$table  = 'tblinvoiceitems';
 					$update = array(
 						'type'          => 'OnAppUsers',
-						'duedate'       => $this->dueDate,
+						'duedate'       => $client[ 'dueDate' ],
 						'relid'         => $client[ 'serviceID' ],
 						'paymentmethod' => $client[ 'paymentmethod' ],
 					);
@@ -182,7 +178,9 @@ class OnApp_UserModule_Cron {
 					tblhosting.`id` AS serviceID,
 					tblhosting.`server` AS serverID,
 					tblcustomfieldsvalues.`relid`,
-					tblproducts.`name` AS packagename
+					tblproducts.`name` AS packagename,
+					NOW() AS todayDate,
+					DATE_ADD( NOW(), INTERVAL tblproducts.`configoption4` DAY ) AS dueDate
 				FROM
 					tblhosting
 				LEFT JOIN tblproducts ON
@@ -278,8 +276,8 @@ class OnApp_UserModule_Cron {
 
 		$return = array(
 			'userid'           => $client[ 'WHMCSUserID' ],
-			'date'             => $this->dueDate,
-			'duedate'          => $this->dueDate,
+			'date'             => $client[ 'todayDate' ],
+			'duedate'          => $client[ 'dueDate' ],
 			'paymentmethod'    => $client[ 'paymentmethod' ],
 			'taxrate'          => $taxrate,
 			'sendinvoice'      => true,

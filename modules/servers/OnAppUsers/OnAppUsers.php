@@ -119,6 +119,10 @@ function OnAppUsers_ConfigOptions( $params ) {
 		exit( json_encode( $serversData ) );
 	}
 
+	# configoption1 = settings
+	# configoption2 = SuspendDays
+	# configoption3 = TerminateDays
+	# configoption4 = DueDateGap
 	$configArray = array(
 		'' => array(
 			'Description' => $js
@@ -132,6 +136,11 @@ function OnAppUsers_ConfigOptions( $params ) {
 			'Type'         => 'text',
 			'Size'         => '1',
 			'Default'      => '7',
+		),
+		'dueDateGap' => array(
+			'Type'         => 'text',
+			'Size'         => '1',
+			'Default'      => '0',
 		),
 	);
 
