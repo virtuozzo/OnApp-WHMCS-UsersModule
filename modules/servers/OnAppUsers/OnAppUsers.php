@@ -17,6 +17,8 @@ else {
 
 function OnAppUsers_ConfigOptions( $params ) {
     global $_LANG;
+    $ramTMP = ini_get( 'memory_limit' );
+    ini_set( 'memory_limit', '512M' );
 
     $js = '<script type="text/javascript" src="../modules/servers/OnAppUsers/includes/js/adminArea.js"></script>';
     $js .= '<script type="text/javascript" src="../modules/servers/OnAppUsers/includes/js/tz.js"></script>';
@@ -147,6 +149,7 @@ function OnAppUsers_ConfigOptions( $params ) {
             'Type'         => 'yesno',
         ),
     );
+    ini_set( 'memory_limit', $ramTMP );
 
     return $configArray;
 }
