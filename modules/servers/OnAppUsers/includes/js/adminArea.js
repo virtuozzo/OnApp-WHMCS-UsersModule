@@ -4,12 +4,12 @@ function buildFields( ServersData ) {
 	var suspendDays = table.find( 'input[name="packageconfigoption[2]"]' ).prop( 'outerHTML' );
 	var terminateDays = table.find( 'input[name="packageconfigoption[3]"]' ).prop( 'outerHTML' );
 	var dueDateGap = table.find( 'input[name="packageconfigoption[4]"]' ).prop( 'outerHTML' );
+	var hideZeroEntries = table.find( 'input[name="packageconfigoption[5]"]' ).prop( 'outerHTML' );
 	if( ! suspendDays ) {
 		suspendDays = '<input type="text" name="packageconfigoption[2]" size="2" value="7">';
 		terminateDays = '<input type="text" name="packageconfigoption[3]" size="2" value="7">';
 	}
 	table.find( 'tr' ).remove();
-
 
 	// if no servers in group
 	if( ServersData.NoServers ) {
@@ -232,6 +232,7 @@ function buildFields( ServersData ) {
 	html = '<tr><td colspan="2" class="fieldarea">' + ONAPP_LANG.OnApp_Users_Admin_SuspendDays + suspendDays + '</td></tr>';
 	html += '<tr><td colspan="2" class="fieldarea">' + ONAPP_LANG.OnApp_Users_Admin_TerminateDays + terminateDays + '</td></tr>';
 	html += '<tr><td colspan="2" class="fieldarea">' + ONAPP_LANG.OnApp_Users_Admin_DueDateGap + dueDateGap + '</td></tr>';
+	html += '<tr><td colspan="2" class="fieldarea">' + ONAPP_LANG.OnApp_Users_Admin_HideZeroEntries + hideZeroEntries + '</td></tr>';
 	table.append( html );
 
 	// handle storing selected values

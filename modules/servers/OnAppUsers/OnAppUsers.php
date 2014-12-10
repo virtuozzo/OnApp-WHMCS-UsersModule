@@ -123,6 +123,7 @@ function OnAppUsers_ConfigOptions( $params ) {
 	# configoption2 = SuspendDays
 	# configoption3 = TerminateDays
 	# configoption4 = DueDateGap
+	# configoption5 = Hide zero amount entries in client area
 	$configArray = array(
 		'' => array(
 			'Description' => $js
@@ -141,6 +142,9 @@ function OnAppUsers_ConfigOptions( $params ) {
 			'Type'         => 'text',
 			'Size'         => '1',
 			'Default'      => '0',
+		),
+		'hideZeroEntries' => array(
+			'Type'         => 'yesno',
 		),
 	);
 
@@ -628,6 +632,7 @@ class OnApp_UserModule {
 			}
 		}
 		$data->currency_code = $rate[ 'code' ];
+		$data->hideZeroEntries = $params[ 'configoption5' ];
 
 		return $data;
 	}
