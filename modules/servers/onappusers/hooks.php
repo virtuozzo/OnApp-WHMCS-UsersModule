@@ -41,49 +41,7 @@ function hook_onappusers_InvoicePaid( $vars ) {
     }
 
     $data = mysql_fetch_assoc( $result );
-
-    $qry = 'SELECT
-                `ipaddress` AS serverip,
-                `username` AS serverusername,
-                `password` AS serverpassword
-            FROM
-                tblservers
-            WHERE
-                `type` = "onappusers"
-                AND `id` = :serverID';
-    $qry = str_replace( ':serverID', $data[ 'server_id' ], $qry );
-    $result = full_query( $qry );
-    $server = mysql_fetch_assoc( $result );
-    $server[ 'serverpassword' ] = decrypt( $server[ 'serverpassword' ] );
-
-    $productSettings = json_decode( htmlspecialchars_decode( $data[ 'settings' ] ) );
-    if( $productSettings->PassTaxes->$data[ 'server_id' ] == 0 ) {
-        $amount = $data[ 'subtotal' ];
-    }
-    else {
-        $amount = $data[ 'total' ];
-    }
-
     $path = dirname( dirname( dirname( __DIR__ ) ) ) . '/includes/';
-    if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-        define( 'ONAPP_WRAPPER_INIT', $path . 'wrapper/OnAppInit.php' );
-        require_once ONAPP_WRAPPER_INIT;
-    }
-
-    $payment = new OnApp_Payment;
-    $payment->auth( $server[ 'serverip' ], $server[ 'serverusername' ], $server[ 'serverpassword' ] );
-    $payment->_user_id = $data[ 'onapp_user_id' ];
-    $payment->_amount = $amount;
-    $payment->_invoice_number = $invoice_id;
-    $payment->save();
-
-    $error = $payment->getErrorsAsString();
-    if( empty( $error ) ) {
-        logactivity( 'OnApp payment was sent. Service ID #' . $data[ 'service_id' ] . ', amount: ' . $amount );
-    }
-    else {
-        logactivity( 'ERROR with OnApp payment for service ID #' . $data[ 'service_id' ] . ': ' . $error );
-    }
 
     if( $data[ 'status' ] == 'Suspended' ) {
         // check for other unpaid invoices for this service
@@ -106,6 +64,63 @@ function hook_onappusers_InvoicePaid( $vars ) {
             }
             serverunsuspendaccount( $data[ 'service_id' ] );
         }
+    }
+
+    if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
+        define( 'ONAPP_WRAPPER_INIT', $path . 'wrapper/OnAppInit.php' );
+        require_once ONAPP_WRAPPER_INIT;
+    }
+
+    $qry = 'SELECT
+                `secure`,
+                `username`,
+                `hostname`,
+                `password`,
+                `ipaddress`
+            FROM
+                tblservers
+            WHERE
+                `type` = "onappusers"
+                AND `id` = :serverID';
+    $qry = str_replace( ':serverID', $data[ 'server_id' ], $qry );
+    $result = full_query( $qry );
+    $server = mysql_fetch_assoc( $result );
+    $server[ 'password' ] = decrypt( $server[ 'password' ] );
+    if( $server[ 'secure' ] ) {
+        $server[ 'address' ] = 'https://';
+    }
+    else {
+        $server[ 'address' ] = 'http://';
+    }
+    if( empty( $server[ 'ipaddress' ] ) ) {
+        $server[ 'address' ] .= $server[ 'hostname' ];
+    }
+    else {
+        $server[ 'address' ] .= $server[ 'ipaddress' ];
+    }
+    unset( $server[ 'ipaddress' ], $server[ 'hostname' ], $server[ 'secure' ] );
+
+    $productSettings = json_decode( htmlspecialchars_decode( $data[ 'settings' ] ) );
+    if( $productSettings->PassTaxes->$data[ 'server_id' ] == 0 ) {
+        $amount = $data[ 'subtotal' ];
+    }
+    else {
+        $amount = $data[ 'total' ];
+    }
+
+    $payment = new OnApp_Payment;
+    $payment->auth( $server[ 'address' ], $server[ 'username' ], $server[ 'password' ] );
+    $payment->_user_id = $data[ 'onapp_user_id' ];
+    $payment->_amount = $amount;
+    $payment->_invoice_number = $invoice_id;
+    $payment->save();
+
+    $error = $payment->getErrorsAsString();
+    if( empty( $error ) ) {
+        logactivity( 'OnApp payment was sent. Service ID #' . $data[ 'service_id' ] . ', amount: ' . $amount );
+    }
+    else {
+        logactivity( 'ERROR with OnApp payment for service ID #' . $data[ 'service_id' ] . ': ' . $error );
     }
 }
 
