@@ -8,6 +8,9 @@ Please visit our [wiki](https://github.com/OnApp/OnApp-WHMCS-UsersModule/wiki) f
 You are welcome to [follow us](https://twitter.com/intent/user?screen_name=OnAppPHPTeam) on Twitter to stay informed on new releases.
 
 ## Changelog:
+####v3.4.0
+ - fix URL handling in payment hook
+
 ####v3.3.5
  - improve server IP/hostname and schema handling
 
