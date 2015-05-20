@@ -68,11 +68,11 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
                     $qry = 'UPDATE
                                 `tblinvoiceitems`
                             SET
-                                `relid` = :WHMCSUserID,
+                                `relid` = :WHMCSServiceID,
                                 `type` = "onappusers"
                             WHERE
                                 `invoiceid` = :invoiceID';
-                    $qry = str_replace( ':WHMCSUserID', $client[ 'service_id' ], $qry );
+                    $qry = str_replace( ':WHMCSServiceID', $client[ 'service_id' ], $qry );
                     $qry = str_replace( ':invoiceID', $result[ 'invoiceid' ], $qry );
                     full_query( $qry );
                 }
