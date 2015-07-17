@@ -1,4 +1,6 @@
 $( document ).ready( function() {
+    $( '#stat_data tbody' ).css( {opacity: 0.1} );
+
     // set datetime pickers
     $( '#datetimepicker1' ).datetimepicker( {
         language: 'en',

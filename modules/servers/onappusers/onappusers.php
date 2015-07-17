@@ -550,7 +550,13 @@ function onappusers_ClientArea( $params = '' ) {
     }
 
     $html = injectServerRow( $params );
-    $html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.html' );
+    if( $GLOBALS[ 'CONFIG' ][ 'Template' ] == 'six' ) {
+        $html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.6.html' );
+    }
+    else {
+        $html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.5.html' );
+    }
+
 
     parseLang( $html );
     $html .= '<script type="text/javascript">'
@@ -564,7 +570,7 @@ function onappusers_ClientArea( $params = '' ) {
 function injectServerRow( $params ) {
     $iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
     $iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
-    $key = substr( md5( uniqid( rand( 1, 999999 ), true ) ), 0, 27 );
+    $key = substr( md5( uniqid( rand( 1, 999999 ), true ) ), 0, 32 );
 
     $server = ! empty( $params[ 'serverip' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
     if( strpos( $server, 'http' ) === false ) {

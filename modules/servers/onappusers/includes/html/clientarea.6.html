@@ -1,0 +1,129 @@
+<h3 id="user-stat">{$LANG.onappusersstatoutstandingdetails}</h3>
+<table class="table table-bordered table-striped" id="stat_data">
+    <thead>
+        <tr>
+            <th colspan="2">
+                <div class='col-md-4'>
+                    <div class='input-group date' id='datetimepicker1'>
+                        <input type="text" class="form-control" placeholder="{$LANG.onappusersstatstartdate}..."/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class='col-md-4'>
+                    <div class='input-group date' id='datetimepicker2'>
+                        <input type='text' class="form-control" placeholder="{$LANG.onappusersstatenddate}..."/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class='col-md-3'>
+                    <button type="button" id="loading-example-btn"
+                            data-loading-text="{$LANG.onappusersstatapply_loading}" class="btn">
+                        {$LANG.onappusersstatapply}
+                    </button>
+                </div>
+
+
+
+            </th>
+        </tr>
+        <tr id="error">
+            <th colspan="2">
+                {$LANG.onappusers_ajax_error}
+            </th>
+        </tr>
+    </thead>
+    <tbody class="text-left">
+        <tr>
+            <td class="span4">{$LANG.onappusers_invoice_vm_cost}</td>
+            <td id="vm_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_backup_cost}</td>
+            <td id="backup_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_monit_cost}</td>
+            <td id="monit_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_storage_disk_size_cost}</td>
+            <td id="storage_disk_size_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_template_cost}</td>
+            <td id="template_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_backup_count_cost}</td>
+            <td id="backup_count_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_backup_disk_size_cost}</td>
+            <td id="backup_disk_size_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_template_count_cost}</td>
+            <td id="template_count_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_template_disk_size_cost}</td>
+            <td id="template_disk_size_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_customer_network_cost}</td>
+            <td id="customer_network_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_edge_group_cost}</td>
+            <td id="edge_group_cost"></td>
+        </tr>
+        <tr>
+            <td>{$LANG.onappusers_invoice_total_cost}</td>
+            <td id="total_cost"></td>
+        </tr>
+    </tbody>
+</table>
+
+<link rel="stylesheet" href="modules/servers/onappusers/includes/css/style.css"/>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="modules/servers/onappusers/includes/js/bootstrap.js"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/css/bootstrap-datetimepicker.min.css"/>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.14.30/js/bootstrap-datetimepicker.min.js"></script>
+<!--
+<link rel="stylesheet" href="modules/servers/onappusers/includes/css/bootstrap-datetimepicker.min.css"/>
+<script type="text/javascript" src="modules/servers/onappusers/includes/js/bootstrap-datetimepicker.min.js"></script>
+-->
+
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.3.2/accounting.min.js"></script>
+<script type="text/javascript" src="modules/servers/onappusers/includes/js/onappusers_stat.6.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

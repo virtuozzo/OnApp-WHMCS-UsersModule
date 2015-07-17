@@ -15,10 +15,6 @@
     padding-top: 12px;
 }
 
-#stat_data tbody {
-    opacity: 0.1;
-}
-
 #stat_data td:first-child {
     font-weight: bold;
 }
