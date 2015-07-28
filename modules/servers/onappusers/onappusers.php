@@ -557,7 +557,6 @@ function onappusers_ClientArea( $params = '' ) {
         $html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.5.html' );
     }
 
-
     parseLang( $html );
     $html .= '<script type="text/javascript">'
              . 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
@@ -570,7 +569,7 @@ function onappusers_ClientArea( $params = '' ) {
 function injectServerRow( $params ) {
     $iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
     $iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
-    $key = substr( md5( uniqid( rand( 1, 999999 ), true ) ), 0, 32 );
+    $key = md5( uniqid( rand( 1, 999999 ), true ) );
 
     $server = ! empty( $params[ 'serverip' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
     if( strpos( $server, 'http' ) === false ) {
@@ -584,14 +583,13 @@ function injectServerRow( $params ) {
         'server'   => $server,
     );
     $data = json_encode( $data ) . '%%%';
-
     $crypttext = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_ECB, $iv );
     $_SESSION[ 'utk' ] = array(
-        $key . substr( md5( uniqid( rand( 1, 999999 ), true ) ), rand( 0, 26 ), 5 ),
+        $key . md5( uniqid( rand( 1, 999999 ), true ) ),
         base64_encode( base64_encode( $crypttext ) )
     );
 
-    $html = file_get_contents( dirname( __FILE__ ) . '/includes/html/serverData.html' );
+    $html = file_get_contents( __DIR__ . '/includes/html/serverData.html' );
     $html = str_replace( '{###}', md5( uniqid( rand( 1, 999999 ), true ) ), $html );
     $html .= '<script type="text/javascript">'
              . 'var SERVER = "' . $server . '";'
@@ -607,7 +605,7 @@ function onappusers_AdminLink( $params ) {
                   <input type="hidden" name="user[login]" value="' . $params[ 'serverusername' ] . '" />
                   <input type="hidden" name="user[password]" value="' . $params[ 'serverpassword' ] . '" />
                   <input type="hidden" name="commit" value="Sign In" />
-                  <input type="submit" value="' . $_LANG[ 'onappuserslogintocp' ] . '" />
+                  <input type="submit" value="' . $_LANG[ 'onappuserslogintocp' ] . '" class="btn btn-default" />
                </form>';
 
     return $form;

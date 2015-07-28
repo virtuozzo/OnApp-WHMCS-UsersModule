@@ -296,7 +296,7 @@ var OnAppUsersData = {
 function storeDueDateCurrent() {
     $( "input[name^='duedate_packageconfigoption']" ).each( function( i, val ) {
         var index = $( val ).attr( 'rel' );
-        OnAppUsersData.DueDateCurrent[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
+        OnAppUsersData.DueDateCurrent[ index ] = $( val ).prop( 'checked' ) ? 1 : 0;
     } );
 
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
@@ -305,7 +305,7 @@ function storeDueDateCurrent() {
 function storePassTaxes() {
     $( "input[name^='passtaxes_packageconfigoption']" ).each( function( i, val ) {
         var index = $( val ).attr( 'rel' );
-        OnAppUsersData.PassTaxes[ index ] = $( val ).attr( 'checked' ) ? 1 : 0;
+        OnAppUsersData.PassTaxes[ index ] = $( val ).prop( 'checked' ) ? 1 : 0;
     } );
 
     $( "input[name^='packageconfigoption[1]']" ).val( objectToString( OnAppUsersData ) );
@@ -349,7 +349,7 @@ function storeSelectedSuspendedPlans() {
 function storeSelectedRoles() {
     OnAppUsersData.SelectedRoles = {};
     $( "input[name^='roles_packageconfigoption']" ).each( function( i, val ) {
-        if( !$( val ).attr( 'checked' ) ) {
+        if( !$( val ).prop( 'checked' ) ) {
             return;
         }
         var index = $( val ).parents( 'td' ).attr( 'rel' );

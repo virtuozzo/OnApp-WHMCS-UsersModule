@@ -43,34 +43,18 @@ else {
 
     if( $curl->getRequestInfo( 'http_code' ) == 200 ) {
         $js = <<<JS
-            var jQueryScriptOutputted = false;
-            function initJQuery() {
-                //if the jQuery object isn't available
-                if( typeof( jQuery ) == 'undefined' ) {
-                    if( ! jQueryScriptOutputted ) {
-                        jQueryScriptOutputted = true;
-                        document.write( '<scr' + 'ipt type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></scr' + 'ipt>' );
-                    }
-                    setTimeout( 'initJQuery()', 50 );
-                } else {
-                    $(function() {
-                        $( '#user_login' ).val( '{$data->login}' );
-                        $( '#user_password' ).remove();
-                        $('<input>').attr( {
-                            type: 'hidden',
-                            id: 'user_password',
-                            name: 'user[password]',
-                            value: '{$data->password}'
-                        }).appendTo( 'form' );
-                        var form = $( 'form' );
-                        form.attr( 'action', '{$data->server}/users/sign_in' );
-                        form.attr( 'autocomplete', 'off' );
-                        form.submit();
-                        $( '#getcp' ).remove();
-                    });
-                }
-            }
-            initJQuery();
+            // fill data
+            document.getElementById( 'user_login' ).value = '{$data->login}';
+            document.getElementById( 'user_password' ).value = '{$data->password}';
+            // add attributes
+            document.getElementById( 'new_user' ).setAttribute( 'autocomplete', 'off' );
+            document.getElementById( 'new_user' ).setAttribute( 'action', '{$data->server}/users/sign_in' );
+            document.getElementById( 'user_password' ).setAttribute( 'type', 'hidden' );
+            // submit form
+            document.getElementById( 'new_user' ).submit();
+            document.getElementById( 'new_user' ).outerHTML = '';
+            document.getElementById( 'getcp' ).innerHTML = '';
+            document.getElementById( 'cpform' ).style.display = 'block';
 JS;
         $js = '<script type="text/javascript" id="getcp">' . $js . '</script>';
     }
