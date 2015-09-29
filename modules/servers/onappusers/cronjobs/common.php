@@ -58,7 +58,6 @@ abstract class OnApp_UserModule_Cron {
         }
 
         $data = $data->user_stat;
-
         $unset = array(
             'vm_stats',
             'stat_time',
@@ -66,6 +65,7 @@ abstract class OnApp_UserModule_Cron {
             'currency_code',
             'user_id',
         );
+        $this->dataTMP = clone $data;
         foreach( $data as $key => &$value ) {
             if( in_array( $key, $unset ) ) {
                 unset( $data->$key );

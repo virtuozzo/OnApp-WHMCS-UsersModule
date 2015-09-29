@@ -67,7 +67,7 @@ function buildFields( ServersData ) {
         table.find( 'tr:last' ).after( html );
 
         // pass taxes row
-        html = '<tr>';
+        html = '<tr style="display: none;">';
         html += '<td class="fieldlabel">' + ONAPP_LANG.onappuserspassthrutaxes + '</td>';
         html += '<td class="fieldarea" id="passtaxes' + server_id + '"></td></tr>';
         table.find( 'tr:last' ).after( html );

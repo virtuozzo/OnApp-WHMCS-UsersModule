@@ -9,3 +9,11 @@ CREATE TABLE IF NOT EXISTS `tblonappusers` (
     KEY `client_id` (`client_id`)
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Create syntax for table 'tblonappusers_invoices'
+CREATE TABLE IF NOT EXISTS `tblonappusers_invoices` (
+    `id`     INT(11)         NOT NULL,
+    `amount` DECIMAL(20, 12) NOT NULL,
+    PRIMARY KEY (`id`)
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8;

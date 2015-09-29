@@ -75,6 +75,13 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
                     $qry = str_replace( ':WHMCSServiceID', $client[ 'service_id' ], $qry );
                     $qry = str_replace( ':invoiceID', $result[ 'invoiceid' ], $qry );
                     full_query( $qry );
+
+                    $table  = 'tblonappusers_invoices';
+                    $values = array(
+                        'id' => $result[ 'invoiceid' ],
+                        'amount' => $this->dataTMP->total_cost
+                    );
+                    insert_query( $table, $values );
                 }
             }
         }

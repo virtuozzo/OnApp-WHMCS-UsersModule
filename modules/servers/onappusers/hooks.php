@@ -100,13 +100,14 @@ function hook_onappusers_InvoicePaid( $vars ) {
     }
     unset( $server[ 'ipaddress' ], $server[ 'hostname' ], $server[ 'secure' ] );
 
-    $productSettings = json_decode( htmlspecialchars_decode( $data[ 'settings' ] ) );
-    if( $productSettings->PassTaxes->$data[ 'server_id' ] == 0 ) {
-        $amount = $data[ 'subtotal' ];
-    }
-    else {
-        $amount = $data[ 'total' ];
-    }
+    # get OnApp amount
+    $qry    = 'SELECT
+                    `amount`
+                FROM
+                    `tblonappusers_invoices`
+                LIMIT 1';
+    $res    = mysql_query( $qry );
+    $amount = mysql_result( $res, 0 );
 
     $payment = new OnApp_Payment;
     $payment->auth( $server[ 'address' ], $server[ 'username' ], $server[ 'password' ] );
@@ -114,6 +115,9 @@ function hook_onappusers_InvoicePaid( $vars ) {
     $payment->_amount = $amount;
     $payment->_invoice_number = $invoice_id;
     $payment->save();
+
+    $where = array( 'id' => $invoice_id );
+    delete_query( 'tblonappusers_invoices', $where );
 
     $error = $payment->getErrorsAsString();
     if( empty( $error ) ) {
