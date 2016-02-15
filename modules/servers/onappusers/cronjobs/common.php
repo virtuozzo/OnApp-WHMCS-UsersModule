@@ -26,7 +26,7 @@ abstract class OnApp_UserModule_Cron {
         $this->root = realpath( dirname( dirname( dirname( dirname( dirname( $_SERVER[ 'argv' ][ 0 ] ) ) ) ) ) ) . DIRECTORY_SEPARATOR;
 
         $this->getRequiredFiles();
-        $this->setCLIoptions();
+        $this->setCLIOptions();
         $this->checkSQL();
         $this->getServers();
         $this->getClients();
