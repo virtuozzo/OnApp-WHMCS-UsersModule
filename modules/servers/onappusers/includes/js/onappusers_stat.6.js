@@ -18,7 +18,8 @@ $( document ).ready( function() {
         $( 'tr#error' ).hide();
         $( '#stat_data tbody' ).fadeTo( 'fast', 0.1 );
         var btn = $( this );
-        btn.button( 'loading' );
+        btn.prop( 'disabled', true );
+        btn.text( btn.data( 'loading' ) );
 
         $.ajax( {
             url: document.location.href,
@@ -43,7 +44,8 @@ $( document ).ready( function() {
                 processData( data );
             }
         } ).always( function() {
-            btn.button( 'reset' );
+            btn.prop( 'disabled', false );
+            btn.text( btn.data( 'normal' ) );
         } );
     } );
     $( '#stat_data button' ).click();
@@ -52,7 +54,7 @@ $( document ).ready( function() {
 function processData( data ) {
     if( data ) {
         for( i in data ) {
-            val = accounting.formatMoney( data[ i ], {symbol: data.currency_code, format: "%v %s"} );
+            val = accounting.formatMoney( data[i], {symbol: data.currency_code, format: "%v %s"} );
             $( '#' + i ).text( val );
         }
         $( '#stat_data tbody' ).fadeTo( 'fast', 1 );

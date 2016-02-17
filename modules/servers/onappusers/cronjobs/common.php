@@ -16,8 +16,8 @@ abstract class OnApp_UserModule_Cron {
     protected $cliOptions;
     protected $logEnabled   = false;
     protected $printEnabled = false;
-    protected $servers      = array();
-    protected $log          = array();
+    protected $servers      = [ ];
+    protected $log          = [ ];
 
     abstract protected function run();
 
@@ -44,27 +44,27 @@ abstract class OnApp_UserModule_Cron {
             $tmp = "\n\t\t\t" . 'WHMCS user ID: ' . $user[ 'client_id' ] . PHP_EOL;
             $tmp .= "\t\t\t" . 'OnApp user ID: ' . $user[ 'onapp_user_id' ] . PHP_EOL;
             $tmp .= "\t\t\t" . 'Server ID: ' . $user[ 'server_id' ];
-            $this->log[ ] = $tmp;
+            $this->log[] = $tmp;
         }
 
-        $date = array(
+        $date = [
             'period[startdate]' => $this->fromDateUTC,
             'period[enddate]'   => $this->tillDateUTC,
-        );
+        ];
         $data = $this->getResourcesData( $user, $date );
 
-        if( !$data ) {
+        if( ! $data ) {
             return false;
         }
 
-        $data = $data->user_stat;
-        $unset = array(
+        $data          = $data->user_stat;
+        $unset         = [
             'vm_stats',
             'stat_time',
             'user_resources_cost',
             'currency_code',
             'user_id',
-        );
+        ];
         $this->dataTMP = clone $data;
         foreach( $data as $key => &$value ) {
             if( in_array( $key, $unset ) ) {
@@ -80,8 +80,7 @@ abstract class OnApp_UserModule_Cron {
 
     protected function getResourcesData( $client, $date ) {
         $date = http_build_query( $date );
-
-        $url = $this->servers[ $client[ 'server_id' ] ][ 'address' ] . '/users/' . $client[ 'onapp_user_id' ] . '/user_statistics.json?' . $date;
+        $url  = $this->servers[ $client[ 'server_id' ] ][ 'address' ] . '/users/' . $client[ 'onapp_user_id' ] . '/user_statistics.json?' . $date;
         $data = $this->sendRequest( $url, $this->servers[ $client[ 'server_id' ] ][ 'username' ], $this->servers[ $client[ 'server_id' ] ][ 'password' ] );
 
         if( $data ) {
@@ -97,12 +96,12 @@ abstract class OnApp_UserModule_Cron {
             echo 'API request: ', $url, PHP_EOL;
         }
         if( $this->logEnabled ) {
-            $this->log[ ] = $url;
+            $this->log[] = $url;
         }
 
         $curl = new CURL();
         $curl->addOption( CURLOPT_USERPWD, $user . ':' . $password );
-        $curl->addOption( CURLOPT_HTTPHEADER, array( 'Accept: application/json', 'Content-type: application/json' ) );
+        $curl->addOption( CURLOPT_HTTPHEADER, [ 'Accept: application/json', 'Content-type: application/json' ] );
         $curl->addOption( CURLOPT_HEADER, true );
         $data = $curl->get( $url );
 
@@ -114,7 +113,7 @@ abstract class OnApp_UserModule_Cron {
                 echo $e;
             }
             if( $this->logEnabled ) {
-                $this->log[ ] = $e;
+                $this->log[] = $e;
             }
 
             return false;
@@ -125,7 +124,7 @@ abstract class OnApp_UserModule_Cron {
     }
 
     protected function getClients() {
-        $sql = 'SELECT
+        $sql           = 'SELECT
                     tblclients.taxexempt,
                     tblclients.state,
                     tblclients.country,
@@ -161,7 +160,7 @@ abstract class OnApp_UserModule_Cron {
     }
 
     protected function getServers() {
-        $sql = 'SELECT
+        $sql    = 'SELECT
                     id,
                     secure,
                     username,
@@ -195,7 +194,7 @@ abstract class OnApp_UserModule_Cron {
     protected function generateInvoiceData( $data, array $client ) {
         global $_LANG;
 
-        if( !isset( $_LANG[ 'onappusersstatvirtualmachines' ] ) ) {
+        if( ! isset( $_LANG[ 'onappusersstatvirtualmachines' ] ) ) {
             require_once dirname( __DIR__ ) . '/onappusers.php';
         }
         loadLang( $client[ 'language' ] );
@@ -226,15 +225,15 @@ abstract class OnApp_UserModule_Cron {
 
         $timeZone = ' UTC' . ( $this->timeZoneOffset >= 0 ? '+' : '-' ) . ( $this->timeZoneOffset / 3600 );
 
-        $this->fromDate = date( $_LANG[ 'onappusersstatdateformat' ], $fromTime );
-        $this->tillDate = date( $_LANG[ 'onappusersstatdateformat' ], $tillTime );
-        $invoiceDescription = array(
+        $this->fromDate     = date( $_LANG[ 'onappusersstatdateformat' ], $fromTime );
+        $this->tillDate     = date( $_LANG[ 'onappusersstatdateformat' ], $tillTime );
+        $invoiceDescription = [
             $_LANG[ 'onappusersstatproduct' ] . $client[ 'packagename' ],
             $_LANG[ 'onappusersstatperiod' ] . $this->fromDate . ' - ' . $this->tillDate . $timeZone,
-        );
+        ];
         $invoiceDescription = implode( PHP_EOL, $invoiceDescription );
 
-        $return = array(
+        $return = [
             'userid'           => $client[ 'client_id' ],
             'date'             => $this->dueDate,
             'duedate'          => $dueDate,
@@ -244,17 +243,17 @@ abstract class OnApp_UserModule_Cron {
             'itemdescription1' => $invoiceDescription,
             'itemamount1'      => 0,
             'itemtaxed1'       => $taxed,
-        );
+        ];
 
         unset( $data->total_cost );
         $i = 1;
         foreach( $data as $key => $value ) {
             if( $value > 0 ) {
-                $tmp = array(
-                    'itemdescription' . ++$i => $_LANG[ 'onappusers_invoice_' . $key ],
-                    'itemamount' . $i        => $value,
-                    'itemtaxed' . $i         => $taxed,
-                );
+                $tmp    = [
+                    'itemdescription' . ++ $i => $_LANG[ 'onappusers_invoice_' . $key ],
+                    'itemamount' . $i         => $value,
+                    'itemtaxed' . $i          => $taxed,
+                ];
                 $return = array_merge( $return, $tmp );
             }
         }
@@ -305,7 +304,7 @@ abstract class OnApp_UserModule_Cron {
 
     private function checkCLIMode() {
         if( PHP_SAPI != 'cli' ) {
-            if( !empty( $_SERVER[ 'REMOTE_ADDR' ] ) ) {
+            if( ! empty( $_SERVER[ 'REMOTE_ADDR' ] ) ) {
                 $this->log[ 'error' ] = 'Not allowed!';
                 exit( 'Not allowed!' . PHP_EOL );
             }
@@ -313,7 +312,7 @@ abstract class OnApp_UserModule_Cron {
     }
 
     private function calculateDates() {
-        $tmp = time();
+        $tmp                  = time();
         $this->timeZoneOffset = strtotime( date( 'Y-m-d H:i:s', $tmp ) ) - strtotime( gmdate( 'Y-m-d H:i:s', $tmp ) );
 
         if( isset( $this->cliOptions->since ) ) {
@@ -350,26 +349,26 @@ abstract class OnApp_UserModule_Cron {
     }
 
     private function setCLIOptions() {
-        $options = array(
-            'since' => array(
+        $options = [
+            'since' => [
                 'description' => 'date to start',
                 'validation'  => '^(20\d{2})-([0][1-9]|[1][0-2])-([\d]{2}) ([0-1][0-9]|[2][0-3]):([0-5][0-9])$',
                 'short'       => 's',
-            ),
-            'till'  => array(
+            ],
+            'till'  => [
                 'description' => 'date to finish',
                 'validation'  => '^(20\d{2})-([0][1-9]|[1][0-2])-([\d]{2}) ([0-1][0-9]|[2][0-3]):([0-5][0-9])$',
                 'short'       => 't',
-            ),
-            'log'   => array(
+            ],
+            'log'   => [
                 'description' => 'log data to file',
                 'short'       => 'l',
-            ),
-            'print' => array(
+            ],
+            'print' => [
                 'description' => 'print data to screen',
                 'short'       => 'p',
-            ),
-        );
+            ],
+        ];
 
         $options = new SOP( $options );
         $options->setBanner( 'OnApp User Module detailed statistics and invoices processor' );
@@ -384,11 +383,11 @@ abstract class OnApp_UserModule_Cron {
     }
 
     private function writeLog() {
-        $c = get_called_class();
+        $c       = get_called_class();
         $logFile = __DIR__ . '/logs/' . $c::TYPE . '/' . date( 'Y-m-d-H-i-s' );
 
-        if( !( file_exists( $logFile ) && is_writable( $logFile ) ) ) {
-            if( !$log = @fopen( $logFile, 'w' ) ) {
+        if( ! ( file_exists( $logFile ) && is_writable( $logFile ) ) ) {
+            if( ! $log = @fopen( $logFile, 'w' ) ) {
                 exit( 'Can\'t write log file. Check if file ' . $logFile . ' exists and is writable!' . PHP_EOL );
             }
             else {

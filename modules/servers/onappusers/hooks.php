@@ -105,7 +105,8 @@ function hook_onappusers_InvoicePaid( $vars ) {
                     `amount`
                 FROM
                     `tblonappusers_invoices`
-                LIMIT 1';
+                WHERE
+                    `id` = ' . $invoice_id;
     $res    = mysql_query( $qry );
     $amount = mysql_result( $res, 0 );
 
@@ -148,7 +149,7 @@ function hook_onappusers_AutoSuspend() {
                 AND tblinvoiceitems.`type` = "onappusers"
                 AND tblhosting.`domainstatus` = "Active"
                 AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
-                AND tblhosting.`overideautosuspend` != "on"
+                AND tblhosting.`overideautosuspend` != 1
             GROUP BY
                 tblhosting.`id`';
     $qry = str_replace( ':days', $CONFIG[ 'AutoSuspensionDays' ], $qry );
@@ -183,7 +184,7 @@ function hook_onappusers_AutoTerminate() {
                 AND tblinvoiceitems.`type` = "onappusers"
                 AND tblhosting.`domainstatus` = "Suspended"
                 AND NOW() > DATE_ADD( tblinvoices.`duedate`, INTERVAL :days DAY )
-                AND tblhosting.`overideautosuspend` != "on"
+                AND tblhosting.`overideautosuspend` != 1
             GROUP BY
                 tblhosting.`id`';
     $qry = str_replace( ':days', $CONFIG[ 'AutoTerminationDays' ], $qry );

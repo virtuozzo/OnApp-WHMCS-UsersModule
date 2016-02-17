@@ -262,13 +262,6 @@ function onappusers_TerminateAccount( $params ) {
 
     $module = new OnApp_UserModule( $params );
     $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
-    $vms = $module->getOnAppObject( 'OnApp_VirtualMachine' );
-    if( $vms->getList( $OnAppUserID ) ) {
-        $errorMsg = $_LANG[ 'onappuserserruserterminate' ];
-
-        return $errorMsg;
-    }
-
     $OnAppUser->_id = $OnAppUserID;
     $OnAppUser->delete( true );
 
@@ -533,7 +526,7 @@ function getJSLang() {
 
 function parseLang( &$html ) {
     $html = preg_replace_callback(
-        '#{\$LANG.(.*)}#',
+        '#{\$LANG.(.*)}#U',
         create_function(
             '$matches',
             'global $_LANG; return $_LANG[ $matches[ 1 ] ];'
