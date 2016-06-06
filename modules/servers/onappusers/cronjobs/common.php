@@ -16,14 +16,14 @@ abstract class OnApp_UserModule_Cron {
     protected $cliOptions;
     protected $logEnabled   = false;
     protected $printEnabled = false;
-    protected $servers      = [ ];
-    protected $log          = [ ];
+    protected $servers      = array();
+    protected $log          = array();
 
     abstract protected function run();
 
     public function __construct() {
-        $this->checkCLIMode();
-        $this->root = realpath( dirname( dirname( dirname( dirname( dirname( $_SERVER[ 'argv' ][ 0 ] ) ) ) ) ) ) . DIRECTORY_SEPARATOR;
+        $this->checkCronkeyOrCLIMode();
+        $this->root = realpath( dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) ) . DIRECTORY_SEPARATOR;
 
         $this->getRequiredFiles();
         $this->setCLIOptions();
@@ -47,10 +47,10 @@ abstract class OnApp_UserModule_Cron {
             $this->log[] = $tmp;
         }
 
-        $date = [
+        $date = array(
             'period[startdate]' => $this->fromDateUTC,
             'period[enddate]'   => $this->tillDateUTC,
-        ];
+        );
         $data = $this->getResourcesData( $user, $date );
 
         if( ! $data ) {
@@ -58,13 +58,13 @@ abstract class OnApp_UserModule_Cron {
         }
 
         $data          = $data->user_stat;
-        $unset         = [
+        $unset         = array(
             'vm_stats',
             'stat_time',
             'user_resources_cost',
             'currency_code',
             'user_id',
-        ];
+        );
         $this->dataTMP = clone $data;
         foreach( $data as $key => &$value ) {
             if( in_array( $key, $unset ) ) {
@@ -101,7 +101,7 @@ abstract class OnApp_UserModule_Cron {
 
         $curl = new CURL();
         $curl->addOption( CURLOPT_USERPWD, $user . ':' . $password );
-        $curl->addOption( CURLOPT_HTTPHEADER, [ 'Accept: application/json', 'Content-type: application/json' ] );
+        $curl->addOption( CURLOPT_HTTPHEADER, array( 'Accept: application/json', 'Content-type: application/json' ) );
         $curl->addOption( CURLOPT_HEADER, true );
         $data = $curl->get( $url );
 
@@ -227,13 +227,13 @@ abstract class OnApp_UserModule_Cron {
 
         $this->fromDate     = date( $_LANG[ 'onappusersstatdateformat' ], $fromTime );
         $this->tillDate     = date( $_LANG[ 'onappusersstatdateformat' ], $tillTime );
-        $invoiceDescription = [
+        $invoiceDescription = array(
             $_LANG[ 'onappusersstatproduct' ] . $client[ 'packagename' ],
             $_LANG[ 'onappusersstatperiod' ] . $this->fromDate . ' - ' . $this->tillDate . $timeZone,
-        ];
+        );
         $invoiceDescription = implode( PHP_EOL, $invoiceDescription );
 
-        $return = [
+        $return = array(
             'userid'           => $client[ 'client_id' ],
             'date'             => $this->dueDate,
             'duedate'          => $dueDate,
@@ -243,17 +243,17 @@ abstract class OnApp_UserModule_Cron {
             'itemdescription1' => $invoiceDescription,
             'itemamount1'      => 0,
             'itemtaxed1'       => $taxed,
-        ];
+        );
 
         unset( $data->total_cost );
         $i = 1;
         foreach( $data as $key => $value ) {
             if( $value > 0 ) {
-                $tmp    = [
+                $tmp    = array(
                     'itemdescription' . ++ $i => $_LANG[ 'onappusers_invoice_' . $key ],
                     'itemamount' . $i         => $value,
                     'itemtaxed' . $i          => $taxed,
-                ];
+                );
                 $return = array_merge( $return, $tmp );
             }
         }
@@ -302,7 +302,23 @@ abstract class OnApp_UserModule_Cron {
         }
     }
 
-    private function checkCLIMode() {
+    private function checkCronkeyOrCLIMode() {
+        $keyFile = dirname( __DIR__ ) . '/cronkey.php';
+        if( file_exists( $keyFile ) ) {
+            include_once $keyFile;
+            if(isset($cronkey)){
+                $cronkey = trim($cronkey);
+                if( $cronkey !== ''){
+                    if( isset( $_POST['key'] ) ) {
+                        $key = trim($_POST['key']);
+                        if($key === $cronkey){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
         if( PHP_SAPI != 'cli' ) {
             if( ! empty( $_SERVER[ 'REMOTE_ADDR' ] ) ) {
                 $this->log[ 'error' ] = 'Not allowed!';
@@ -349,30 +365,43 @@ abstract class OnApp_UserModule_Cron {
     }
 
     private function setCLIOptions() {
-        $options = [
-            'since' => [
+        $options = array(
+            'since' => array(
                 'description' => 'date to start',
                 'validation'  => '^(20\d{2})-([0][1-9]|[1][0-2])-([\d]{2}) ([0-1][0-9]|[2][0-3]):([0-5][0-9])$',
                 'short'       => 's',
-            ],
-            'till'  => [
+            ),
+            'till'  => array(
                 'description' => 'date to finish',
                 'validation'  => '^(20\d{2})-([0][1-9]|[1][0-2])-([\d]{2}) ([0-1][0-9]|[2][0-3]):([0-5][0-9])$',
                 'short'       => 't',
-            ],
-            'log'   => [
+            ),
+            'log'   => array(
                 'description' => 'log data to file',
                 'short'       => 'l',
-            ],
-            'print' => [
+            ),
+            'print' => array(
                 'description' => 'print data to screen',
                 'short'       => 'p',
-            ],
-        ];
+            ),
+        );
 
         $options = new SOP( $options );
         $options->setBanner( 'OnApp User Module detailed statistics and invoices processor' );
         $this->cliOptions = $options->parse();
+
+        if( isset( $_POST['since'] ) ) {
+            $this->cliOptions->since = $_POST['since'];
+        }
+        if( isset( $_POST['till'] ) ) {
+            $this->cliOptions->till = $_POST['till'];
+        }
+        if( isset( $_POST['log'] ) ) {
+            $this->cliOptions->log = true;
+        }
+        if( isset( $_POST['print'] ) ) {
+            $this->cliOptions->print = true;
+        }
 
         if( isset( $this->cliOptions->log ) ) {
             $this->logEnabled = true;

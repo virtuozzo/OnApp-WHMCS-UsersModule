@@ -3,6 +3,7 @@ $_LANG[ 'onappuserserrtmpladd' ] = 'OnApp User Module: error adding "%s" email t
 $_LANG[ 'onappuserserrpwdnotset' ] = 'Password not set';
 $_LANG[ 'onappuserserrusercreate' ] = 'Can\'t create OnApp User';
 $_LANG[ 'onappuserserrassociateuser' ] = 'Can\'t find OnApp User for client #%s on server #%s';
+$_LANG[ 'onappuserserrassociateuserbyserviceid' ] = 'Can\'t find OnApp User for serviceid %s';
 $_LANG[ 'onappuserserrusersuspend' ] = 'Can\'t suspend OnApp User';
 $_LANG[ 'onappuserserruserunsuspend' ] = 'Can\'t unsuspend OnApp User';
 $_LANG[ 'onappuserserruserdelete' ] = 'Can\'t delete OnApp User';

@@ -248,16 +248,14 @@ function onappusers_TerminateAccount( $params ) {
                 FROM
                     tblonappusers
                 WHERE
-                    server_id = $serverID
-                    AND client_id = $clientID
-                    AND service_id = $serviceID";
+                    service_id = $serviceID";
 
     $result = full_query( $query );
     if( $result ) {
         $OnAppUserID = mysql_result( $result, 0 );
     }
     if( ! $OnAppUserID ) {
-        return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $clientID, $serverID );
+        return sprintf( $_LANG[ 'onappuserserrassociateuserbyserviceid' ], $serviceID);
     }
 
     $module = new OnApp_UserModule( $params );
@@ -275,9 +273,7 @@ function onappusers_TerminateAccount( $params ) {
         $query = 'DELETE FROM
                         tblonappusers
                     WHERE
-                        service_id = ' . (int)$serviceID . '
-                        AND client_id = ' . (int)$clientID . '
-                        AND server_id = ' . (int)$serverID;
+                        service_id = ' . (int)$serviceID;
         full_query( $query );
     }
 
@@ -304,16 +300,14 @@ function onappusers_SuspendAccount( $params ) {
                 FROM
                     tblonappusers
                 WHERE
-                    server_id = '$serverID'
-                    AND client_id = '$clientID'
-                    AND service_id = '$serviceID'";
+                    service_id = $serviceID";
 
     $result = full_query( $query );
     if( $result ) {
         $OnAppUserID = mysql_result( $result, 0 );
     }
     if( ! $OnAppUserID ) {
-        return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $clientID, $serverID );
+        return sprintf( $_LANG[ 'onappuserserrassociateuserbyserviceid' ], $serviceID);
     }
 
     $module = new OnApp_UserModule( $params );
@@ -348,7 +342,6 @@ function onappusers_UnsuspendAccount( $params ) {
     }
 
     $serverID = $params[ 'serverid' ];
-    $clientID = $params[ 'clientsdetails' ][ 'userid' ];
     $serviceID = $params[ 'serviceid' ];
     $billingPlan = json_decode( $params[ 'configoption1' ] );
     $billingPlan = $billingPlan->SelectedPlans->$serverID;
@@ -358,16 +351,14 @@ function onappusers_UnsuspendAccount( $params ) {
                 FROM
                     tblonappusers
                 WHERE
-                    server_id = '$serverID'
-                    AND client_id = '$clientID'
-                    AND service_id = '$serviceID'";
+                    service_id = $serviceID";
 
     $result = full_query( $query );
     if( $result ) {
         $OnAppUserID = mysql_result( $result, 0 );
     }
     if( ! $OnAppUserID ) {
-        return sprintf( $_LANG[ 'onappuserserrassociateuser' ], $clientID, $serverID );
+        return sprintf( $_LANG[ 'onappuserserrassociateuserbyserviceid' ], $serviceID);
     }
 
     $module = new OnApp_UserModule( $params );
@@ -401,17 +392,13 @@ function onappusers_ChangePackage( $params ) {
 
     $config = json_decode( $params[ 'configoption1' ] );
     $serviceID = $params[ 'serviceid' ];
-    $clientID = $params[ 'clientsdetails' ][ 'userid' ];
-    $serverID = $params[ 'serverid' ];
 
     $query = "SELECT
                     onapp_user_id
                 FROM
                     tblonappusers
                 WHERE
-                    server_id = '$serverID'
-                    AND client_id = '$clientID'
-                    AND service_id = '$serviceID'";
+                    service_id = $serviceID";
 
     $result = full_query( $query );
     $OnAppUserID = mysql_result( $result, 0 );
@@ -450,8 +437,6 @@ function onappusers_GeneratePassword( $params ) {
     global $_LANG;
 
     $serviceID = $params[ 'serviceid' ];
-    $clientID = $params[ 'clientsdetails' ][ 'userid' ];
-    $serverID = $params[ 'serverid' ];
     $password = OnApp_UserModule::generatePassword();
 
     $query = "SELECT
@@ -459,9 +444,7 @@ function onappusers_GeneratePassword( $params ) {
                 FROM
                     tblonappusers
                 WHERE
-                    server_id = '$serverID'
-                    AND client_id = '$clientID'
-                    AND service_id = '$serviceID'";
+                    service_id = $serviceID";
 
     $result = full_query( $query );
     $OnAppUserID = mysql_result( $result, 0 );
@@ -521,7 +504,12 @@ function loadLang( $lang = null ) {
 function getJSLang() {
     global $_LANG;
 
-    return json_encode( $_LANG );
+    $result = array();
+    foreach ($_LANG as $key => $value){
+        $result[$key] = utf8_encode($value);
+    }
+
+    return json_encode( $result );
 }
 
 function parseLang( &$html ) {
