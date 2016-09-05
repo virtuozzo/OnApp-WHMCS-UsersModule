@@ -597,6 +597,13 @@ function onappusers_OutstandingDetails( $params = '' ) {
     exit( $data );
 }
 
+function onappusers_AdminCustomButtonArray() {
+    if(isset($_GET['userid']) && isset($_GET['id'])){
+        OnApp_UserModule::checkIfServiceWasMoved($_GET['userid'], $_GET['id']);
+    }
+    return array();
+}
+
 class OnApp_UserModule {
     private $server;
 
@@ -761,4 +768,37 @@ class OnApp_UserModule {
     public static function generatePassword() {
         return substr( str_shuffle( '~!@$%^&*(){}|0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' ), 0, 20 );
     }
+
+    public static function checkIfServiceWasMoved($userID, $serviceID) {
+        $serviceID = (int)$serviceID;
+        $userID = (int)$userID;
+
+        if($serviceID <= 0 || $userID <= 0){
+            return false;
+        }
+
+        $query = "SELECT * FROM tblonappusers WHERE service_id = " . $serviceID;
+
+        $result = full_query( $query );
+        if( !$result ) {
+            return false;
+        }
+        if( mysql_num_rows( $result ) !== 1 ) {
+            return false;
+        }
+
+        $onappuser = mysql_fetch_assoc( $result );
+        if(!$onappuser) {
+            return false;
+        }
+
+        if($userID !== (int)$onappuser['client_id']){
+            $sql = "UPDATE tblonappusers SET client_id = " . $userID . " WHERE service_id = " . $serviceID;
+            full_query($sql);
+            return true;
+        }
+
+        return false;
+    }
+
 }
