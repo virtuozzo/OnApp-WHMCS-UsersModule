@@ -32,7 +32,6 @@ function onappusers_ConfigOptions() {
         $configArray = array(
             $_LANG[ 'onappwrappernotfound' ] . realpath( ROOTDIR ) . '/includes/wrapper' => array()
         );
-
         return $configArray;
     }
 
@@ -63,8 +62,7 @@ function onappusers_ConfigOptions() {
     $serversData = array();
     if( mysql_num_rows( $res ) == 0 ) {
         $serversData[ 'NoServers' ] = sprintf( $_LANG[ 'onappuserserrorholder' ], $_LANG[ 'onappuserserrornoserveringroup' ] );
-    }
-    else {
+    } else {
         while( $onappConfig = mysql_fetch_assoc( $res ) ) {
             //Error if server adress (IP and hostname) not set
             if( empty( $onappConfig[ 'serverip' ] ) && empty( $onappConfig[ 'serverhostname' ] ) ) {
@@ -79,6 +77,16 @@ function onappusers_ConfigOptions() {
 
             $data = array();
             $module = new OnApp_UserModule( $onappConfig );
+
+            //compare wrapper version with API
+            $compare = $module->checkWrapperVersion();
+
+            if( $compare != 0 ){
+                $configArray = array(
+                    $_LANG[ 'onappneedupdatewrapper' ] => array()
+                );
+                return $configArray;
+            }
 
             // handle billing plans per server
             $data[ 'BillingPlans' ] = $data[ 'SuspendedBillingPlans' ] = $module->getBillingPlans();
@@ -801,4 +809,28 @@ class OnApp_UserModule {
         return false;
     }
 
+    private function getWrapperVersion(){
+        $pathToWrapper = realpath( ROOTDIR ) . '/includes/wrapper/';
+        $version = file_get_contents( $pathToWrapper.'version.txt' );
+
+        return $version;
+    }
+
+    private function getAPIVersion() {
+        $obj = new OnApp_Factory( $this->server->ip, $this->server->user, $this->server->pass);
+        $apiVersion = $obj->getAPIVersion();
+
+        return $apiVersion;
+    }
+
+    public function checkWrapperVersion(){
+        $wrapperVersion = self::getWrapperVersion();
+        $apiVersion = self::getAPIVersion();
+
+        $wrapperVersion = substr( $wrapperVersion, 0, 3 );
+
+        $compare = strcmp($wrapperVersion, $apiVersion);
+
+        return $compare;
+    }
 }

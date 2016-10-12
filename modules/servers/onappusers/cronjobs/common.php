@@ -18,6 +18,7 @@ abstract class OnApp_UserModule_Cron {
     protected $printEnabled = false;
     protected $servers      = array();
     protected $log          = array();
+    protected $whmcsuserid  = -1;
 
     abstract protected function run();
 
@@ -124,6 +125,7 @@ abstract class OnApp_UserModule_Cron {
     }
 
     protected function getClients() {
+        $certainWHMCSUser = ($this->whmcsuserid != -1) ? 'AND tblclients.id = ' . $this->whmcsuserid : '';
         $sql           = 'SELECT
                     tblclients.taxexempt,
                     tblclients.state,
@@ -145,6 +147,7 @@ abstract class OnApp_UserModule_Cron {
                 LEFT JOIN tblhosting ON
                     tblhosting.userid = tblonappusers.client_id
                     AND tblhosting.server = tblonappusers.server_id
+                    AND tblhosting.id = tblonappusers.service_id
                 LEFT JOIN tblproducts ON
                     tblhosting.packageid = tblproducts.id
                     AND tblproducts.servertype = "onappusers"
@@ -155,7 +158,9 @@ abstract class OnApp_UserModule_Cron {
                 WHERE
                     tblhosting.domainstatus IN ( "Active", "Suspended" )
                     AND tblproducts.name IS NOT NULL
+                    ' . $certainWHMCSUser . '
                     ORDER BY tblonappusers.`onapp_user_id`';
+
         $this->clients = full_query( $sql );
     }
 
@@ -384,6 +389,11 @@ abstract class OnApp_UserModule_Cron {
                 'description' => 'print data to screen',
                 'short'       => 'p',
             ),
+            'whmcsuserid' => array(
+                'description' => 'generate invoice for a certain whmcs user',
+                'validation'  => '^(\d{1,})$',
+                'short'       => 'u',
+            ),
         );
 
         $options = new SOP( $options );
@@ -402,12 +412,18 @@ abstract class OnApp_UserModule_Cron {
         if( isset( $_POST['print'] ) ) {
             $this->cliOptions->print = true;
         }
+        if( isset( $_POST['whmcsuserid'] ) ) {
+            $this->cliOptions->whmcsuserid = $_POST['whmcsuserid'];
+        }
 
         if( isset( $this->cliOptions->log ) ) {
             $this->logEnabled = true;
         }
         if( isset( $this->cliOptions->print ) ) {
             $this->printEnabled = true;
+        }
+        if( isset( $this->cliOptions->whmcsuserid ) ) {
+            $this->whmcsuserid = $this->cliOptions->whmcsuserid;
         }
     }
 
