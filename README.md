@@ -8,6 +8,10 @@ Please visit our [wiki](https://github.com/OnApp/OnApp-WHMCS-UsersModule/wiki) f
 You are welcome to [follow us](https://twitter.com/intent/user?screen_name=OnAppPHPTeam) on Twitter to stay informed on new releases.
 
 ## Changelog:
+####v3.6.0
+ - WHMCS 7 compatibility
+ - fix support issues
+ 
 ####v3.4.0
  - fix URL handling in payment hook
 

@@ -79,11 +79,13 @@ function onappusers_ConfigOptions() {
             $module = new OnApp_UserModule( $onappConfig );
 
             //compare wrapper version with API
-            $compare = $module->checkWrapperVersion();
 
-            if( $compare != 0 ){
+            $compareResult = $module->checkWrapperVersion();
+
+            if( !$compareResult['status'] ){
+                $error = $_LANG[ 'onappneedupdatewrapper' ] . ' (wrapper version: ' . $compareResult['wrapperVersion'] . '; ' . 'api version: ' . $compareResult['apiVersion'] . ')';
                 $configArray = array(
-                    $_LANG[ 'onappneedupdatewrapper' ] => array()
+                    $error => array()
                 );
                 return $configArray;
             }
@@ -134,9 +136,10 @@ function onappusers_ConfigOptions() {
         }
 
         $js .= '<script type="text/javascript">'
-               . 'var ServersData = ' . json_encode( $serversData ) . ';'
-               . 'var ONAPP_LANG = ' . getJSLang() . ';'
-               . '</script>';
+            . 'var ServersData = ' . json_encode( $serversData ) . ';'
+            . 'var ONAPP_LANG = ' . getJSLang() . ';'
+            . 'buildFields( ServersData );'
+            . '</script>';
 
         if( isset( $_GET[ 'servergroup' ] ) ) {
             ob_end_clean();
@@ -512,11 +515,11 @@ function loadLang( $lang = null ) {
 function getJSLang() {
     global $_LANG;
 
-    $result = array();
-    foreach ($_LANG as $key => $value){
-        $result[$key] = utf8_encode($value);
-    }
-
+        $result = array();
+        foreach ($_LANG as $key => $value){
+            $result[$key] = utf8_encode($value);
+        }
+    
     return json_encode( $result );
 }
 
@@ -548,9 +551,9 @@ function onappusers_ClientArea( $params = '' ) {
 
     parseLang( $html );
     $html .= '<script type="text/javascript">'
-             . 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
-             . 'var PID = ' . $params[ 'accountid' ] . ';'
-             . 'var LANG = ' . getJSLang() . ';</script>';
+        . 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
+        . 'var PID = ' . $params[ 'accountid' ] . ';'
+        . 'var LANG = ' . getJSLang() . ';</script>';
 
     return $html;
 }
@@ -581,9 +584,9 @@ function injectServerRow( $params ) {
     $html = file_get_contents( __DIR__ . '/includes/html/serverData.html' );
     $html = str_replace( '{###}', md5( uniqid( rand( 1, 999999 ), true ) ), $html );
     $html .= '<script type="text/javascript">'
-             . 'var SERVER = "' . $server . '";'
-             . 'var injTarget = "' . $params[ 'username' ] . ' / ' . $params[ 'password' ] . '";'
-             . '</script>';
+        . 'var SERVER = "' . $server . '";'
+        . 'var injTarget = "' . $params[ 'username' ] . ' / ' . $params[ 'password' ] . '";'
+        . '</script>';
 
     return $html;
 }
@@ -824,13 +827,47 @@ class OnApp_UserModule {
     }
 
     public function checkWrapperVersion(){
-        $wrapperVersion = self::getWrapperVersion();
-        $apiVersion = self::getAPIVersion();
+        $wrapperVersion = trim($this->getWrapperVersion());
+        $apiVersion = trim($this->getAPIVersion());
 
-        $wrapperVersion = substr( $wrapperVersion, 0, 3 );
+        $result = array();
+        $result['wrapperVersion'] = $wrapperVersion;
+        $result['apiVersion'] = $apiVersion;
+        if(($wrapperVersion == '')||($apiVersion == '')){
+            $result['status'] = false;
+            return $result;
+        }
 
-        $compare = strcmp($wrapperVersion, $apiVersion);
+        $wrapperVersionAr = preg_split( '/[.,]/', $wrapperVersion, NULL, PREG_SPLIT_NO_EMPTY );
+        if((count($wrapperVersionAr) == 1)&&($wrapperVersionAr[0] == '')){
+            $result['status'] = false;
+            return $result;
+        }
 
-        return $compare;
+        $apiVersionAr     = preg_split( '/[.,]/', $apiVersion, NULL, PREG_SPLIT_NO_EMPTY );
+        if((count($apiVersionAr) == 1)&&($apiVersionAr[0] == '')){
+            $result['status'] = false;
+            return $result;
+        }
+
+        $result['status'] = true;
+        foreach ( $apiVersionAr as $apiVersionKey => $apiVersionValue ) {
+            if ( ! isset( $wrapperVersionAr[ $apiVersionKey ] ) ) {
+                $result['status'] = false;
+                break;
+            }
+
+            $apiVersionValue     = (int) $apiVersionValue;
+            $wrapperVersionValue = (int) $wrapperVersionAr[ $apiVersionKey ];
+
+            if ( $apiVersionValue == $wrapperVersionValue ) {
+                continue;
+            }
+
+            $result['status'] = ( $wrapperVersionAr[ $apiVersionKey ] > $apiVersionValue );
+            break;
+        }
+
+        return $result;
     }
 }

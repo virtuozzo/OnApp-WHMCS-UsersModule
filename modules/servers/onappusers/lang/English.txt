@@ -135,4 +135,4 @@ $_LANG[ 'onapppasswordstrenght' ] = 'Password should be at least 6 characters';
 $_LANG[ 'onappusersgeneratenewpassword' ] = 'Generate new service password';
 $_LANG[ 'onappuserschangeaccountpassword' ] = 'OnApp account password has been generated';
 $_LANG[ 'onappuserslogintocp' ] = 'Login to OnApp CP';
-$_LANG[ 'onappneedupdatewrapper' ] = '<div class="errorbox">Please update the <a href="https://github.com/OnApp/OnApp-PHP-Wrapper-External" style="color:red" target="_blank">wrapper</a> according to your OnApp CP version</div>';
+$_LANG[ 'onappneedupdatewrapper' ] = 'Please update the <a href="https://github.com/OnApp/OnApp-PHP-Wrapper-External" style="color:red" target="_blank">wrapper</a> according to your OnApp CP version';

@@ -414,7 +414,7 @@ $( document ).ready( function() {
     } );
 
     // fill the table with datas
-    buildFields( ServersData );
+    //buildFields( ServersData );
 
     $( 'li#tab2' ).bind( 'click', function() {
         alignSelects();
