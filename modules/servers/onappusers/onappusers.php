@@ -25,8 +25,10 @@ if( file_exists( $file = __DIR__ . '/module.sql' ) ) {
     require_once __DIR__ . '/module.mail.php';
 }
 
+
 function onappusers_ConfigOptions() {
     global $_LANG;
+
 
     if( ! file_exists( ONAPP_WRAPPER_INIT ) ) {
         $configArray = array(
@@ -125,11 +127,19 @@ function onappusers_ConfigOptions() {
                     `tblproducts` AS prod
                 WHERE
                     prod.`id` = :id';
-        $sql = str_replace( ':id', (int)$_GET[ 'id' ], $sql );
+        if(!isset($_GET[ 'id' ])){
+            preg_match_all( '/id=(\d+)/', $_SERVER['HTTP_REFERER'], $matches);
+            $sql = str_replace( ':id', (int)$matches[1][0], $sql );
+        }else{
+            $sql = str_replace( ':id', (int)$_GET[ 'id' ], $sql );
+        }
+
         $results = full_query( $sql );
         $results = mysql_fetch_assoc( $results );
+
         $results[ 'options' ] = htmlspecialchars_decode( $results[ 'options' ] );
         $serversData[ 'Group' ] = $results[ 'group' ];
+
         if( ! empty( $results[ 'options' ] ) ) {
             $results[ 'options' ] = json_decode( $results[ 'options' ], true );
             $serversData += $results[ 'options' ];
@@ -644,7 +654,7 @@ class OnApp_UserModule {
     }
 
     public function getBillingPlans() {
-        $data = $this->getOnAppObject( 'OnApp_BillingPlan' )->getList();
+        $data = $this->getOnAppObject( 'OnApp_BillingUser' )->getList();
 
         return $this->buildArray( $data );
     }
