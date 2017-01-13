@@ -62,8 +62,10 @@ function onappusers_ConfigOptions() {
 
     $res = full_query( $sql );
     $serversData = array();
+    $error = false;
     if( mysql_num_rows( $res ) == 0 ) {
         $serversData[ 'NoServers' ] = sprintf( $_LANG[ 'onappuserserrorholder' ], $_LANG[ 'onappuserserrornoserveringroup' ] );
+        $error = true;
     } else {
         while( $onappConfig = mysql_fetch_assoc( $res ) ) {
             //Error if server adress (IP and hostname) not set
@@ -86,6 +88,9 @@ function onappusers_ConfigOptions() {
 
             if( !$compareResult['status'] ){
                 $error = $_LANG[ 'onappneedupdatewrapper' ] . ' (wrapper version: ' . $compareResult['wrapperVersion'] . '; ' . 'api version: ' . $compareResult['apiVersion'] . ')';
+                if($compareResult['apiMessage'] != ''){
+                    $error .= '; ' . $compareResult['apiMessage'];
+                }
                 $configArray = array(
                     $error => array()
                 );
@@ -145,23 +150,24 @@ function onappusers_ConfigOptions() {
             $serversData += $results[ 'options' ];
         }
 
-        $js .= '<script type="text/javascript">'
-            . 'var ServersData = ' . json_encode( $serversData ) . ';'
-            . 'var ONAPP_LANG = ' . getJSLang() . ';'
-            . 'buildFields( ServersData );'
-            . '</script>';
-
-        if( isset( $_GET[ 'servergroup' ] ) ) {
-            ob_end_clean();
-            exit( json_encode( $serversData ) );
-        }
-
-        $configArray = array(
-            sprintf( '' ) => array(
-                'Description' => $js
-            ),
-        );
     }
+
+    $js .= '<script type="text/javascript">'
+           . 'var ServersData = ' . json_encode( $serversData ) . ';'
+           . 'var ONAPP_LANG = ' . getJSLang() . ';'
+           . 'buildFields( ServersData );'
+           . '</script>';
+
+    if( (!$error) && isset( $_GET[ 'servergroup' ] ) ) {
+        ob_end_clean();
+        exit( json_encode( $serversData ) );
+    }
+
+    $configArray = array(
+        sprintf( '' ) => array(
+            'Description' => $js
+        ),
+    );
 
     return $configArray;
 }
@@ -654,7 +660,11 @@ class OnApp_UserModule {
     }
 
     public function getBillingPlans() {
-        $data = $this->getOnAppObject( 'OnApp_BillingUser' )->getList();
+        if( $this->getAPIVersion() > 5.1 ){
+            $data = $this->getOnAppObject( 'OnApp_BillingUser' )->getList();
+        } else {
+            $data = $this->getOnAppObject( 'OnApp_BillingPlan' )->getList();
+        }
 
         return $this->buildArray( $data );
     }
@@ -832,15 +842,20 @@ class OnApp_UserModule {
     private function getAPIVersion() {
         $obj = new OnApp_Factory( $this->server->ip, $this->server->user, $this->server->pass);
         $apiVersion = $obj->getAPIVersion();
-
-        return $apiVersion;
+        return array(
+            'version' => trim($apiVersion),
+            'message' => trim($obj->getErrorsAsString( ', ' )),
+        );
     }
 
     public function checkWrapperVersion(){
         $wrapperVersion = trim($this->getWrapperVersion());
-        $apiVersion = trim($this->getAPIVersion());
+
+        $apiVersionArr = $this->getAPIVersion();
+        $apiVersion = $apiVersionArr['version'];
 
         $result = array();
+        $result['apiMessage'] = $apiVersionArr['message'];
         $result['wrapperVersion'] = $wrapperVersion;
         $result['apiVersion'] = $apiVersion;
         if(($wrapperVersion == '')||($apiVersion == '')){

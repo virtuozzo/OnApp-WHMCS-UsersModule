@@ -1,6 +1,11 @@
 function buildFields( ServersData ) {
     // Clean up table & store titles
-    var table = $( 'div#tab3 table.form' ).eq(1);
+    var table;
+    if ($('div#tab3').length) {
+        table = $('div#tab3 table.form').eq(1);
+    } else {
+        table = $('table').eq(5);
+    }
     table.find( 'tr' ).remove();
 
     // if no servers in group
