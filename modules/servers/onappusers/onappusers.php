@@ -624,12 +624,12 @@ function onappusers_OutstandingDetails( $params = '' ) {
     exit( $data );
 }
 
-function onappusers_AdminCustomButtonArray() {
+/*function onappusers_AdminCustomButtonArray() {
     if(isset($_GET['userid']) && isset($_GET['id'])){
         OnApp_UserModule::checkIfServiceWasMoved($_GET['userid'], $_GET['id']);
     }
     return array();
-}
+}*/
 
 class OnApp_UserModule {
     private $server;
