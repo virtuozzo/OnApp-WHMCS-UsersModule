@@ -109,7 +109,9 @@ if (!function_exists('hook_onappusers_InvoicePaid')) {
                 WHERE
                     `id` = ' . $invoice_id;
         $res    = mysql_query( $qry );
-        $amount = mysql_result( $res, 0 );
+        //$amount = mysql_result( $res, 0 );
+        $amountArr = mysql_fetch_assoc( $res );
+        $amount = $amountArr['amount'];
 
         $payment = new OnApp_Payment;
         $payment->auth( $server[ 'address' ], $server[ 'username' ], $server[ 'password' ] );

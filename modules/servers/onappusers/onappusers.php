@@ -8,7 +8,9 @@ if( file_exists( ONAPP_WRAPPER_INIT ) ) {
     require_once ONAPP_WRAPPER_INIT;
 }
 
+
 loadLang();
+
 
 if( file_exists( $file = __DIR__ . '/module.sql' ) ) {
     logactivity( 'OnApp User Module: process SQL file, called from module.' );
@@ -279,7 +281,9 @@ function onappusers_TerminateAccount( $params ) {
 
     $result = full_query( $query );
     if( $result ) {
-        $OnAppUserID = mysql_result( $result, 0 );
+        //$OnAppUserID = mysql_result( $result, 0 );
+        $OnAppUserIDArr = mysql_fetch_assoc( $result );
+        $OnAppUserID = $OnAppUserIDArr['onapp_user_id'];
     }
     if( ! $OnAppUserID ) {
         return sprintf( $_LANG[ 'onappuserserrassociateuserbyserviceid' ], $serviceID);
@@ -331,7 +335,9 @@ function onappusers_SuspendAccount( $params ) {
 
     $result = full_query( $query );
     if( $result ) {
-        $OnAppUserID = mysql_result( $result, 0 );
+        //$OnAppUserID = mysql_result( $result, 0 );
+        $OnAppUserIDArr = mysql_fetch_assoc( $result );
+        $OnAppUserID = $OnAppUserIDArr['onapp_user_id'];
     }
     if( ! $OnAppUserID ) {
         return sprintf( $_LANG[ 'onappuserserrassociateuserbyserviceid' ], $serviceID);
@@ -382,7 +388,9 @@ function onappusers_UnsuspendAccount( $params ) {
 
     $result = full_query( $query );
     if( $result ) {
-        $OnAppUserID = mysql_result( $result, 0 );
+        //$OnAppUserID = mysql_result( $result, 0 );
+        $OnAppUserIDArr = mysql_fetch_assoc( $result );
+        $OnAppUserID = $OnAppUserIDArr['onapp_user_id'];
     }
     if( ! $OnAppUserID ) {
         return sprintf( $_LANG[ 'onappuserserrassociateuserbyserviceid' ], $serviceID);
@@ -428,7 +436,9 @@ function onappusers_ChangePackage( $params ) {
                     service_id = $serviceID";
 
     $result = full_query( $query );
-    $OnAppUserID = mysql_result( $result, 0 );
+    //$OnAppUserID = mysql_result( $result, 0 );
+    $OnAppUserIDArr = mysql_fetch_assoc( $result );
+    $OnAppUserID = $OnAppUserIDArr['onapp_user_id'];
 
     $module = new OnApp_UserModule( $params );
     $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
@@ -474,7 +484,9 @@ function onappusers_GeneratePassword( $params ) {
                     service_id = $serviceID";
 
     $result = full_query( $query );
-    $OnAppUserID = mysql_result( $result, 0 );
+    //$OnAppUserID = mysql_result( $result, 0 );
+    $OnAppUserIDArr = mysql_fetch_assoc( $result );
+    $OnAppUserID = $OnAppUserIDArr['onapp_user_id'];
 
     $module = new OnApp_UserModule( $params );
     $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
