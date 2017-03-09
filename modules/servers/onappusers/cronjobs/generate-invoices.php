@@ -67,7 +67,6 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
                     }
                     if( $this->logEnabled ) {
                         $this->log[ ] = print_r( $result, true );
-                        $this->log[ ] = '========== SPLIT =============';
                     }
                     $qry = 'UPDATE
                                 `tblinvoiceitems`
@@ -86,6 +85,32 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
                         'amount' => $this->dataTMP->total_cost
                     );
                     insert_query( $table, $values );
+
+                    $getInvoiceData = array(
+                        'invoiceid' => $result[ 'invoiceid' ],
+                    );
+                    $getInvoiceResult = localAPI( 'GetInvoice', $getInvoiceData, $admin );
+                    if( $getInvoiceResult[ 'result' ] == 'success' ) {
+                        if ( $getInvoiceResult['status'] == "Paid" ) {
+                            if ( function_exists( 'hook_onappusers_InvoicePaid' ) ) {
+                                $vars['invoiceid'] = $result['invoiceid'];
+                                hook_onappusers_InvoicePaid( $vars );
+                                if( $this->printEnabled ) {
+                                    print_r( $getInvoiceResult );
+                                    echo PHP_EOL, PHP_EOL;
+                                }
+                                if( $this->logEnabled ) {
+                                    $this->log[ ] = print_r( $getInvoiceResult, true );
+                                }
+
+                            }
+                        }
+                    }
+                    if( $this->logEnabled ) {
+                        $this->log[ ] = '========== SPLIT =============';
+                    }
+
+
                 }
             }
         }

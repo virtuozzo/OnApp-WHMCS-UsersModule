@@ -19,6 +19,7 @@ abstract class OnApp_UserModule_Cron {
     protected $servers      = array();
     protected $log          = array();
     protected $whmcsuserid  = -1;
+    protected $autoapplycredit = false;
 
     abstract protected function run();
 
@@ -248,7 +249,11 @@ abstract class OnApp_UserModule_Cron {
             'itemdescription1' => $invoiceDescription,
             'itemamount1'      => 0,
             'itemtaxed1'       => $taxed,
+            'status'           => 'Unpaid',
         );
+        if($this->autoapplycredit){
+            $return['autoapplycredit'] = true;
+        }
 
         unset( $data->total_cost );
         $i = 1;
@@ -394,6 +399,10 @@ abstract class OnApp_UserModule_Cron {
                 'validation'  => '^(\d{1,})$',
                 'short'       => 'u',
             ),
+            'autoapplycredit' => array(
+                'description' => 'auto apply credit',
+                'short'       => 'c',
+            ),
         );
 
         $options = new SOP( $options );
@@ -415,6 +424,9 @@ abstract class OnApp_UserModule_Cron {
         if( isset( $_POST['whmcsuserid'] ) ) {
             $this->cliOptions->whmcsuserid = $_POST['whmcsuserid'];
         }
+        if( isset( $_POST['autoapplycredit'] ) ) {
+            $this->cliOptions->autoapplycredit = true;
+        }
 
         if( isset( $this->cliOptions->log ) ) {
             $this->logEnabled = true;
@@ -424,6 +436,9 @@ abstract class OnApp_UserModule_Cron {
         }
         if( isset( $this->cliOptions->whmcsuserid ) ) {
             $this->whmcsuserid = $this->cliOptions->whmcsuserid;
+        }
+        if( isset( $this->cliOptions->autoapplycredit ) ) {
+            $this->autoapplycredit = true;
         }
     }
 
