@@ -35,9 +35,10 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron {
             if( $clientAmount->total_cost > 0 ) {
                 $client[ 'dueDate' ] = htmlspecialchars_decode( $client[ 'dueDate' ] );
                 $client[ 'dueDate' ] = json_decode( $client[ 'dueDate' ] );
+                $server_id = $client[ 'server_id' ];
                 $client[ 'dueDate' ] = $client[ 'dueDate' ]
                     ->DueDateCurrent
-                    ->$client[ 'server_id' ];
+                    ->$server_id;
 
                 $data = $this->generateInvoiceData( $clientAmount, $client );
                 if( $data == false ) {
