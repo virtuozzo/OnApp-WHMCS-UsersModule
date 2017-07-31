@@ -9,7 +9,7 @@ if( file_exists( ONAPP_WRAPPER_INIT ) ) {
 }
 
 
-loadLang();
+OnApp_UserModule::loadLang();
 
 
 if( file_exists( $file = __DIR__ . '/module.sql' ) ) {
@@ -156,7 +156,7 @@ function onappusers_ConfigOptions() {
 
     $js .= '<script type="text/javascript">'
            . 'var ServersData = ' . json_encode( $serversData ) . ';'
-           . 'var ONAPP_LANG = ' . getJSLang() . ';'
+           . 'var ONAPP_LANG = ' . OnApp_UserModule::getJSLang() . ';'
            . 'buildFields( ServersData );'
            . '</script>';
 
@@ -516,60 +516,12 @@ function onappusers_GeneratePassword( $params ) {
     return 'success';
 }
 
-function loadLang( $lang = null ) {
-    global $_LANG, $CONFIG;
-
-    $currentDir = getcwd();
-    chdir( dirname( __FILE__ ) . '/lang/' );
-    $availableLangs = glob( '*.txt' );
-
-    if( empty( $lang ) ) {
-        $language = isset( $_SESSION[ 'Language' ] ) ? $_SESSION[ 'Language' ] : $CONFIG[ 'Language' ];
-    }
-    else {
-        $language = $lang;
-    }
-    $language = ucfirst( $language ) . '.txt';
-
-    if( ! in_array( $language, $availableLangs ) ) {
-        $language = 'English.txt';
-    }
-
-    $templang = file_get_contents( dirname( __FILE__ ) . '/lang/' . $language );
-    eval ( $templang );
-    chdir( $currentDir );
-}
-
-function getJSLang() {
-    global $_LANG;
-
-        $result = array();
-        foreach ($_LANG as $key => $value){
-            $result[$key] = utf8_encode($value);
-        }
-    
-    return json_encode( $result );
-}
-
-function parseLang( &$html ) {
-    $html = preg_replace_callback(
-        '#{\$LANG.(.*)}#U',
-        create_function(
-            '$matches',
-            'global $_LANG; return $_LANG[ $matches[ 1 ] ];'
-        ),
-        $html
-    );
-
-    return $html;
-}
-
 function onappusers_ClientArea( $params = '' ) {
     if( isset( $_GET[ 'getstat' ] ) ) {
         onappusers_OutstandingDetails( $params );
     }
 
-    $html = injectServerRow( $params );
+    $html = OnApp_UserModule::injectServerRow( $params );
     if( $GLOBALS[ 'CONFIG' ][ 'Template' ] == 'six' ) {
         $html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.6.html' );
     }
@@ -577,44 +529,11 @@ function onappusers_ClientArea( $params = '' ) {
         $html .= file_get_contents( dirname( __FILE__ ) . '/includes/html/clientarea.5.html' );
     }
 
-    parseLang( $html );
+    OnApp_UserModule::parseLang( $html );
     $html .= '<script type="text/javascript">'
         . 'var UID = ' . $params[ 'clientsdetails' ][ 'userid' ] . ';'
         . 'var PID = ' . $params[ 'accountid' ] . ';'
-        . 'var LANG = ' . getJSLang() . ';</script>';
-
-    return $html;
-}
-
-function injectServerRow( $params ) {
-    $iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
-    $iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
-    $key = md5( uniqid( rand( 1, 999999 ), true ) );
-
-    $server = ! empty( $params[ 'serverip' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
-    if( strpos( $server, 'http' ) === false ) {
-        $scheme = $params[ 'serversecure' ] ? 'https://' : 'http://';
-        $server = $scheme . $server;
-    }
-
-    $data = array(
-        'login'    => $params[ 'username' ],
-        'password' => $params[ 'password' ],
-        'server'   => $server,
-    );
-    $data = json_encode( $data ) . '%%%';
-    $crypttext = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_ECB, $iv );
-    $_SESSION[ 'utk' ] = array(
-        $key . md5( uniqid( rand( 1, 999999 ), true ) ),
-        base64_encode( base64_encode( $crypttext ) )
-    );
-
-    $html = file_get_contents( __DIR__ . '/includes/html/serverData.html' );
-    $html = str_replace( '{###}', md5( uniqid( rand( 1, 999999 ), true ) ), $html );
-    $html .= '<script type="text/javascript">'
-        . 'var SERVER = "' . $server . '";'
-        . 'var injTarget = "' . $params[ 'username' ] . ' / ' . $params[ 'password' ] . '";'
-        . '</script>';
+        . 'var LANG = ' . OnApp_UserModule::getJSLang() . ';</script>';
 
     return $html;
 }
@@ -906,5 +825,86 @@ class OnApp_UserModule {
         }
 
         return $result;
+    }
+
+    public static function loadLang( $lang = null ) {
+        global $_LANG, $CONFIG;
+
+        $currentDir = getcwd();
+        chdir( dirname( __FILE__ ) . '/lang/' );
+        $availableLangs = glob( '*.txt' );
+
+        if( empty( $lang ) ) {
+            $language = isset( $_SESSION[ 'Language' ] ) ? $_SESSION[ 'Language' ] : $CONFIG[ 'Language' ];
+        }
+        else {
+            $language = $lang;
+        }
+        $language = ucfirst( $language ) . '.txt';
+
+        if( ! in_array( $language, $availableLangs ) ) {
+            $language = 'English.txt';
+        }
+
+        $templang = file_get_contents( dirname( __FILE__ ) . '/lang/' . $language );
+        eval ( $templang );
+        chdir( $currentDir );
+    }
+
+    public static function getJSLang() {
+        global $_LANG;
+
+        $result = array();
+        foreach ($_LANG as $key => $value){
+            $result[$key] = utf8_encode($value);
+        }
+
+        return json_encode( $result );
+    }
+
+    public static function parseLang( &$html ) {
+        $html = preg_replace_callback(
+            '#{\$LANG.(.*)}#U',
+            create_function(
+                '$matches',
+                'global $_LANG; return $_LANG[ $matches[ 1 ] ];'
+            ),
+            $html
+        );
+
+        return $html;
+    }
+
+    public static function injectServerRow( $params ) {
+        $iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
+        $iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
+        $key = md5( uniqid( rand( 1, 999999 ), true ) );
+
+        $server = ! empty( $params[ 'serverip' ] ) ? $params[ 'serverip' ] : $params[ 'serverhostname' ];
+        if( strpos( $server, 'http' ) === false ) {
+            $scheme = $params[ 'serversecure' ] ? 'https://' : 'http://';
+            $server = $scheme . $server;
+        }
+
+        $data = array(
+            'login'    => $params[ 'username' ],
+            'password' => $params[ 'password' ],
+            'server'   => $server,
+        );
+        $data = json_encode( $data ) . '%%%';
+        $crypttext = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_ECB, $iv );
+        $_SESSION[ 'utk' ] = array(
+            $key . md5( uniqid( rand( 1, 999999 ), true ) ),
+            base64_encode( base64_encode( $crypttext ) )
+        );
+
+        $html = file_get_contents( __DIR__ . '/includes/html/serverData.html' );
+        $html = str_replace( '{###}', md5( uniqid( rand( 1, 999999 ), true ) ), $html );
+        $html .= '<script type="text/javascript">'
+                 . 'var SERVER = "' . $server . '";'
+                 . 'var injTarget = "' . $params[ 'username' ] . ' / ' . $params[ 'password' ] . '";'
+                 . '</script>';
+
+        return $html;
     }
 }

@@ -203,7 +203,7 @@ abstract class OnApp_UserModule_Cron {
         if( ! isset( $_LANG[ 'onappusersstatvirtualmachines' ] ) ) {
             require_once dirname( __DIR__ ) . '/onappusers.php';
         }
-        loadLang( $client[ 'language' ] );
+        OnApp_UserModule::loadLang( $client[ 'language' ] );
 
         //check if invoice should be generated
         $fromTime = strtotime( $this->fromDate );

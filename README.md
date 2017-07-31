@@ -5,10 +5,13 @@ The OnApp Users module for WHMCS allows you to operate (creating/suspending/dele
 Please visit our [wiki](https://github.com/OnApp/OnApp-WHMCS-UsersModule/wiki) for detailed instructions _(updated on **23 of July 2014**)_.
 
 ## Changelog:
-
+####v3.8.0
+ - fix Naming conflict
+ 
 ####v3.7.5
  - fix due date bug
 
+## Changelog:
 ####v3.7.4
  - fix support issues
 
