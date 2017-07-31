@@ -11,7 +11,6 @@ Please visit our [wiki](https://github.com/OnApp/OnApp-WHMCS-UsersModule/wiki) f
 ####v3.7.5
  - fix due date bug
 
-## Changelog:
 ####v3.7.4
  - fix support issues
 
