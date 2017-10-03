@@ -555,6 +555,64 @@ function onappusers_OutstandingDetails( $params = '' ) {
     exit( $data );
 }
 
+function onappusers_AdminServicesTabFields($params){
+    $serviceID = $params['serviceid'];
+
+    $query = "SELECT
+                    onapp_user_id
+                FROM
+                    tblonappusers
+                WHERE
+                    service_id = $serviceID";
+
+    $onAppUserID = '';
+    $result      = full_query($query);
+    if ($result) {
+        $onAppUserIDArr = mysql_fetch_assoc($result);
+        $onAppUserID    = $onAppUserIDArr['onapp_user_id'];
+    }
+
+    $fieldsarray = array(
+        'OnApp User ID' => '<input type="text" name="onAppUserID" size="30" value="'.$onAppUserID.'" />',
+    );
+
+    return $fieldsarray;
+
+}
+
+function onappusers_AdminServicesTabFieldsSave($params){
+    $clientsDetails = $params['clientsdetails'];
+    $serverID       = $params['serverid'];
+    $serviceID      = $params['serviceid'];
+    $onAppUserIDNew = (int)$_POST['onAppUserID'];
+
+    $query = "SELECT
+                    onapp_user_id
+                FROM
+                    tblonappusers
+                WHERE
+                    service_id = $serviceID";
+
+    $onAppUserID = '';
+    $result      = full_query($query);
+    if ($result) {
+        $onAppUserIDArr = mysql_fetch_assoc($result);
+        $onAppUserID    = $onAppUserIDArr['onapp_user_id'];
+    }
+
+    if ($onAppUserID) {
+        $sql = "UPDATE tblonappusers SET onapp_user_id = ".$onAppUserIDNew." WHERE service_id = ".$serviceID;
+        full_query($sql);
+    } else {
+        insert_query('tblonappusers', array(
+            'server_id'     => $serverID,
+            'client_id'     => $clientsDetails['userid'],
+            'service_id'    => $serviceID,
+            'onapp_user_id' => $onAppUserIDNew,
+        ));
+    }
+}
+
 /*function onappusers_AdminCustomButtonArray() {
     if(isset($_GET['userid']) && isset($_GET['id'])){
         OnApp_UserModule::checkIfServiceWasMoved($_GET['userid'], $_GET['id']);
