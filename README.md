@@ -5,6 +5,9 @@ The OnApp Users module for WHMCS allows you to operate (creating/suspending/dele
 Please visit our [wiki](https://github.com/OnApp/OnApp-WHMCS-UsersModule/wiki) for detailed instructions _(updated on **23 of July 2014**)_.
 
 ## Changelog:
+####v3.8.2
+ - add the ability to force delete the user. In server details add: <forceDelete>yes</forceDelete>
+
 ####v3.8.1
  - add the ability to set OnApp User ID
  

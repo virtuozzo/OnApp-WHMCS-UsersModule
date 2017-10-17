@@ -292,7 +292,12 @@ function onappusers_TerminateAccount( $params ) {
     $module = new OnApp_UserModule( $params );
     $OnAppUser = $module->getOnAppObject( 'OnApp_User' );
     $OnAppUser->_id = $OnAppUserID;
-    $OnAppUser->delete( true );
+
+    $force = false;
+    if ( $module->getExtData( "forceDelete" ) == "yes" ) {
+        $force = true;
+    }
+    $OnAppUser->delete( $force );
 
     if( ! empty( $OnAppUser->error ) ) {
         $errorMsg = $_LANG[ 'onappuserserruserdelete' ] . ': ';
@@ -622,9 +627,15 @@ function onappusers_AdminServicesTabFieldsSave($params){
 
 class OnApp_UserModule {
     private $server;
+    protected $params = array();
 
     public function __construct( $params ) {
         $this->server = new stdClass;
+
+        if ( is_array( $params ) ) {
+            $this->params = $params;
+        }
+
         if( $params[ 'serversecure' ] == 'on' ) {
             $this->server->ip = 'https://';
         }
@@ -964,5 +975,44 @@ class OnApp_UserModule {
                  . '</script>';
 
         return $html;
+    }
+
+    public function getExtData( $name ){
+        if ( ! isset( $this->params[ 'serverid' ] ) ) {
+            return false;
+        }
+        $results = array();
+        $sql = "SELECT * FROM tblservers WHERE id = " . $this->params[ 'serverid' ];
+
+        $result = mysql_fetch_assoc( full_query( $sql ) );
+        if( !$result ) {
+            return false;
+        }
+
+        ## check we have some vars
+        if ( $result ) {
+            $data    = htmlspecialchars_decode( $result['accesshash'] );
+            $results = $this->sortReturn( $data );
+        }
+
+        if ( ! is_array( $results ) ) {
+            return array();
+        }
+
+        if ( isset( $results[ $name ] ) ) {
+            return $results[ $name ];
+        }
+
+        return false;
+    }
+
+    public function sortReturn( $data ) {
+        preg_match_all( '/<(.*?)>([^<]+)<\/\\1>/i', $data, $matches );
+        $result = array();
+        foreach ( $matches[1] as $k => $v ) {
+            $result[ $v ] = $matches[2][ $k ];
+        }
+
+        return $result;
     }
 }
