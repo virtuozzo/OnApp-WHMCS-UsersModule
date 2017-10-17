@@ -6,7 +6,7 @@ Please visit our [wiki](https://github.com/OnApp/OnApp-WHMCS-UsersModule/wiki) f
 
 ## Changelog:
 ####v3.8.2
- - add the ability to force delete the user. In server details add: <forceDelete>yes</forceDelete>
+ - add the ability to force delete the user. In server details add: `<forceDelete>yes</forceDelete>`
 
 ####v3.8.1
  - add the ability to set OnApp User ID
