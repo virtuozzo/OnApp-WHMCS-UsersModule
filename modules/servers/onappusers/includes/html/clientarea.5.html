@@ -1,86 +1,122 @@
 <h3 id="user-stat">{$LANG.onappusersstatoutstandingdetails}</h3>
 <table class="table table-bordered table-striped" id="stat_data">
     <thead>
-        <tr>
-            <th colspan="2">
-                <div id="datetimepicker1" class="input-append date inline-block">
-                    <input data-format="yyyy-MM-dd hh:mm" type="text" class="input-medium" placeholder="{$LANG.onappusersstatstartdate}...">
-                    <span class="add-on">
+    <tr>
+        <th colspan="2">
+            <div id="datetimepicker1" class="input-append date inline-block">
+                <input data-format="yyyy-MM-dd hh:mm" type="text" class="input-medium"
+                       placeholder="{$LANG.onappusersstatstartdate}...">
+                <span class="add-on">
                       <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
                     </span>
-                </div>
-                <div id="datetimepicker2" class="input-append date inline-block">
-                    <input data-format="yyyy-MM-dd hh:mm" type="text" class="input-medium" placeholder="{$LANG.onappusersstatenddate}..">
-                    <span class="add-on">
+            </div>
+            <div id="datetimepicker2" class="input-append date inline-block">
+                <input data-format="yyyy-MM-dd hh:mm" type="text" class="input-medium"
+                       placeholder="{$LANG.onappusersstatenddate}..">
+                <span class="add-on">
                       <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
                     </span>
-                </div>
-                <button type="button" id="loading-example-btn" data-loading-text="{$LANG.onappusersstatapply_loading}" class="btn">
-                    {$LANG.onappusersstatapply}
-                </button>
-            </th>
-        </tr>
-        <tr id="error">
-            <th colspan="2">
-                {$LANG.onappusers_ajax_error}
-            </th>
-        </tr>
+            </div>
+            <button type="button" id="loading-example-btn" data-loading-text="{$LANG.onappusersstatapply_loading}"
+                    class="btn">
+                {$LANG.onappusersstatapply}
+            </button>
+        </th>
+    </tr>
+    <tr id="error">
+        <th colspan="2">
+            {$LANG.onappusers_ajax_error}
+        </th>
+    </tr>
     </thead>
     <tbody>
-        <tr>
-            <td class="span4">{$LANG.onappusers_invoice_vm_cost}</td>
-            <td id="vm_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_backup_cost}</td>
-            <td id="backup_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_monit_cost}</td>
-            <td id="monit_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_storage_disk_size_cost}</td>
-            <td id="storage_disk_size_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_template_cost}</td>
-            <td id="template_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_backup_count_cost}</td>
-            <td id="backup_count_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_backup_disk_size_cost}</td>
-            <td id="backup_disk_size_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_template_count_cost}</td>
-            <td id="template_count_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_template_disk_size_cost}</td>
-            <td id="template_disk_size_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_customer_network_cost}</td>
-            <td id="customer_network_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_edge_group_cost}</td>
-            <td id="edge_group_cost"></td>
-        </tr>
-        <tr>
-            <td>{$LANG.onappusers_invoice_total_cost}</td>
-            <td id="total_cost"></td>
-        </tr>
+    <tr>
+        <td class="span4">{$LANG.onappusers_invoice_vm_cost}</td>
+        <td id="vm_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_backup_cost}</td>
+        <td id="backup_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_monit_cost}</td>
+        <td id="monit_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_storage_disk_size_cost}</td>
+        <td id="storage_disk_size_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_template_cost}</td>
+        <td id="template_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_backup_count_cost}</td>
+        <td id="backup_count_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_backup_disk_size_cost}</td>
+        <td id="backup_disk_size_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_template_count_cost}</td>
+        <td id="template_count_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_template_disk_size_cost}</td>
+        <td id="template_disk_size_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_customer_network_cost}</td>
+        <td id="customer_network_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_edge_group_cost}</td>
+        <td id="edge_group_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_usage_cost}</td>
+        <td id="usage_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_vm_resource_cost}</td>
+        <td id="vm_resource_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_template_iso_cost}</td>
+        <td id="template_iso_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_autoscale_cost}</td>
+        <td id="autoscale_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_acceleration_cost}</td>
+        <td id="acceleration_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_ova_count_cost}</td>
+        <td id="ova_count_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_ova_size_cost}</td>
+        <td id="ova_size_cost"></td>
+    </tr>
+    <tr>
+        <td>{$LANG.onappusers_invoice_total_cost}</td>
+        <td id="total_cost"></td>
+    </tr>
     </tbody>
 </table>
 
 <link rel="stylesheet" href="modules/servers/onappusers/includes/css/style.css"/>
 
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $.prototype.confirmation = function () {
+
+    };
+</script>
 <script src="modules/servers/onappusers/includes/js/bootstrap.js"></script>
 
 <link rel="stylesheet" href="modules/servers/onappusers/includes/css/bootstrap-datetimepicker.min.css"/>
@@ -89,23 +125,4 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.3.2/accounting.min.js"></script>
 <script type="text/javascript" src="modules/servers/onappusers/includes/js/onappusers_stat.5.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

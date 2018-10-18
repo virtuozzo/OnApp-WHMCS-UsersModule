@@ -14,6 +14,8 @@ $_LANG[ 'onappuserserrorholder' ] = '<b style="color:red;">%s</b>';
 $_LANG[ 'onappuserserrornoserveringroup' ] = 'There are no servers in selected server group';
 $_LANG[ 'onappusersbindingplanstitle' ] = 'Billing Plan';
 $_LANG[ 'onappusersbindingplanssuspendedtitle' ] = 'Suspended Billing Plan';
+$_LANG[ 'onappusersbucketstitle' ] = 'Buckets';
+$_LANG[ 'onappusersbucketssuspendedtitle' ] = 'Suspended Buckets';
 $_LANG[ 'onappusersbindingrolestitle' ] = 'Roles';
 $_LANG[ 'onappusersbindinglocaletitle' ] = 'Default Locale';
 $_LANG[ 'onappuserstimezonetitle' ] = 'Time Zone';
@@ -67,6 +69,14 @@ $_LANG[ 'onappusers_invoice_template_disk_size_cost' ] = 'Backup Zones Template 
 $_LANG[ 'onappusers_invoice_customer_network_cost' ] = 'Customer Network Cost';
 $_LANG[ 'onappusers_invoice_edge_group_cost' ] = 'CDN Edge Group Cost';
 $_LANG[ 'onappusers_invoice_total_cost' ] = 'Total Cost';
+$_LANG[ 'onappusers_invoice_usage_cost' ] = 'Costs for actual usage of the VS';
+$_LANG[ 'onappusers_invoice_vm_resource_cost' ] = 'Cost for the resources';
+$_LANG[ 'onappusers_invoice_template_iso_cost' ] = 'Cost per ISO per hour';
+$_LANG[ 'onappusers_invoice_autoscale_cost' ] = 'Cost per number of VSs using Autoscaling';
+$_LANG[ 'onappusers_invoice_acceleration_cost' ] = 'Cost per number of accelerated VSs';
+$_LANG[ 'onappusers_invoice_ova_count_cost' ] = 'Cost per OVA file per hour';
+$_LANG[ 'onappusers_invoice_ova_size_cost' ] = 'Cost per GB per hour for OVA file disk size';
+
 
 $_LANG[ 'onappusers_ajax_error' ] = 'There is no data for given period or something went wrong.';
 $_LANG[ 'onappusersstatapply_loading' ] = 'Loading...';
@@ -136,3 +146,20 @@ $_LANG[ 'onappusersgeneratenewpassword' ] = 'Generate new service password';
 $_LANG[ 'onappuserschangeaccountpassword' ] = 'OnApp account password has been generated';
 $_LANG[ 'onappuserslogintocp' ] = 'Login to OnApp CP';
 $_LANG[ 'onappneedupdatewrapper' ] = 'Please update the <a href="https://github.com/OnApp/OnApp-PHP-Wrapper-External" style="color:red" target="_blank">wrapper</a> and(or) check OnApp CP accessibility';
+
+$_LANG[ 'onappusersbillingtype' ] = 'Billing Type';
+$_LANG[ 'onappusersbillingtypepostpaid' ] = 'Postpaid';
+$_LANG[ 'onappusersbillingtypeprepaid' ] = 'Prepaid';
+
+$_LANG[ 'onappusersusecustombillingplans' ] = 'Use custom billing plans';
+$_LANG[ 'onappusersusecustombuckets' ] = 'Use custom buckets';
+
+$_LANG[ 'onappusersprefixforcustombillingplans' ] = 'Prefix for custom billing plans';
+$_LANG[ 'onappusersprefixforcustombuckets' ] = 'Prefix for custom buckets';
+
+$_LANG[ 'onappuserscopybillingplanerror' ] = 'Can not get custom billing plan';
+$_LANG[ 'onappuserscopybucketerror' ] = 'Can not get custom bucket';
+
+$_LANG[ 'onappusersunsuspendonpositivebalance' ] = 'Unsuspend on a positive Credit Balance';
+
+$_LANG[ 'onappuserslowbalanceemail' ] = 'Your credit balance reached a critical level';

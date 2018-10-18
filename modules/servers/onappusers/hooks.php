@@ -1,12 +1,13 @@
 <?php
 
-if( ! defined( 'WHMCS' ) ) {
-    exit( 'This file cannot be accessed directly' );
+if (!defined('WHMCS')) {
+    exit('This file cannot be accessed directly');
 }
 
 if (!function_exists('hook_onappusers_InvoicePaid')) {
-    function hook_onappusers_InvoicePaid( $vars ) {
-        $invoice_id = $vars[ 'invoiceid' ];
+    function hook_onappusers_InvoicePaid($vars)
+    {
+        $invoice_id = $vars['invoiceid'];
         $qry = 'SELECT
                 tblonappusers.`client_id`,
                 tblonappusers.`server_id`,
@@ -34,17 +35,17 @@ if (!function_exists('hook_onappusers_InvoicePaid')) {
                 AND tblproducts.`servertype` = "onappusers"
                 AND tblinvoiceitems.`type` = "onappusers"
             GROUP BY tblinvoices.`id`';
-        $qry = str_replace( ':invoiceID', $invoice_id, $qry );
-        $result = full_query( $qry );
+        $qry = str_replace(':invoiceID', $invoice_id, $qry);
+        $result = full_query($qry);
 
-        if( mysql_num_rows( $result ) == 0 ) {
+        if (mysql_num_rows($result) == 0) {
             return;
         }
 
-        $data = mysql_fetch_assoc( $result );
-        $path = dirname( dirname( dirname( __DIR__ ) ) ) . '/includes/';
+        $data = mysql_fetch_assoc($result);
+        $path = __DIR__ . '/../../../includes/';
 
-        if( $data[ 'status' ] == 'Suspended' ) {
+        if ($data['status'] == 'Suspended') {
             // check for other unpaid invoices for this service
             $qry = 'SELECT
                     tblinvoices.`id`
@@ -56,19 +57,19 @@ if (!function_exists('hook_onappusers_InvoicePaid')) {
                 WHERE
                     tblinvoices.`status` = "Unpaid"
                 GROUP BY tblinvoices.`id`';
-            $qry = str_replace( ':serviceID', $data[ 'service_id' ], $qry );
-            $result = full_query( $qry );
+            $qry = str_replace(':serviceID', $data['service_id'], $qry);
+            $result = full_query($qry);
 
-            if( mysql_num_rows( $result ) == 0 ) {
-                if( ! function_exists( 'serverunsuspendaccount' ) ) {
+            if (mysql_num_rows($result) == 0) {
+                if (!function_exists('serverunsuspendaccount')) {
                     require_once $path . 'modulefunctions.php';
                 }
-                serverunsuspendaccount( $data[ 'service_id' ] );
+                serverunsuspendaccount($data['service_id']);
             }
         }
 
-        if( ! defined( 'ONAPP_WRAPPER_INIT' ) ) {
-            define( 'ONAPP_WRAPPER_INIT', $path . 'wrapper/OnAppInit.php' );
+        if (!defined('ONAPP_WRAPPER_INIT')) {
+            define('ONAPP_WRAPPER_INIT', $path . 'wrapper/OnAppInit.php');
             require_once ONAPP_WRAPPER_INIT;
         }
 
@@ -83,64 +84,62 @@ if (!function_exists('hook_onappusers_InvoicePaid')) {
             WHERE
                 `type` = "onappusers"
                 AND `id` = :serverID';
-        $qry = str_replace( ':serverID', $data[ 'server_id' ], $qry );
-        $result = full_query( $qry );
-        $server = mysql_fetch_assoc( $result );
-        $server[ 'password' ] = decrypt( $server[ 'password' ] );
-        if( $server[ 'secure' ] ) {
-            $server[ 'address' ] = 'https://';
+        $qry = str_replace(':serverID', $data['server_id'], $qry);
+        $result = full_query($qry);
+        $server = mysql_fetch_assoc($result);
+        $server['password'] = decrypt($server['password']);
+        if ($server['secure']) {
+            $server['address'] = 'https://';
+        } else {
+            $server['address'] = 'http://';
         }
-        else {
-            $server[ 'address' ] = 'http://';
+        if (empty($server['ipaddress'])) {
+            $server['address'] .= $server['hostname'];
+        } else {
+            $server['address'] .= $server['ipaddress'];
         }
-        if( empty( $server[ 'ipaddress' ] ) ) {
-            $server[ 'address' ] .= $server[ 'hostname' ];
-        }
-        else {
-            $server[ 'address' ] .= $server[ 'ipaddress' ];
-        }
-        unset( $server[ 'ipaddress' ], $server[ 'hostname' ], $server[ 'secure' ] );
+        unset($server['ipaddress'], $server['hostname'], $server['secure']);
 
         # get OnApp amount
-        $qry    = 'SELECT
+        $qry = 'SELECT
                     `amount`
                 FROM
                     `tblonappusers_invoices`
                 WHERE
                     `id` = ' . $invoice_id;
-        $res    = mysql_query( $qry );
+        $res = mysql_query($qry);
         //$amount = mysql_result( $res, 0 );
-        $amountArr = mysql_fetch_assoc( $res );
+        $amountArr = mysql_fetch_assoc($res);
         $amount = $amountArr['amount'];
 
         $payment = new OnApp_Payment;
-        $payment->auth( $server[ 'address' ], $server[ 'username' ], $server[ 'password' ] );
-        $payment->_user_id = $data[ 'onapp_user_id' ];
+        $payment->auth($server['address'], $server['username'], $server['password']);
+        $payment->_user_id = $data['onapp_user_id'];
         $payment->_amount = $amount;
         $payment->_invoice_number = $invoice_id;
         $payment->save();
 
-        $where = array( 'id' => $invoice_id );
-        delete_query( 'tblonappusers_invoices', $where );
+        $where = array('id' => $invoice_id);
+        delete_query('tblonappusers_invoices', $where);
 
         $error = $payment->getErrorsAsString();
-        if( empty( $error ) ) {
-            logactivity( 'OnApp payment was sent. Service ID #' . $data[ 'service_id' ] . ', amount: ' . $amount );
-        }
-        else {
-            logactivity( 'ERROR with OnApp payment for service ID #' . $data[ 'service_id' ] . ': ' . $error );
+        if (empty($error)) {
+            logactivity('OnApp payment was sent. Service ID #' . $data['service_id'] . ', amount: ' . $amount);
+        } else {
+            logactivity('ERROR with OnApp payment for service ID #' . $data['service_id'] . ': ' . $error);
         }
     }
 
-    add_hook( 'InvoicePaid', 1, 'hook_onappusers_InvoicePaid' );
+    add_hook('InvoicePaid', 1, 'hook_onappusers_InvoicePaid');
 
 }
 
 if (!function_exists('hook_onappusers_AutoSuspend')) {
-    function hook_onappusers_AutoSuspend() {
+    function hook_onappusers_AutoSuspend()
+    {
         global $CONFIG;
 
-        if( $CONFIG[ 'AutoSuspension' ] != 'on' ) {
+        if ($CONFIG['AutoSuspension'] != 'on') {
             return;
         }
 
@@ -160,27 +159,28 @@ if (!function_exists('hook_onappusers_AutoSuspend')) {
                 AND tblhosting.`overideautosuspend` != 1
             GROUP BY
                 tblhosting.`id`';
-        $qry = str_replace( ':days', $CONFIG[ 'AutoSuspensionDays' ], $qry );
-        $result = full_query( $qry );
+        $qry = str_replace(':days', $CONFIG['AutoSuspensionDays'], $qry);
+        $result = full_query($qry);
 
-        $path = dirname( dirname( dirname( __DIR__ ) ) ) . '/includes/';
-        if( ! function_exists( 'serversuspendaccount' ) ) {
+        $path = __DIR__ . '/../../../includes/';
+        if (!function_exists('serversuspendaccount')) {
             require_once $path . 'modulefunctions.php';
         }
-        while( $data = mysql_fetch_assoc( $result ) ) {
-            serversuspendaccount( $data[ 'id' ] );
+        while ($data = mysql_fetch_assoc($result)) {
+            serversuspendaccount($data['id']);
         }
     }
 
-    add_hook( 'DailyCronJob', 1, 'hook_onappusers_AutoSuspend' );
+    add_hook('DailyCronJob', 1, 'hook_onappusers_AutoSuspend');
 
 }
 
 if (!function_exists('hook_onappusers_AutoTerminate')) {
-    function hook_onappusers_AutoTerminate() {
+    function hook_onappusers_AutoTerminate()
+    {
         global $CONFIG;
 
-        if( $CONFIG[ 'AutoTermination' ] != 'on' ) {
+        if ($CONFIG['AutoTermination'] != 'on') {
             return;
         }
 
@@ -200,18 +200,18 @@ if (!function_exists('hook_onappusers_AutoTerminate')) {
                 AND tblhosting.`overideautosuspend` != 1
             GROUP BY
                 tblhosting.`id`';
-        $qry = str_replace( ':days', $CONFIG[ 'AutoTerminationDays' ], $qry );
-        $result = full_query( $qry );
+        $qry = str_replace(':days', $CONFIG['AutoTerminationDays'], $qry);
+        $result = full_query($qry);
 
-        $path = dirname( dirname( dirname( __DIR__ ) ) ) . '/includes/';
-        if( ! function_exists( 'serverterminateaccount' ) ) {
+        $path = __DIR__ . '/../../../includes/';
+        if (!function_exists('serverterminateaccount')) {
             require_once $path . 'modulefunctions.php';
         }
-        while( $data = mysql_fetch_assoc( $result ) ) {
-            serverterminateaccount( $data[ 'id' ] );
+        while ($data = mysql_fetch_assoc($result)) {
+            serverterminateaccount($data['id']);
         }
     }
 
-    add_hook( 'DailyCronJob', 2, 'hook_onappusers_AutoTerminate' );
+    add_hook('DailyCronJob', 2, 'hook_onappusers_AutoTerminate');
 
 }
