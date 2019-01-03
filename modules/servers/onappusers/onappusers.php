@@ -557,11 +557,7 @@ function onappusers_ClientArea($params = '')
     }
 
     $html = OnApp_UserModule::injectServerRow($params);
-    if ($GLOBALS['CONFIG']['Template'] == 'six') {
-        $html .= file_get_contents(__DIR__ . '/includes/html/clientarea.6.html');
-    } else {
-        $html .= file_get_contents(__DIR__ . '/includes/html/clientarea.5.html');
-    }
+    $html .= file_get_contents(__DIR__ . '/includes/html/clientarea.6.html');
 
     OnApp_UserModule::parseLang($html);
     $html .= '<script type="text/javascript">'
