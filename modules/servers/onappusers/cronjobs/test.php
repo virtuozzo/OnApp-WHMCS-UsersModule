@@ -20,14 +20,14 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron
         $this->dueDate = date('Ymd');
         $tab = "\n\t\t\t";
 
-/*        if (!function_exists('serversuspendaccount')) {
-            require_once $this->root . 'includes/modulefunctions.php';
-        }
-        $result = serversuspendaccount(15);
+        /*        if (!function_exists('serversuspendaccount')) {
+                    require_once $this->root . 'includes/modulefunctions.php';
+                }
+                $result = serversuspendaccount(15);
 
-        print_r($result);
+                print_r($result);
 
-        exit;*/
+                exit;*/
 
         while ($client = mysql_fetch_assoc($this->clients)) {
             if ($client['billing_type'] !== 'postpaid') {
@@ -44,7 +44,7 @@ class OnApp_UserModule_Cron_Invoices_Test extends OnApp_UserModule_Cron
                 continue;
             }
 
-            if ($clientAmount->total_cost > 0) {
+            if ($this->getTotalCost($clientAmount) > 0) {
                 $data = $this->generateInvoiceData($clientAmount, $client);
                 if ($data == false) {
                     continue;

@@ -47,7 +47,7 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron
                 continue;
             }
 
-            if ($clientAmount->total_cost > 0) {
+            if ($this->getTotalCost($clientAmount) > 0) {
                 $client['dueDate'] = htmlspecialchars_decode($client['dueDate']);
                 $client['dueDate'] = json_decode($client['dueDate']);
                 $server_id = $client['server_id'];
@@ -85,7 +85,7 @@ class OnApp_UserModule_Cron_Invoices extends OnApp_UserModule_Cron
                     $table = 'tblonappusers_invoices';
                     $values = array(
                         'id' => $result['invoiceid'],
-                        'amount' => $this->dataTMP->total_cost
+                        'amount' => $this->getTotalCost($this->dataTMP)
                     );
                     insert_query($table, $values);
 

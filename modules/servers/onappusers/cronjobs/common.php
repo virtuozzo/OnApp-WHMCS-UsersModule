@@ -376,6 +376,7 @@ abstract class OnApp_UserModule_Cron
     {
         $date = http_build_query($date);
         $url = $this->servers[$client['server_id']]['address'] . '/users/' . $client['onapp_user_id'] . '/user_statistics.json?' . $date;
+
         $data = $this->sendRequest(
             $url,
             $this->servers[$client['server_id']]['username'],
@@ -470,22 +471,31 @@ abstract class OnApp_UserModule_Cron
             $return['autoapplycredit'] = true;
         }
 
-        unset($data->total_cost);
-        $i = 1;
-        foreach ($data as $key => $value) {
-            if ($value <= 0) {
-                continue;
+        if (property_exists($data, 'total_cost_with_discount')) {
+            $return = array_merge($return, array(
+                'itemdescription2' => $_LANG['onappusers_invoice_total_cost'],
+                'itemamount2' => $data->total_cost_with_discount,
+                'itemtaxed2' => $taxed,
+            ));
+        } else {
+            unset($data->total_cost);
+
+            $i = 1;
+            foreach ($data as $key => $value) {
+                if ($value <= 0) {
+                    continue;
+                }
+                $langIndex = 'onappusers_invoice_' . $key;
+                if (!isset($_LANG[$langIndex])) {
+                    continue;
+                }
+                $tmp = array(
+                    'itemdescription' . ++$i => $_LANG[$langIndex],
+                    'itemamount' . $i => $value,
+                    'itemtaxed' . $i => $taxed,
+                );
+                $return = array_merge($return, $tmp);
             }
-            $langIndex = 'onappusers_invoice_' . $key;
-            if (!isset($_LANG[$langIndex])) {
-                continue;
-            }
-            $tmp = array(
-                'itemdescription' . ++$i => $_LANG[$langIndex],
-                'itemamount' . $i => $value,
-                'itemtaxed' . $i => $taxed,
-            );
-            $return = array_merge($return, $tmp);
         }
 
         $this->log(print_r($return, true), 'Invoice data');
@@ -511,5 +521,15 @@ abstract class OnApp_UserModule_Cron
         $this->admin = $adminArr['username'];
 
         return $this->admin;
+    }
+
+    protected function getTotalCost($obj)
+    {
+        if (!property_exists($obj, 'total_cost')) {
+            return 0;
+        }
+
+        return property_exists($obj, 'total_cost_with_discount') ?
+            $obj->total_cost_with_discount : $obj->total_cost;
     }
 }

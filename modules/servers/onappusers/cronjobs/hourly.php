@@ -70,16 +70,16 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
                 if (!$clientAmount) {
                     continue;
                 }
-                if (!$clientAmount->total_cost) {
+                if (!$this->getTotalCost($clientAmount)) {
                     continue;
                 }
 
                 $this->log($startDate . ' - ' . $endDate, 'Period');
-                $this->log($clientAmount->total_cost, 'Cost');
+                $this->log($this->getTotalCost($clientAmount), 'Cost');
 
                 //$hasData = true;
 
-                $chargeClientData = $this->chargeClient($client, $clientAmount->total_cost, $startDate, $endDate);
+                $chargeClientData = $this->chargeClient($client, $this->getTotalCost($clientAmount), $startDate, $endDate);
 
                 if (!$chargeClientData['status']) {
                     break;
@@ -89,7 +89,7 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
                 $lastNewBalanceCurrencyID = $client['currency'];
                 $lastNewBalanceDate = $endDate;
 
-                $this->saveHourlyStat($client, $clientAmount->total_cost, $startDate, $endDate);
+                $this->saveHourlyStat($client, $this->getTotalCost($clientAmount), $startDate, $endDate);
                 $this->saveLastCheckDate($client, $endDate);
 
                 if (!$startDateForOutput) {

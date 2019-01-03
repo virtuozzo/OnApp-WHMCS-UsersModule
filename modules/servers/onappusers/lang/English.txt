@@ -76,6 +76,8 @@ $_LANG[ 'onappusers_invoice_autoscale_cost' ] = 'Cost per number of VSs using Au
 $_LANG[ 'onappusers_invoice_acceleration_cost' ] = 'Cost per number of accelerated VSs';
 $_LANG[ 'onappusers_invoice_ova_count_cost' ] = 'Cost per OVA file per hour';
 $_LANG[ 'onappusers_invoice_ova_size_cost' ] = 'Cost per GB per hour for OVA file disk size';
+$_LANG[ 'onappusers_invoice_total_discount_due_to_free' ] = 'Total Discount due to free';
+$_LANG[ 'onappusers_invoice_total_cost_with_discount' ] = 'Total Cost with discount';
 
 
 $_LANG[ 'onappusers_ajax_error' ] = 'There is no data for given period or something went wrong.';
