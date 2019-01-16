@@ -237,7 +237,9 @@ class OnApp_UserModule
     {
         global $_LANG, $CONFIG;
 
-        $_LANG = array();
+        if (!isset($_LANG) || !is_array($_LANG)) {
+            $_LANG = array();
+        }
 
         $languagesDir = __DIR__ . '/../../lang/';
 
