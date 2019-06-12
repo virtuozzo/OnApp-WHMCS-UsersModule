@@ -275,20 +275,33 @@ abstract class OnApp_UserModule_Cron
 
         if (isset($this->cliOptions->since)) {
             $fromDate = $this->cliOptions->since;
+            $this->fromDateUTC = $this->getUTCTime($fromDate, 'Y-m-d H:30');
+            $this->fromDate = $fromDate;
         } else {
+            $tz = date_default_timezone_get();
+            date_default_timezone_set('UTC');
+
             $fromDate = date('Y-m-d 00:00', strtotime('first day of last month'));
+            $this->fromDateUTC = $this->getUTCTime($fromDate, 'Y-m-d H:30');
+            $this->fromDate = $fromDate;
+
+            date_default_timezone_set($tz);
         }
         if (isset($this->cliOptions->till)) {
             $tillDate = $this->cliOptions->till;
+            $this->tillDateUTC = $this->getUTCTime($tillDate, 'Y-m-d H:30');
+            $this->tillDate = $tillDate;
         } else {
-            $tillDate = date('Y-m-d 00:00', strtotime('first day of next month', strtotime($fromDate)));
+            $tz = date_default_timezone_get();
+            date_default_timezone_set('UTC');
+
+            //first day of next month - MINUS 1 sec
+            $tillDate = date('Y-m-d H:00', strtotime('first day of next month', strtotime($fromDate)) - 1);
+            $this->tillDateUTC = $this->getUTCTime($tillDate, 'Y-m-d H:30');
+            $this->tillDate = $tillDate;
+
+            date_default_timezone_set($tz);
         }
-
-        $this->fromDateUTC = $this->getUTCTime($fromDate, 'Y-m-d H:30');
-        $this->tillDateUTC = $this->getUTCTime($tillDate, 'Y-m-d H:30');
-
-        $this->fromDate = $fromDate;
-        $this->tillDate = $tillDate;
     }
 
     protected function getUTCTime($date, $format = 'Y-m-d H:i')
