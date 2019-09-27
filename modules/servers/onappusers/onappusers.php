@@ -455,6 +455,9 @@ function onappusers_ChangePackage($params)
     }
 
     $serviceID = $params['serviceid'];
+    $serverID = $params['serverid'];
+    $userID = $params['clientsdetails']['userid'];
+    $userName = explode('@' ,$params['clientsdetails']['email'])[0];
 
     $query = "SELECT
                     onapp_user_id
@@ -476,7 +479,29 @@ function onappusers_ChangePackage($params)
     $onAppUser->_locale = $module->getProductParam('SelectedLocales');
 
     $billingRow = $module->getBillingFieldName();
-    $onAppUser->{$billingRow} = $module->getProductParam('SelectedPlans');
+
+    if ($module->getProductParam('CustomBillingPlansCurrent')) {
+        $billingPlanID = $module->getBillingPlanID();
+        if (!$billingPlanID) {
+            return $module->getLastErrorMessage();
+        }
+
+        $onAppUser->{$billingRow} = $billingPlanID;
+        $module->renameBillingPlanIfCustom($billingPlanID, $onAppUser->_obj->_id, $userName);
+
+        $sql = "UPDATE `tblonappusers`
+                SET
+                    `custom_billing_plan_id` = $billingPlanID
+                WHERE
+                    `server_id` = $serverID
+                 AND
+                    `client_id` = $userID
+                 AND
+                    `service_id` = $serviceID";
+        full_query($sql);
+    } else {
+        $onAppUser->{$billingRow} = $module->getProductParam('SelectedPlans');
+    }
 
     $onAppUser->_user_group_id = $module->getProductParam('SelectedUserGroups');
     $onAppUser->save();
