@@ -379,9 +379,7 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
             );
         }
 
-        $command = 'addcredit';
-        $values['clientid'] = $client['client_id'];
-        $values['description'] = 'Hourly bill user #' .
+        $description = 'Hourly bill user #' .
             $client['WHMCSUserID'] .
             ' | Period: ' .
             $startDate .
@@ -389,7 +387,33 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
             $endDate .
             ' | Billed ' .
             date('d/m/Y H:i');
-        $values['amount'] = -($amount * $client['rate']);
+
+        $version = trim(preg_replace('/-(.*)/', ' ', $CONFIG['Version']));
+        if (version_compare ($version , '7.8.0', '<')) {
+            $command = 'addcredit';
+            $values = [
+                'clientid' => $client['client_id'],
+                'description' => $description,
+                'amount' => -($amount * $client['rate']),
+            ];
+        } else {
+            $correctAmount = $this->getCorrectAmount($client, $amount);
+
+            if (!$correctAmount) {
+                return array(
+                    'status' => true,
+                    'new_balance' => 0,
+                );
+            }
+
+            $command = 'AddCredit';
+            $values = [
+                'clientid' => $client['client_id'],
+                'description' => $description,
+                'amount' => $correctAmount * $client['rate'],
+                'type' => 'remove',
+            ];
+        }
 
         $this->log($this->getAdminUsername(), 'addcredit admin');
         $this->log(print_r($values, true), 'addcredit params');
@@ -554,6 +578,111 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
                 $client['client_id'],
                 $client['onapp_user_id'],
                 $date,
+            ),
+            $qry
+        );
+        full_query($qry);
+    }
+
+    private function getCorrectAmount($client, $amount)
+    {
+        $buffer = (float) $this->getBufferData($client);
+
+        $totalAmount = (float) $amount + $buffer;
+
+        $result = (float) bcdiv($totalAmount, 1, 2);
+
+        if (!$result) {
+            $this->saveBufferData($client, $totalAmount);
+        } else {
+            $diff = round($totalAmount - $result, 8);
+            $this->saveBufferData($client, $diff);
+        }
+
+        return $result;
+    }
+
+    private function getBufferData($client)
+    {
+        $qry = 'SELECT
+                    `buffer`
+                FROM
+                    `tblonappusers_Hourly_Buffer`
+                WHERE
+                    `server_id` = :server_id AND
+                    `client_id` = :client_id AND 
+                    `onapp_user_id` = :onapp_user_id';
+        $qry = str_replace(
+            array(':server_id', ':client_id', ':onapp_user_id'),
+            array(
+                $client['server_id'],
+                $client['client_id'],
+                $client['onapp_user_id'],
+            ),
+            $qry
+        );
+
+        $dataRes = mysql_query($qry);
+        if (($dataRes === false) || (mysql_num_rows($dataRes) == 0)) {
+            return;
+        } else {
+            $dataArr = mysql_fetch_assoc($dataRes);
+
+            return $dataArr['buffer'];
+        }
+    }
+
+    private function saveBufferData($client, $amount)
+    {
+        $qry = 'SELECT
+                    `id`
+                FROM
+                    `tblonappusers_Hourly_Buffer`
+                WHERE
+                    `server_id` = :server_id AND
+                    `client_id` = :client_id AND 
+                    `onapp_user_id` = :onapp_user_id';
+        $qry = str_replace(
+            array(':server_id', ':client_id', ':onapp_user_id'),
+            array(
+                $client['server_id'],
+                $client['client_id'],
+                $client['onapp_user_id'],
+            ),
+            $qry
+        );
+        $dataQry = mysql_query($qry);
+        if (($dataQry === false) || (mysql_num_rows($dataQry) == 0)) {
+            $qry = 'INSERT INTO
+                            `tblonappusers_Hourly_Buffer` (
+                                 `server_id`,
+                                 `client_id`,
+                                 `onapp_user_id`,
+                                 `buffer`
+                            )
+                            VALUES (
+                                :server_id,
+                                :client_id,
+                                :onapp_user_id,
+                                :buffer
+                            )';
+        } else {
+            $qry = 'UPDATE
+                    `tblonappusers_Hourly_Buffer`
+                SET
+                    `buffer` = :buffer
+                WHERE
+                    `server_id` = :server_id AND
+                    `client_id` = :client_id AND 
+                    `onapp_user_id` = :onapp_user_id';
+        }
+        $qry = str_replace(
+            array(':server_id', ':client_id', ':onapp_user_id', ':buffer'),
+            array(
+                $client['server_id'],
+                $client['client_id'],
+                $client['onapp_user_id'],
+                $amount,
             ),
             $qry
         );

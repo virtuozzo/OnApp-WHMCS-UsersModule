@@ -45,8 +45,20 @@ CREATE TABLE IF NOT EXISTS `tblonappusers_Hourly_LastCheck` (
 )
 ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
+-- Create syntax for table 'tblonappusers_Hourly_Buffer'
+CREATE TABLE IF NOT EXISTS `tblonappusers_Hourly_Buffer` (
+    `id`            INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `server_id`     INT(11)          DEFAULT NULL,
+    `client_id`     INT(11)          DEFAULT NULL,
+    `onapp_user_id` INT(11)          DEFAULT NULL,
+    `buffer`       DOUBLE(20, 12)   DEFAULT NULL,
+    PRIMARY KEY (`id`)
+)
+ENGINE = InnoDB DEFAULT CHARSET = utf8;
+
 -- Update syntax for table 'tblonappusers'
 ALTER TABLE `tblonappusers` ADD `custom_billing_plan_id` INT(11) DEFAULT 0 AFTER `billing_type`;
 
 -- Update syntax for table 'tblonappusers'
 ALTER TABLE `tblonappusers` ADD `custom_info` TEXT DEFAULT '' AFTER `custom_billing_plan_id`;
+
