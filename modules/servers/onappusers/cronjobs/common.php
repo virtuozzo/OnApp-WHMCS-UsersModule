@@ -466,7 +466,6 @@ abstract class OnApp_UserModule_Cron
             $_LANG['onappusersstatproduct'] . $client['packagename'],
             $_LANG['onappusersstatperiod'] . $this->fromDate . ' - ' . $this->tillDate . $timeZone,
         );
-        $invoiceDescription = implode(PHP_EOL, $invoiceDescription);
 
         $return = array(
             'userid' => $client['client_id'],
@@ -475,9 +474,6 @@ abstract class OnApp_UserModule_Cron
             'paymentmethod' => $client['paymentmethod'],
             'taxrate' => $taxrate,
             'sendinvoice' => true,
-            'itemdescription1' => $invoiceDescription,
-            'itemamount1' => 0,
-            'itemtaxed1' => $taxed,
             'status' => 'Unpaid',
         );
         if ($this->autoapplycredit) {
@@ -485,31 +481,29 @@ abstract class OnApp_UserModule_Cron
         }
 
         if (property_exists($data, 'total_cost_with_discount')) {
-            $return = array_merge($return, array(
-                'itemdescription2' => $_LANG['onappusers_invoice_total_cost'],
-                'itemamount2' => $data->total_cost_with_discount,
-                'itemtaxed2' => $taxed,
-            ));
+            $totalCost = $data->total_cost_with_discount;
         } else {
-            unset($data->total_cost);
-
-            $i = 1;
-            foreach ($data as $key => $value) {
-                if ($value <= 0) {
-                    continue;
-                }
-                $langIndex = 'onappusers_invoice_' . $key;
-                if (!isset($_LANG[$langIndex])) {
-                    continue;
-                }
-                $tmp = array(
-                    'itemdescription' . ++$i => $_LANG[$langIndex],
-                    'itemamount' . $i => $value,
-                    'itemtaxed' . $i => $taxed,
-                );
-                $return = array_merge($return, $tmp);
-            }
+            $totalCost = $data->total_cost;
         }
+
+        foreach ($data as $key => $value) {
+            if ($value <= 0) {
+                continue;
+            }
+            $langIndex = 'onappusers_invoice_' . $key;
+            if (!isset($_LANG[$langIndex])) {
+                continue;
+            }
+
+            $invoiceDescription[] = $_LANG[$langIndex] . ': ' . $value;
+        }
+
+        $invoiceDescription = implode(PHP_EOL, $invoiceDescription);
+        $return = array_merge($return, array(
+            'itemdescription1' => $invoiceDescription,
+            'itemamount1' => $totalCost,
+            'itemtaxed1' => $taxed,
+        ));
 
         $this->log(print_r($return, true), 'Invoice data');
 

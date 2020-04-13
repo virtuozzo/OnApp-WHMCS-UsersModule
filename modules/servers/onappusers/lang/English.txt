@@ -79,6 +79,28 @@ $_LANG[ 'onappusers_invoice_ova_size_cost' ] = 'Cost per GB per hour for OVA fil
 $_LANG[ 'onappusers_invoice_total_discount_due_to_free' ] = 'Total Discount due to free';
 $_LANG[ 'onappusers_invoice_total_cost_with_discount' ] = 'Total Cost with discount';
 
+$_LANG[ 'onappusers_invoice_vm_discount_due_to_free' ] = 'Virtual Servers Discount Due To Free';
+$_LANG[ 'onappusers_invoice_user_resources_cost' ] = 'User Resources Cost';
+$_LANG[ 'onappusers_invoice_user_resources_discount_due_to_free' ] = 'User Resources Discount Due To Free';
+$_LANG[ 'onappusers_invoice_monthly_discount_due_to_free' ] = 'Monthly Discount Due To Free';
+$_LANG[ 'onappusers_invoice_backup_discount_due_to_free' ] = 'Backup Discount Due To Free';
+$_LANG[ 'onappusers_invoice_template_discount_due_to_free' ] = 'Template Discount Due To Free';
+$_LANG[ 'onappusers_invoice_storage_disk_size_discount_due_to_free' ] = 'Storage Disk Size Discount Due To Free';
+$_LANG[ 'onappusers_invoice_backup_count_discount_due_to_free' ] = 'Backup Count Discount Due To Free';
+$_LANG[ 'onappusers_invoice_backup_disk_size_discount_due_to_free' ] = 'Backup Disk Size Discount Due To Free';
+$_LANG[ 'onappusers_invoice_template_count_discount_due_to_free' ] = 'Template Count Discount Due To Free';
+$_LANG[ 'onappusers_invoice_template_disk_size_discount_due_to_free' ] = 'Template Disk Size Discount Due To Free';
+$_LANG[ 'onappusers_invoice_recovery_point_cost' ] = 'Recovery Point Cost';
+$_LANG[ 'onappusers_invoice_recovery_point_discount_due_to_free' ] = 'Recovery Point Discount Due To Free';
+$_LANG[ 'onappusers_invoice_recovery_point_size_cost' ] = 'Recovery Point Size Cost';
+$_LANG[ 'onappusers_invoice_recovery_point_size_discount_due_to_free' ] = 'Recovery Point Size Discount Due To Free';
+$_LANG[ 'onappusers_invoice_autoscale_discount_due_to_free' ] = 'Autoscale Discount Due To Free';
+$_LANG[ 'onappusers_invoice_acceleration_discount_due_to_free' ] = 'Acceleration Discount Due To Free';
+$_LANG[ 'onappusers_invoice_ova_count_discount_due_to_free' ] = 'OVA Count Discount Due To Free';
+$_LANG[ 'onappusers_invoice_ova_size_discount_due_to_free' ] = 'OVA Size Discount Due To Free';
+$_LANG[ 'onappusers_invoice_backup_resource_usage_cost' ] = 'Backup Resource Usage Cost';
+$_LANG[ 'onappusers_invoice_backup_resource_usage_discount_due_to_free' ] = 'Backup Resource Usage Discount Due To Free';
+
 
 $_LANG[ 'onappusers_ajax_error' ] = 'There is no data for given period or something went wrong.';
 $_LANG[ 'onappusersstatapply_loading' ] = 'Loading...';

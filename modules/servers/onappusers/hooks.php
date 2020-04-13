@@ -114,7 +114,7 @@ if (!function_exists('hook_onappusers_InvoicePaid')) {
 
         $payment = new OnApp_Payment;
         $payment->auth($server['address'], $server['username'], $server['password']);
-        $payment->_user_id = $data['onapp_user_id'];
+        $payment->_payer_id = $data['onapp_user_id'];
         $payment->_amount = $amount;
         $payment->_invoice_number = $invoice_id;
         $payment->save();
