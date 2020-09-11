@@ -32,15 +32,13 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
 
             if ($unsuspendOnPositiveBalance && $client['domainstatus'] === 'Suspended') {
                 $credit = (float) $client['credit'];
-                if ($credit > 0) {
-                    if ($this->unsuspendUser($client)) {
-                        $client['domainstatus'] = 'Active';
-                    }
+                if ($credit <= 0) {
+                    continue;
                 }
-            }
-
-            if ($client['domainstatus'] !== 'Active') {
-                continue;
+            } else {
+                if ($client['domainstatus'] !== 'Active') {
+                    continue;
+                }
             }
 
             OnApp_UserModule::loadLang($client['language']);
@@ -85,8 +83,23 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
                     break;
                 }
 
-                $lastNewBalance = $chargeClientData['new_balance'];
+                $chargeClientData['unsuspend'] = isset($chargeClientData['unsuspend']) ? $chargeClientData['unsuspend'] : false;
+
+                if($chargeClientData['unsuspend']){
+                    if ($client['domainstatus'] !== 'Active') {
+                        if ($this->unsuspendUser($client)) {
+                            $client['domainstatus'] = 'Active';
+                        }
+                    }
+                }
+
+                $chargeClientData['amountIsTooLow'] = isset($chargeClientData['amountIsTooLow']) ? $chargeClientData['amountIsTooLow'] : false;
+
+                if(!$chargeClientData['amountIsTooLow']){
+                    $lastNewBalance = $chargeClientData['new_balance'];
+                }
                 $lastNewBalanceCurrencyID = $client['currency'];
+
                 $lastNewBalanceDate = $endDate;
 
                 $this->saveHourlyStat($client, $this->getTotalCost($clientAmount), $startDate, $endDate);
@@ -96,7 +109,7 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
                     $startDateForOutput = $startDate;
                 }
 
-                if ($lastNewBalance < 0) {
+                if ($lastNewBalance <= 0) {
                     break;
                 }
             }
@@ -402,11 +415,20 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
             if (!$correctAmount) {
                 return array(
                     'status' => true,
-                    'new_balance' => 0,
+                    'amountIsTooLow' => true,
                 );
             }
 
             $command = 'AddCredit';
+            $creditBalance = $this->getCreditBalance($client);
+            if ($creditBalance < $correctAmount * $client['rate']) {
+                $this->suspendUserAndSetAutoTermination($client);
+
+                return [
+                    'status' => false,
+                ];
+            }
+
             $values = [
                 'clientid' => $client['client_id'],
                 'description' => $description,
@@ -425,40 +447,66 @@ class OnApp_UserModule_Cron_Hourly extends OnApp_UserModule_Cron
 
             return array(
                 'status' => false,
-                'new_balance' => 0,
             );
         }
 
         $this->log(print_r($results, true), 'addcredit call result');
 
         if (isset($results['newbalance']) && $results['newbalance'] <= 0) {
-            if ($CONFIG['AutoTermination'] === 'on') {
-                // todo check query
-                $qry = 'UPDATE
+            $this->suspendUserAndSetAutoTermination($client);
+        }
+
+        return array(
+            'status' => true,
+            'unsuspend' => true,
+            'new_balance' => (float) $results['newbalance'],
+        );
+    }
+
+    private function suspendUserAndSetAutoTermination($client){
+        global $CONFIG;
+
+        if ($client['domainstatus'] !== 'Active') {
+            return;
+        }
+
+        if ($CONFIG['AutoTermination'] === 'on') {
+            // todo check query
+            $qry = 'UPDATE
                             tblhosting
                         SET
                             nextduedate = DATE_ADD( NOW(), INTERVAL :days DAY )
                         WHERE
                             id = :serviceID';
-                $qry = str_replace(':days', $CONFIG['AutoTerminationDays'], $qry);
-                $qry = str_replace(':serviceID', $client['service_id'], $qry);
-                full_query($qry);
-            }
-
-            $this->suspendUser($client);
-
-            $this->log('client suspended');
-
-            return array(
-                'status' => true,
-                'new_balance' => (float) $results['newbalance'],
-            );
+            $qry = str_replace(':days', $CONFIG['AutoTerminationDays'], $qry);
+            $qry = str_replace(':serviceID', $client['service_id'], $qry);
+            full_query($qry);
         }
 
-        return array(
-            'status' => true,
-            'new_balance' => (float) $results['newbalance'],
-        );
+        $this->suspendUser($client);
+
+        $this->log('client suspended');
+    }
+
+    private function getCreditBalance($client)
+    {
+        $command = 'GetClientsDetails';
+        $values = [
+            'clientid' => $client['client_id'],
+            'stats' => 'false',
+        ];
+
+        $results = localAPI($command, $values, $this->getAdminUsername());
+
+        if (! isset($results['result']) || $results['result'] !== 'success') {
+            return 0.0;
+        }
+
+        if (! isset($results['client']['credit'])) {
+            return 0.0;
+        }
+
+        return (float) $results['client']['credit'];
     }
 
     private function suspendUser($client)
