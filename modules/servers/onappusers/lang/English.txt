@@ -100,6 +100,7 @@ $_LANG[ 'onappusers_invoice_ova_count_discount_due_to_free' ] = 'OVA Count Disco
 $_LANG[ 'onappusers_invoice_ova_size_discount_due_to_free' ] = 'OVA Size Discount Due To Free';
 $_LANG[ 'onappusers_invoice_backup_resource_usage_cost' ] = 'Backup Resource Usage Cost';
 $_LANG[ 'onappusers_invoice_backup_resource_usage_discount_due_to_free' ] = 'Backup Resource Usage Discount Due To Free';
+$_LANG[ 'onappusers_invoice_resources_cost' ] = 'User resources cost';
 
 
 $_LANG[ 'onappusers_ajax_error' ] = 'There is no data for given period or something went wrong.';
@@ -120,6 +121,8 @@ $_LANG[ 'onappusersstatdateformat' ] = 'Y-m-d H:i';
 $_LANG[ 'onappusersstatproduct' ] = 'Product: ';
 $_LANG[ 'onappusersstatperiod' ] = 'Period: ';
 $_LANG[ 'onappusersstatotherresources' ] = 'Other resources';
+
+$_LANG[ 'onappusersuser_resources_cost' ] = 'User resources cost';
 
 
 $_LANG[ 'onappusersstathour' ] = 'Hour';

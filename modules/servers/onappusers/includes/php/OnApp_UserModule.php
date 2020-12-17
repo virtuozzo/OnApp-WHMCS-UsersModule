@@ -129,7 +129,6 @@ class OnApp_UserModule
         $unset = array(
             'vm_stats',
             'stat_time',
-            'user_resources_cost',
             'user_id',
         );
         foreach ($data as $key => &$value) {

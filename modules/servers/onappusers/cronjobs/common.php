@@ -368,7 +368,6 @@ abstract class OnApp_UserModule_Cron
         $unset = array(
             'vm_stats',
             'stat_time',
-            'user_resources_cost',
             'currency_code',
             'user_id',
             'template_cost',

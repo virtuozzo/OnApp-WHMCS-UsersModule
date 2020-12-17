@@ -37,105 +37,136 @@
     <tbody class="text-left">
     <tr>
         <td class="span4">{$LANG.onappusers_invoice_vm_cost}</td>
-        <td id="vm_cost"></td>
+        <td id="vm_cost">-</td>
+    </tr>
+    <tr>
+        <td class="span4">{$LANG.onappusersuser_resources_cost}</td>
+        <td id="user_resources_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_backup_cost}</td>
-        <td id="backup_cost"></td>
+        <td id="backup_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_monit_cost}</td>
-        <td id="monit_cost"></td>
+        <td id="monit_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_storage_disk_size_cost}</td>
-        <td id="storage_disk_size_cost"></td>
+        <td id="storage_disk_size_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_template_cost}</td>
-        <td id="template_cost"></td>
+        <td id="template_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_backup_count_cost}</td>
-        <td id="backup_count_cost"></td>
+        <td id="backup_count_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_backup_disk_size_cost}</td>
-        <td id="backup_disk_size_cost"></td>
+        <td id="backup_disk_size_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_template_count_cost}</td>
-        <td id="template_count_cost"></td>
+        <td id="template_count_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_template_disk_size_cost}</td>
-        <td id="template_disk_size_cost"></td>
+        <td id="template_disk_size_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_customer_network_cost}</td>
-        <td id="customer_network_cost"></td>
+        <td id="customer_network_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_edge_group_cost}</td>
-        <td id="edge_group_cost"></td>
+        <td id="edge_group_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_usage_cost}</td>
-        <td id="usage_cost"></td>
+        <td id="usage_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_vm_resource_cost}</td>
-        <td id="vm_resource_cost"></td>
+        <td id="vm_resource_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_template_iso_cost}</td>
-        <td id="template_iso_cost"></td>
+        <td id="template_iso_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_autoscale_cost}</td>
-        <td id="autoscale_cost"></td>
+        <td id="autoscale_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_acceleration_cost}</td>
-        <td id="acceleration_cost"></td>
+        <td id="acceleration_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_ova_count_cost}</td>
-        <td id="ova_count_cost"></td>
+        <td id="ova_count_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_ova_size_cost}</td>
-        <td id="ova_size_cost"></td>
+        <td id="ova_size_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_total_cost}</td>
-        <td id="total_cost"></td>
+        <td id="total_cost">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_total_discount_due_to_free}</td>
-        <td id="total_discount_due_to_free"></td>
+        <td id="total_discount_due_to_free">-</td>
     </tr>
     <tr>
         <td>{$LANG.onappusers_invoice_total_cost_with_discount}</td>
-        <td id="total_cost_with_discount"></td>
+        <td id="total_cost_with_discount">-</td>
     </tr>
     </tbody>
 </table>
 
 <link rel="stylesheet" href="modules/servers/onappusers/includes/css/style.css"/>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
-    $.prototype.confirmation = function () {
-
-    };
+    window.oldJqueryVersionToCheck = jQuery().jquery;
+    window.oldBootstrapVersionToCheck = $.fn.tooltip.Constructor.VERSION;
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
 
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+<script>
+    function loadScript(src, callback) {
+        let script = document.createElement('script');
+        script.src = src;
+        script.async = false;
+        if(callback){
+            script.onload = callback;
+        }
+        document.body.append(script);
+    }
+
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js', function (){
+        $.prototype.confirmation = function () {
+
+        };
+        $.prototype.popover = function () {
+
+        };
+        $.prototype.tooltip  = function () {
+
+        };
+    });
+
+    if (!(window.oldJqueryVersionToCheck == '1.12.4' && (
+        window.oldBootstrapVersionToCheck == '3.4.1' ||
+        window.oldBootstrapVersionToCheck == '3.3.7'
+    ))) {
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js');
+    }
+
+    loadScript('//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js');
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js');
+    loadScript('//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.3.2/accounting.min.js');
+    loadScript('modules/servers/onappusers/includes/js/onappusers_stat.6.js');
+</script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.3.2/accounting.min.js"></script>
-<script type="text/javascript" src="modules/servers/onappusers/includes/js/onappusers_stat.6.js"></script>
