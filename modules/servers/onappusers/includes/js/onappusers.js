@@ -6,6 +6,9 @@ function buildFields(ServersData) {
     } else {
         table = $('table').eq(5);
     }
+    if(table.hasClass('hidden')){
+        table.removeClass('hidden')
+    }
     table.find('tr').remove();
 
     // if no servers in group
