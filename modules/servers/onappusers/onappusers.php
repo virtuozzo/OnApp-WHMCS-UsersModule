@@ -12,6 +12,10 @@ if (file_exists($file = __DIR__ . '/module.sql')) {
     $sql = preg_split('/(\r\n\r\n|\n\n)/', $sql);
 
     foreach ($sql as $qry) {
+        if (trim($qry) == ''){
+            continue;
+        }
+
         full_query($qry);
     }
 
@@ -64,8 +68,8 @@ function onappusers_ConfigOptions()
             LEFT JOIN
                 `tblservergroups` AS grp ON grp.`id` = rel.`groupid`
             WHERE
-                grp.`id` = :servergroup AND 
-                srv.`disabled` = 0 AND 
+                grp.`id` = :servergroup AND
+                srv.`disabled` = 0 AND
                 srv.`type` = \':type\'';
     $sql = str_replace(':servergroup', $serverGroup, $sql);
     $sql = str_replace(':type', OnApp_UserModule::MODULE_NAME, $sql);
@@ -665,11 +669,11 @@ function onappusers_AdminServicesTabFieldsSave($params)
             'billing_type' => $module->getBillingType(),
         ));
     } else {
-        $sql = "UPDATE 
-                      tblonappusers 
-                  SET 
-                      onapp_user_id = " . $onAppUserIDNew . " 
-                  WHERE 
+        $sql = "UPDATE
+                      tblonappusers
+                  SET
+                      onapp_user_id = " . $onAppUserIDNew . "
+                  WHERE
                     server_id = $serverID AND
                     client_id = " . $clientsDetails['userid'] . " AND
                     service_id = $serviceID";

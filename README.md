@@ -5,6 +5,9 @@ The OnApp Users module for WHMCS allows you to operate (creating/suspending/dele
 Please visit our [wiki](https://github.com/OnApp/OnApp-WHMCS-UsersModule/wiki) for detailed instructions _(updated on **23 of July 2014**)_.
 
 ## Changelog:
+####v3.8.15
+- fix support issues
+
 ####v3.8.14
 - fix support issues
 
@@ -47,10 +50,10 @@ Please visit our [wiki](https://github.com/OnApp/OnApp-WHMCS-UsersModule/wiki) f
 
 ####v3.8.1
  - add the ability to set OnApp User ID
- 
+
 ####v3.8.0
  - fix Naming conflict
- 
+
 ####v3.7.5
  - fix due date bug
 
@@ -73,7 +76,7 @@ Please visit our [wiki](https://github.com/OnApp/OnApp-WHMCS-UsersModule/wiki) f
 ####v3.6.0
  - WHMCS 7 compatibility
  - fix support issues
- 
+
 ####v3.4.0
  - fix URL handling in payment hook
 
