@@ -1,17 +1,16 @@
 $(document).ready(function () {
     $('#stat_data tbody').css({opacity: 0.1});
 
-    // set datetime pickers
-    var opts = {
-        format: 'YYYY-MM-DD HH:mm',
-        allowInputToggle: true,
-        maxDate: 'now',
-        collapse: true
-    };
-    $('#datetimepicker1').datetimepicker(opts);
-    $('#datetimepicker2').datetimepicker(opts);
-    $('#datetimepicker2 input').val(moment().format('YYYY-MM-DD HH:mm'));
-    $('#datetimepicker1 input').val(moment().subtract(2, 'days').format('YYYY-MM-DD HH:mm'));
+    $('#datetimes1').daterangepicker({
+        timePicker: true,
+        startDate: moment().format('YYYY-MM-DD HH:mm'),
+        endDate: moment().subtract(2, 'days').format('YYYY-MM-DD HH:mm'),
+        locale: {
+        format: 'YYYY-MM-DD HH:mm'
+        },
+        autoApply: true,
+        autoUpdateInput: true
+    });
 
     // ajax
     $('#stat_data button').on('click', function () {
@@ -27,8 +26,8 @@ $(document).ready(function () {
                 getstat: 1,
                 modop: 'custom',
                 a: 'OutstandingDetails',
-                start: $('#datetimepicker1 input').val(),
-                end: $('#datetimepicker2 input').val(),
+                start: $('#datetimes1').data('daterangepicker').startDate.format('YYYY-MM-DD HH:mm'),
+                end: $('#datetimes1').data('daterangepicker').endDate.format('YYYY-MM-DD HH:mm'),
                 tz_offset: function () {
                     var myDate = new Date();
                     offset = myDate.getTimezoneOffset();

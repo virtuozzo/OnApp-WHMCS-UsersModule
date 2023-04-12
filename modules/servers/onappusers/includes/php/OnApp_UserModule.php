@@ -284,10 +284,11 @@ class OnApp_UserModule
     {
         $html = preg_replace_callback(
             '#{\$LANG.(.*)}#U',
-            create_function(
-                '$matches',
-                'global $_LANG; return $_LANG[ $matches[ 1 ] ];'
-            ),
+            function ($matches) {
+                global $_LANG;
+
+                return $_LANG[ $matches[ 1 ] ];
+            },
             $html
         );
 

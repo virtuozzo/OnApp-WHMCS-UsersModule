@@ -1,33 +1,21 @@
 <h3 id="user-stat">{$LANG.onappusersstatoutstandingdetails}</h3>
 <table class="table table-bordered table-striped" id="stat_data">
     <thead>
-    <tr>
-        <th colspan="2">
-            <div class='col-md-4'>
-                <div class='input-group date' id='datetimepicker1'>
-                    <input type="text" class="form-control" placeholder="{$LANG.onappusersstatstartdate}..."/>
-                    <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                </div>
-            </div>
-            <div class='col-md-4'>
-                <div class='input-group date' id='datetimepicker2'>
-                    <input type='text' class="form-control" placeholder="{$LANG.onappusersstatenddate}..."/>
-                    <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                </div>
-            </div>
 
-            <div class="col-md-3">
+    <tr>
+        <th>
+                <div class='input-group date'>
+                    <input style='width: 300px' type='text' name='datetimes' id='datetimes1'/>
+                </div>
+        </th>
+        <th>
                 <button type="button" data-loading="{$LANG.onappusersstatapply_loading}"
                         data-normal="{$LANG.onappusersstatapply}" class="btn btn-default">
                     {$LANG.onappusersstatapply}
                 </button>
-            </div>
         </th>
     </tr>
+
     <tr id="error">
         <th colspan="2">
             {$LANG.onappusers_ajax_error}
@@ -154,19 +142,15 @@
         $.prototype.tooltip  = function () {
 
         };
+        $.prototype.iCheck  = function () {
+
+        };
     });
 
-    if (!(window.oldJqueryVersionToCheck == '1.12.4' && (
-        window.oldBootstrapVersionToCheck == '3.4.1' ||
-        window.oldBootstrapVersionToCheck == '3.3.7'
-    ))) {
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js');
-    }
-
     loadScript('//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js');
-    loadScript('https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js');
+    loadScript('https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js');
     loadScript('//cdnjs.cloudflare.com/ajax/libs/accounting.js/0.3.2/accounting.min.js');
     loadScript('modules/servers/onappusers/includes/js/onappusers_stat.6.js');
 </script>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
