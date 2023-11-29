@@ -3,8 +3,8 @@ $(document).ready(function () {
 
     $('#datetimes1').daterangepicker({
         timePicker: true,
-        startDate: moment().format('YYYY-MM-DD HH:mm'),
-        endDate: moment().subtract(2, 'days').format('YYYY-MM-DD HH:mm'),
+        startDate: moment().subtract(2, 'days').format('YYYY-MM-DD HH:mm'),
+        endDate: moment().format('YYYY-MM-DD HH:mm'),
         locale: {
         format: 'YYYY-MM-DD HH:mm'
         },

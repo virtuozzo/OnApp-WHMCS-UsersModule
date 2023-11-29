@@ -135,7 +135,7 @@ class OnApp_UserModule
             if (in_array($key, $unset)) {
                 unset($data->$key);
             } else {
-                $data->$key *= $rate['rate'];
+                $data->$key = (float)$data->$key * $rate['rate'];
             }
         }
         $data->currency_code = $rate['code'];

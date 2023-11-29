@@ -231,7 +231,7 @@ abstract class OnApp_UserModule_Cron
                     tblonappusers.billing_type,
                     tblproducts.tax,
                     tblproducts.name AS packagename,
-                    tblproducts.configoption1                    
+                    tblproducts.configoption1
                 FROM
                     tblonappusers
                 LEFT JOIN tblhosting ON
@@ -377,7 +377,7 @@ abstract class OnApp_UserModule_Cron
             if (in_array($key, $unset)) {
                 unset($data->$key);
             } else {
-                $data->$key *= $user['rate'];
+                $data->$key = (float)$data->$key * $user['rate'];
             }
         }
 
